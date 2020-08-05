@@ -41,7 +41,13 @@
  
 				<topTabs :tabsList="headList" @changeTabs="changeTabs">
 					<div slot="tab-content">
-						<div></div>
+						<div>
+							<div class="tree-class">
+	            	<el-input v-model="filterText" placeholder="请输入组织名称开始搜索..." suffix-icon="el-icon-search" size="small"></el-input>
+
+	              <basicTree :tree-data="orgData" :filterText="filterText" @selectnode="defaultSelectNode" @handleNodeClick="handleNodeClick"></basicTree>
+	            </div>
+						</div>
 					</div>
 				</topTabs>
 

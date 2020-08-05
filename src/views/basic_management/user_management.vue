@@ -520,6 +520,7 @@ export default {
 
           }else {
             this.searchClassList = data.data.content
+            this.getTableData()
           }
           
 
