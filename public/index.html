@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>管理平台</title>
+  <!-- <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"> -->
+  <link rel="stylesheet" href="/iconfont.css">
+  <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        showProcessingMessages: false, 
+        messageStyle: "none",
+        jax: ["input/TeX", "output/HTML-CSS"],
+        tex2jax: {
+            inlineMath: [["$", "$"], ["\\(", "\\)"]], 
+            displayMath: [["$$", "$$"], ["\\[", "\\]"]], 
+            skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] 
+        },
+        "HTML-CSS": {
+            availableFonts: ["STIX", "TeX"], 
+            showMathMenu: false 
+        }
+      })
+
+      MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+
+  </script>
+        <!-- <script type="text/javascript"
+            src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+            </script> -->
+  <script src="/MathJax-2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+  <style>
+
+  </style>
+</head>
+
+<body>
+
+  <div id="app"></div>
+  <!-- built files will be auto injected -->
+  <script>
+    window.onload = function(){
+      var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+      link.type = 'image/x-icon';
+      link.rel = 'shortcut icon';
+      link.href = '/favicon.ico';
+      document.getElementsByTagName('head')[0].appendChild(link);
+    }
+    
+      // this.$http.get(`/api/internal/configuration/logo`)
+      // .then((data)=>{
+      //   if(data.status == '200') {
+
+
+      //     this.site = data.data
+      //     this.oldSite = JSON.parse(JSON.stringify(data.data))
+
+      //     } else {
+      //       return this.$message({
+      //         message: data.msg,
+      //         type:'error'
+      //       })
+      //     }
+          
+      //   })
+      // .catch(()=>{
+      //   return this.$message({
+      //     message:'接口报错',
+      //     type:'error'
+      //   })
+      // })
+  </script>
+</body>
+
+</html>

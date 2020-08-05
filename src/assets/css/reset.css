@@ -1,0 +1,141 @@
+/* 全局样式表 */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr,
+acronym, address, big, cite, code, del, dfn, em, img, ins, kbd,
+q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i,
+center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td, article, aside,
+canvas, details, embed, figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+    padding: 0;
+    border: 0;
+    box-sizing: border-box;
+    font-family:"微软雅黑", Arial,"宋体";
+    
+    
+}
+
+body {
+  padding-right: 0px !important;
+  color: #333333;
+  
+  
+}
+ol,ul{
+  list-style: none;
+}
+
+html,body{
+  width:100%;
+  height:100%;
+  overflow: hidden; 
+}
+/*.v-modal {
+  background-color: transparent;
+}*/
+.el-tabs__item:focus.is-active.is-focus:not(:active) {
+    box-shadow: none;
+}
+.el-tabs__nav-wrap::after {
+  height: 0px;
+}
+
+
+
+.el-card img {
+  vertical-align: middle;
+}
+
+.el-tag + .el-tag {
+  margin-left: 10px;
+}
+.el-tag.el-tag--warning {
+  color: #9f9d92;
+  background-color: #fbf7dd;
+  margin-left:10px;
+  margin-bottom: 10px;
+}
+
+.el-form-item.is-error .el-input__inner {
+  border-color:#DCDFE6;
+}
+
+
+/* el-dialog相关 */
+
+.el-dialog__header {
+  border-bottom: 1px solid #e4e7ed;
+}
+/*.el-dialog__header {
+  background-color: #5182f4;
+  padding: 0px 20px;
+  
+}
+
+.el-dialog__title {
+  color: #ffffff;
+  font-size: 1rem;
+  line-height:38px;
+}
+
+.el-dialog__headerbtn {
+  top: 10px;
+}
+.el-dialog__headerbtn .el-dialog__close {
+  color: #ffffff;
+}
+
+.el-dialog__body {
+  padding: 20px 30px;
+}
+*/
+
+.el-scrollbar .el-scrollbar__wrap {
+  overflow-x: hidden;
+  margin-bottom: 0px !important;
+  margin-right: -7px !important;
+}
+.el-scrollbar__bar {
+  right: 0px;
+}
+/* .el-scrollbar__wrap.default-scrollbar__wrap {
+  overflow-x: auto;
+} */
+
+.MathJax:focus {
+  outline: 0px;
+}
+.MathJax_Display {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* 下划线 */
+.underline{
+  width:100px;
+  border:0;
+  border-bottom:1px solid #000;
+  text-align:center;
+  background-color: #f0f3f9;
+  
+}
+
+/* 滚动条 */
+*::-webkit-scrollbar {width:7px; height:10px; background-color:transparent;} /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+*::-webkit-scrollbar-track {background-color:#f0f6ff;  } /*定义滚动条轨道 内阴影+圆角*/
+*::-webkit-scrollbar-thumb {background-color:rgba(144,147,153,.3); border-radius:6px;} /*定义滑块 内阴影+圆角*/
+.scrollbarHide::-webkit-scrollbar{display: none}
+.scrollbarShow::-webkit-scrollbar{display: block}
+
+
+input:focus {
+  outline: 0px;
+}
+
+
+.cursor {
+  cursor: pointer;
+}
+
+
