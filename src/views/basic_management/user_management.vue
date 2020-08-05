@@ -36,7 +36,7 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="学科"  v-show="search.roleTpye=='teacher'">
-                <el-select v-model="search.subjectList"class="search-class" @change="getTableData">
+                <el-select v-model="search.subjectId"class="search-class" @change="getTableData" clearable>
                   <el-option v-for="list in subjectList" :label="list.subjectName" :value="list.subjectId.id" :key="list.subjectId.id"></el-option>
                 </el-select>
               </el-form-item>
