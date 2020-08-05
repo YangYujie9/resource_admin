@@ -62,7 +62,7 @@ export default {
     },//是否允许选中组织
     defaultRoot:{
       type:Boolean,
-      default:false
+      default:true
     }
   },
   data() {
@@ -103,13 +103,14 @@ export default {
       handler: function(newVal, oldVal) {
 
           this.initTreeData(JSON.parse(JSON.stringify(newVal)));
-          this.currenttNode = this.defaultRoot? this.defaultSelectedNode: this.firstSchool;
+          this.currenttNode = this.defaultSelectedNode
           this.$emit('selectnode',this.currenttNode )
           
-          // this.$nextTick(()=>{
-          //   this.$refs.tree.setCurrentKey(this.currenttNode.resourceId.id);
+          this.$nextTick(()=>{
+            this.currenttNode?this.$refs.tree.setCurrentKey(this.currenttNode.resourceId.id):null
+            // 
             
-          // })
+          })
           
       }
 
@@ -117,13 +118,16 @@ export default {
 
   },
   methods: {
-    getCheckedNodes(cur, prev) {
+    getCheckedNodes(node, data) {
+
+
       let arr = [];
-      prev.checkedNodes.forEach(node => {
+      data.checkedNodes.forEach(node => {
         node.children && node.children.length ? null : arr.push(node);
       });
       // console.log(arr)
       this.$emit('check',arr) ;
+
     },
 
 
@@ -145,7 +149,6 @@ export default {
           this.originalTreeData = treeData;
 
         }
-        console.log(this.originalTreeData)
 
       }
       
@@ -208,16 +211,18 @@ export default {
     },
 
     handleNodeClick(data) {
-      
-      if(data.memberType == "Organization" && !this.orgSelectable) {
-          this.$nextTick(()=>{
-            this.$refs.tree.setCurrentKey(this.currenttNode .resourceId.id);
+
+
+      this.$emit('handleNodeClick',data)
+      // if(data.memberType == "Organization" && !this.orgSelectable) {
+      //     this.$nextTick(()=>{
+      //       this.$refs.tree.setCurrentKey(this.currenttNode .resourceId.id);
             
-          })
-      }else {
-        this.currenttNode = data
-        this.$emit('handleNodeClick',data)
-      }
+      //     })
+      // }else {
+      //   this.currenttNode = data
+      //   
+      // }
       
     },
 
@@ -226,9 +231,27 @@ export default {
 </script>
 <style lang="less">
 
-.point /deep/ .el-tree > .el-tree-node:after {
-  border-top: none;
-  border-left: none;
+.point {
+  /deep/ .el-tree > .el-tree-node:after {
+    border-top: none;
+    border-left: none;
+  }
+  .el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content,
+  .el-tree-node__content:hover {
+    cursor: pointer;
+    color:#409EFF;
+    background-color: transparent;
+    // .active-wrap {
+    //   display: block;
+    // }
+  }
+
+
+  //横向
+  .el-tree>.el-tree-node {
+    display: inline-block;
+    min-width: 100%;
+  }
 }
 .pageTree {
   .el-tree-node__content {
@@ -242,15 +265,6 @@ export default {
     color: transparent;
   }
 
-  .el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content,
-  .el-tree-node__content:hover {
-    cursor: pointer;
-    color:#409EFF;
-    background-color: transparent;
-    // .active-wrap {
-    //   display: block;
-    // }
-  }
 
   .el-tree-node:focus>.el-tree-node__content {
     background-color: transparent;

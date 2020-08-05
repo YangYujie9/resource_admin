@@ -286,18 +286,22 @@ export default {
 
 	//单选框组
 
-	.el-radio-button__inner {
-		border: 0px;
+	.radio-button {
+		.el-radio-button__inner {
+			border: 0px;
+		}
+		.el-radio-button__orig-radio:checked+.el-radio-button__inner {
+			color:#409eff;
+			background-color:transparent;
+			border-color:transparent;
+			box-shadow: 0px 0 0 0 #409EFF;
+		}
+		.el-radio-button:first-child .el-radio-button__inner {
+			border-left: 0px;
+		}
 	}
-	.el-radio-button__orig-radio:checked+.el-radio-button__inner {
-		color:#409eff;
-		background-color:transparent;
-		border-color:transparent;
-		box-shadow: 0px 0 0 0 #409EFF;
-	}
-	.el-radio-button:first-child .el-radio-button__inner {
-		border-left: 0px;
-	}
+
+
 
 	.icon-active {
 		&:hover {

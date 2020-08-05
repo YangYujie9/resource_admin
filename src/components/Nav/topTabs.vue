@@ -95,7 +95,7 @@ export default {
         this.tabsList[index].check = true
         this.translateX +=this.$refs.tabsBar.offsetWidth*(index-oldIndex);
 
-        this.$emit('changeTabs',this.tabsList[index].label)
+        this.$emit('changeTabs',this.tabsList[index].value)
         //this.translateX +=this.$refs.tabs[index].offsetWidth*2*(index-oldIndex);
       },
     },

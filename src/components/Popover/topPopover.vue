@@ -50,6 +50,7 @@ export default {
     height: 36px;
     position: relative;
     cursor: pointer;
+    transition: 5s;
     z-index: 1000;
 
     &:hover {
@@ -69,12 +70,12 @@ export default {
       position: absolute;
       width: 700px;
       z-index: 99;
-      background-color: #f2f5fc;
-      
+      background-color: #ffffff;
+      transition: 5s;
       border: 1px solid #3399ff;
       //border-left: 0px;
       line-height: 40px;
-      display: block;
+      display: none;
     }
   }
 }

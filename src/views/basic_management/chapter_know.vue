@@ -61,7 +61,7 @@
 		<div class="right-two contener">
 			<p class="right-header">章节列表 </p>
       <div class="tree-div">
-        <pointTree :tree-data="treeData" @editnode="editNode" @appendnode="appendNode" @deletenode="deleteNode" :enableEdit="true" :orgSelectable="true" :defaultRoot="true"></pointTree>
+        <pointTree :tree-data="treeData" @editnode="editNode" @appendnode="appendNode" @deletenode="deleteNode" :enableEdit="true" :showCheckbox="false"></pointTree>
       </div>
 		</div>
 
@@ -434,10 +434,7 @@ export default {
 	.el-radio-group {
 		width: 100%;
 	}
-  .el-tree>.el-tree-node {
-    display: inline-block;
-    min-width: 100%;
-  }
+
 	.el-radio-button {
 		width: 100%;
 		position: relative;

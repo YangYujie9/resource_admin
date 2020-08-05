@@ -107,13 +107,21 @@
                 sortable>
               </el-table-column>
               <el-table-column
+                v-if="search.roleTpye=='student'"
                 label="年级"
                 prop="grade.name"
                 sortable>
               </el-table-column>
               <el-table-column
+                v-if="search.roleTpye=='student'"
                 label="班级"
                 prop="clazz.name"
+                sortable>
+              </el-table-column>
+              <el-table-column
+                v-if="search.roleTpye=='teacher'"
+                label="学科"
+                prop="subject.name"
                 sortable>
               </el-table-column>
               <el-table-column
@@ -451,11 +459,11 @@ export default {
       this.get_grade_list()
       this.get_subject_list()
       this.getTableData() 
-      this.search.roleTpye = 'student'
+      // this.search.roleTpye = 'student'
       this.search.gradeId = ''
       this.search.classId = ''
-      this.search.name = ''
-      this.search.subjectId = ''
+      // this.search.name = ''
+      // this.search.subjectId = ''
       this.search.page = 1
       this.search.size = 10
 
@@ -1073,7 +1081,7 @@ export default {
         })
       }
 
-      if(this.userForm.userRole=='student') {
+      if(this.resetForm.userRole=='student') {
         this.$http.put(`/api/internal/schools/${this.currentNode.id}/students/${this.editUserId}/password`,{
           newPassword: this.resetForm.pass
         })
@@ -1109,29 +1117,24 @@ export default {
         })
 
 
-      }else if(this.userForm.userRole=='teacher') {
-        this.$http.post(`/api/internal/schools/${this.currentNode.id}/teachers`,{
-          username: this.userForm.account,
-          password: this.userForm.pass, 
-          user: {
-            fullName: this.userForm.name,
-            phoneNumber: this.userForm.phoneNumber,
-            email: this.userForm.email,
-          }, 
-          subjectId: this.userForm.subjectId, 
+      }else if(this.resetForm.userRole=='teacher') {
+        this.$http.put(`/api/internal/schools/${this.currentNode.id}/teachers/${this.editUserId}/password`,{
+          newPassword: this.resetForm.pass
         })
 
         .then((data)=>{
 
-          this.getTableData()
-
           if(data.status == '200') {
-            this.dialogVisible = false
 
+            this.getTableData()
+
+            this.resetDialogVisible = false
+            
             this.$message({
-              message: '老师新增成功',
+              message: '密码重置成功',
               type:'success'
             })
+
 
 
           } else {

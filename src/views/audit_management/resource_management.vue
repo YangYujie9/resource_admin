@@ -2,136 +2,160 @@
   <div class="resource">
     <rightNav>
       <div slot="left" class="left">
-<!--       	  <el-tabs stretch v-model="activeType">
-            <el-tab-pane label="组织架构" name="organization">
-	            <div class="tree-class">
-	            	<el-input v-model="filterText" placeholder="请输入组织名称开始搜索..." suffix-icon="el-icon-search" size="small"></el-input>
 
-	              <basicTree :tree-data="orgData" :filterText="filterText" @selectnode="defaultSelectNode" @handleNodeClick="handleNodeClick"></basicTree>
-	            </div>
-
-	          </el-tab-pane>
-            <el-tab-pane label="章节知识" name="knowledge">
-            	<div style="z-index: 1000;">
-		            <top-popover>
-		              <div slot="reference" class="search-class">
-		                <p>七年级下</p><p>数学</p>
-		              </div>
-		              <div slot="popover">
-		                <div>
-		                  <p>版本：</p>
-		                  <el-radio-group v-model="filter.gradeId" size="mini">
-		                    <el-radio-button :label="item" v-for="item in list"></el-radio-button>
-		                  </el-radio-group>
-
-		                  <p>年级：</p>
-		                  <el-radio-group v-model="filter.subjectId" size="mini">
-		                    <el-radio-button :label="item" v-for="item in list"></el-radio-button>
-		                  </el-radio-group>
-		                </div>
-		              </div>
-		            </top-popover>
-		          </div>
-	            <div class="tree-class">
-	              <pointTree :tree-data="orgData"></pointTree>
-	            </div>
-            </el-tab-pane>
-          </el-tabs>  -->
-       <!-- <div class="right-header" > -->
  
 				<topTabs :tabsList="headList" @changeTabs="changeTabs">
 					<div slot="tab-content">
-						<div>
+						<div v-show="activeType == 'organizations'">
+							<el-input v-model="filterText" placeholder="请输入组织名称开始搜索..." suffix-icon="el-icon-search" size="small"></el-input>
 							<div class="tree-class">
-	            	<el-input v-model="filterText" placeholder="请输入组织名称开始搜索..." suffix-icon="el-icon-search" size="small"></el-input>
+	            	
+	              <basicTree :tree-data="orgData" :filterText="filterText" @selectnode="defaultSelectNode" @handleNodeClick="orgNodeClick"></basicTree>
+	            </div>
+						</div>
 
-	              <basicTree :tree-data="orgData" :filterText="filterText" @selectnode="defaultSelectNode" @handleNodeClick="handleNodeClick"></basicTree>
+						<div v-show="activeType == 'knowledge'">
+							<top-popover>
+	              <div slot="reference" class="search-class">
+	                <p v-if="filter.grade">{{filter.grade.value}}</p><p>{{filter.subject}}</p>
+	              </div>
+	              <div slot="popover">
+	                <div>
+	                	<p>学段：</p>
+	                  <el-radio-group v-model="filter.learningSection" size="mini" @change="getGrades">
+	                    <el-radio-button v-for="list in sectionList" :label="list.key" :key="list.key">{{list.value}}</el-radio-button>
+	                  </el-radio-group>
+	                  <p>年级：</p>
+	                  <el-radio-group v-model="filter.grade" size="mini" @change="getPonitTree">
+	                    <el-radio-button v-for="list in gradesList" :label="list" :key="list.key">{{list.value}}</el-radio-button>
+	                  </el-radio-group>
+
+	                  <p>科目：</p>
+	                  <el-radio-group v-model="filter.subject" size="mini" @change="getPonitTree">
+	                    <el-radio-button :label="item" v-for="item in subjectsList"></el-radio-button>
+	                  </el-radio-group>
+	                </div>
+	              </div>
+	            </top-popover>
+	            <div class="search-wrap">
+	              <el-radio-group v-model="knowType" size="mini" @change="getPonitTree">
+	                <el-radio-button label="chapter">章节目录</el-radio-button>
+	                <el-radio-button label="knowPoint">知识点</el-radio-button>
+	              </el-radio-group>
+              </div>
+	            <div class="tree-class point-tree">
+	              <pointTree :tree-data="pointData" @handleNodeClick="pointNodeClick" @selectnode="defaultPointNode"></pointTree>
 	            </div>
 						</div>
 					</div>
 				</topTabs>
 
-        <!-- </div> -->
-     <!--    		    <top-popover>
-		              <div slot="reference" class="search-class">
-		                <p>七年级下</p><p>数学</p>
-		              </div>
-		              <div slot="popover">
-		                <div>
-		                  <p>版本：</p>
-		                  <el-radio-group v-model="filter.gradeId" size="mini">
-		                    <el-radio-button :label="item" v-for="item in list"></el-radio-button>
-		                  </el-radio-group>
-
-		                  <p>年级：</p>
-		                  <el-radio-group v-model="filter.subjectId" size="mini">
-		                    <el-radio-button :label="item" v-for="item in list"></el-radio-button>
-		                  </el-radio-group>
-		                </div>
-		              </div>
-		            </top-popover>  -->
 
 
       </div>
       <div slot="right">
         <div class="right-header">
-          <span>学科管理 </span>
+          <span>资源审核列表 </span>
           <span style="margin-left: 20px;">{{schoolsName}}</span>
-<!--           <el-button size="mini" style="margin-left: 20px;" @click="add_subject"><i class="el-icon-plus"></i> 添加</el-button> -->
         </div>
 
-        <div class="table-wrap" ref="table_warp">
-          <el-table
-            :data="tableData"
-            :height="table_height"
-            ref="multipleTable"
-            border>
-            <el-table-column
-              type="selection">
-            </el-table-column>
-            <el-table-column
-                label="学科名"
-                prop="subjectName"
-                sortable>
-              </el-table-column>
-            <el-table-column
-              prop="learningSectionName"
-              sortable
-              label="所属学段">
-            </el-table-column> 
+        <div class="wrap" ref="wrap">
+          <div class="search-wrap" ref="search_wrap">
+            <el-form :inline="true" :model="search" class="demo-form-inline" size="mini">
+              <el-form-item label="类型">
+                <el-select v-model="search.type"class="search-class" @change="getTableData" clearable placeholder="类型">
+                  <el-option v-for="list in typeList" :label="list" :value="list" :key="list"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="公开">
+                <el-select v-model="search.openState" placeholder="公开" class="search-class" @change="getTableData" clearable>
+                  <el-option v-for="list in openList" :label="list" :value="list" :key="list"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="状态">
+                <el-select v-model="search.applyState" placeholder="状态" class="search-class" @change="getTableData" clearable>
+                  <el-option v-for="list in statusLiist" :label="list" :value="list" :key="list"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="上传时间">
+						    <el-date-picker
+						      v-model="search.time"
+						      style="width: 220px;"
+						      type="daterange"
+						      range-separator="-"
+						      start-placeholder="开始日期"
+						      end-placeholder="结束日期">
+						    </el-date-picker>
+              </el-form-item>
 
-<!--             <el-table-column
-              prop=""
-              label="操作"
-              sortable
-              show-overflow-tooltip>
-              <template slot-scope="scope">
-                <div style="cursor: pointer;">
-                  <i class="el-icon-delete" @click="deleteUser(scope.row)"></i>
-
-                </div>
-              </template>
-            </el-table-column> -->
-          </el-table>
-
-        </div>
-<!--         <div class="pagination">
-          <div>
-            <el-checkbox v-model="checked" @change="toggleSelection">全选</el-checkbox>
-            <el-button type="text" @click="deleteUser()" style="margin-left: 20px;">删除</el-button>
+            </el-form>
           </div>
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="search.page"
-            :page-sizes="[10, 20, 30, 50]"
-            :page-size="search.size"
-            layout="total, prev, pager, next, sizes , jumper"
-            :total="total">
-          </el-pagination>
-        </div> -->
+          <div class="table-wrap" ref="table_warp">
+            <el-table
+              :data="tableData"
+              :height="table_height"
+              ref="multipleTable"
+              border>
+              <el-table-column
+                type="selection">
+              </el-table-column>
+              <el-table-column
+                  label="文件名"
+                  prop="personal.fullName"
+                  sortable>
+                </el-table-column>
+              <el-table-column
+                prop="username"
+                sortable
+                label="栏目">
+              </el-table-column> 
+              <el-table-column
+                prop="school.name"
+                label="类型">
+              </el-table-column>
+              <el-table-column
+                prop="enabled"
+                label="状态"
+                sortable>
+                <template slot-scope="scope">
+                  <span>{{scope.row.enabled ? '正常' : '冻结'}}</span>
+                </template>
+              </el-table-column>
 
-        <el-dialog
+              <el-table-column
+                prop=""
+                label="操作">
+                <template slot-scope="scope">
+                  <div style="cursor: pointer;width: 100%;display: flex;justify-content: space-around;">
+ <!--                    <i class="iconfont iconbianji icon-active" @click="editUserDialog(scope.row)"></i>
+                    <i class="iconfont iconshanchu-copy icon-active" @click="deleteUser(scope.row)"></i>
+                    <i class="iconfont iconsuo icon-active" style="" v-if="!scope.row.enabled" @click="UnLockUser(scope.row)"></i>
+                    <i class="iconfont iconkaisuo icon-active" v-if="scope.row.enabled" @click="lockUser(scope.row)"></i>
+                    <i class="iconfont icon_zhongzhi icon-active" @click="resetpassDialog(scope.row)"></i> -->
+                  </div>
+                </template>
+              </el-table-column>
+            </el-table>
+
+          </div>
+          <div class="pagination">
+            <div>
+              <el-checkbox v-model="checked" @change="toggleSelection">全选</el-checkbox>
+              <el-button type="text" @click="deleteUser()" style="margin-left: 20px;">删除</el-button>
+            </div>
+            <el-pagination
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="search.page"
+              :page-sizes="[10, 20, 30, 50]"
+              :page-size="search.size"
+              layout="total, prev, pager, next, sizes , jumper"
+              :total="total">
+            </el-pagination>
+          </div>
+        </div>
+
+<!--         <el-dialog
 				  title="添加学科"
 				  :visible.sync="dialogVisible"
           :close-on-click-modal='false'
@@ -148,7 +172,7 @@
 				    <el-button @click="dialogVisible = false" size="mini">取 消</el-button>
 				    <el-button type="primary" @click="dialogVisible = false" size="mini">确 定</el-button>
 				  </span>
-				</el-dialog>
+				</el-dialog> -->
       </div>
     </rightNav>
 
@@ -167,12 +191,13 @@ export default {
   data() {
 
     return {
-    	activeType:'knowledge',
+    	activeType:'organizations',
     	orgData: [],
     	filterText:'',
     	filter: {
     		gradeId:'',
-    		subjectId:''
+    		subjectId:'',
+    		learningSection:'',
     	},
 	    headList: [{
           label:'组织架构',
@@ -184,21 +209,46 @@ export default {
           check:false
         }
       ],
-
-
-
+      sectionList:[],
+      gradesList:[],
+      subjectsList:[],
+      pointData:[],
+      knowType:'chapter',
+      current: {
+      	gradeName:'',
+      	subjectName:''
+      },
+      search: {
+      	type:'',
+      	openState:'',
+      	applyState:'',
+      	time:'',
+      	page:1,
+      	size:10
+      },
+      total:0,
+      checked:'',
     	tableData:[],
     	table_height:300,
+    	typeList:['课件','学案','教案','套题试卷','微课','教学反思'],
+    	openList:['私有','学校共享','完全公开'],
+    	statusLiist:['已推荐','下架','待审核','审核通过（已上架）','审核通过（私有）'],
+    	currentPoint:'',
+    	currentNode:'',
+    	schoolsName:'',
+
+
+
     	
     	data:[],
-    	currentNode:'',
+    	
     	subjects:[],
     	dialogVisible:false,
     	subject:{
     		learningSection:'',
     		subjectName: ''
     	},
-    	schoolsName:'',
+    	
     	list:[1,2,3]
 
 
@@ -226,11 +276,12 @@ export default {
   },
   mounted() {
     this.$nextTick(()=>{
-      this.table_height = this.$refs.table_warp.offsetHeight 
+      this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight -40
+      // 
     })
 
-
     this.getOrgTree()
+    this.getlearningSection()
 
 
 
@@ -264,61 +315,271 @@ export default {
     },
 
     changeTabs(tab) {
-    	console.log(tab)
+    	this.activeType = tab
+    	this.getTableData()
     },
 
 
     defaultSelectNode(node) {
     	this.currentNode = node
     	this.schoolsName = node.name
-      this.get_subject_list()
+    	this.getTableData()
     },
 
-    handleNodeClick(data) {
+    orgNodeClick(data) {
     	this.currentNode = data
     	this.schoolsName = data.name
-      this.get_subject_list()
+    	this.getTableData()
     },
 
-    get_subject_list() {
-    	this.$http.get(`/api/internal/schools/${this.currentNode.id}/subjects`)
-    	.then((data)=>{
+    defaultPointNode(node) {
+    	this.currentPoint = node
+    	this.getTableData()
+    },
 
+    pointNodeClick(data) {
+    	this.currentPoint = data
+    },
+
+  	getlearningSection() {
+
+      this.$http.get(`/api/internal/dictionaries/learningSection`)
+      .then((data)=>{
         if(data.status == '200') {
 
-          this.tableData = data.data.content
 
+        	this.sectionList = data.data
+        	this.filter.learningSection = 	this.sectionList[0].key
+        	this.getGrades()
+        	
 
-        } else {
-          return this.$message({
-            message: data.msg,
-            type:'error'
-          })
-        }
-        
-      })
+          } else {
+            return this.$message({
+              message: data.msg,
+              type:'error'
+            })
+          }
+          
+        })
       .catch(()=>{
         return this.$message({
           message:'接口报错',
           type:'error'
         })
       })
+  	},
+
+
+  	getGrades() {
+
+
+      this.$http.get(`/api/open/common/grades?learningSection=${this.filter.learningSection}`)
+      .then((data)=>{
+        if(data.status == '200') {
+
+        	this.gradesList = data.data
+        	this.filter.grade = this.gradesList[0]
+
+
+        	this.getSubject()
+
+
+          } else {
+            return this.$message({
+              message: data.msg,
+              type:'error'
+            })
+          }
+          
+        })
+      .catch(()=>{
+        return this.$message({
+          message:'接口报错',
+          type:'error'
+        })
+      })
+  	},
+
+  	getSubject() {
+
+      this.$http.get(`/api/open/common/subjects?learningSection=${this.filter.learningSection}`)
+      .then((data)=>{
+        if(data.status == '200') {
+
+
+        	this.subjectsList = data.data
+        	this.filter.subject = this.subjectsList[0]
+        	this.getPonitTree()
+
+
+          } else {
+            return this.$message({
+              message: data.msg,
+              type:'error'
+            })
+          }
+          
+        })
+      .catch(()=>{
+        return this.$message({
+          message:'接口报错',
+          type:'error'
+        })
+      })
+  	},
+
+  	getPonitTree() {
+
+  		this.pointData = []
+
+  		if(this.knowType == 'chapter') {
+	      this.$http.get(`/api/internal/chapter/chapterTree?subjectName=${this.filter.subject}&grade=${this.filter.grade.key}`)
+	      .then((data)=>{
+	        if(data.status == '200') {
+
+	        	this.pointData = data.data
+
+
+	          } else {
+	            return this.$message({
+	              message: data.msg,
+	              type:'error'
+	            })
+	          }
+	          
+	        })
+	      .catch(()=>{
+	        return this.$message({
+	          message:'接口报错',
+	          type:'error'
+	        })
+	      })  		
+	    }else {
+	      this.$http.get(`/api/internal/knowledge/knowledgeTree?subjectName=${this.filter.subject}&grade=${this.filter.grade.key}`)
+	      .then((data)=>{
+	        if(data.status == '200') {
+
+	        	this.pointData = data.data
+
+
+	          } else {
+	            return this.$message({
+	              message: data.msg,
+	              type:'error'
+	            })
+	          }
+	          
+	        })
+	      .catch(()=>{
+	        return this.$message({
+	          message:'接口报错',
+	          type:'error'
+	        })
+	      })
+	    }
+
+
+
+  	},
+
+    toggleSelection() {
+
+      // this.$refs.multipleTable.toggleAllSelection()
+        if (this.checked) {
+          this.tableData.forEach(row => {
+            this.$refs.multipleTable.toggleRowSelection(row,true);
+          });
+        } else {
+          this.$refs.multipleTable.clearSelection();
+        }
+
+
     },
 
-    add_subject() {
-    	this.dialogVisible = true
+    // 分页
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+      this.getTableData()
+    },
+    // 分页
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.getTableData()
+    },
+
+
+    getTableData() {
+
+    	if(!this.currentNode && !this.currentPoint && !this.filter.subject) {
+    		setTimeout(this.getTableData(),1000)
+    	}
+
+      this.tableData = []
+      let params = {
+      	schoolId: this.currentNode.id,
+
+				resourceType: this.search.type,
+				chapterId: this.currentPoint.id,
+				knowledgeId: this.currentPoint.id,
+				openState: this.search.openState,
+				applyState: this.search.applyState,
+				startTime: this.search.time[0],
+				endTime: this.search.time[1],
+				page: this.search.page - 1,
+				size: this.search.size,
+      }
+
+      if(this.activeType == 'organizations') {
+    		params.chapterId = ''
+    		params.knowledgeId = ''
+
+    	}else if(this.activeType == 'knowledge') {
+    		params.schoolId = ''
+    		
+    		if(this.knowType == 'chapter') {
+    			params.knowledgeId = ''
+    		}else {
+    			params.chapterId = ''
+    		}
+    	}
+    
+      this.$http.get(`/api/internal/resources/resourceList`,{params})
+      .then((data)=>{
+        if(data.status == '200') {
+
+          this.tableData = data.data.content
+          this.total = data.data.totalElements
+
+
+        } else {
+            return this.$message({
+              message: data.msg,
+              type:'error'
+            })
+        }
+          
+        })
+      .catch(()=>{
+        return this.$message({
+          message:'接口报错',
+          type:'error'
+        })
+      })
     }
+
 
   }
 }
 </script>
 <style lang="less">
 .resource {
-
-	.el-tabs__nav.is-stretch>* {
-		// height: 60px;
-		// line-height: 60px;
+	.search-wrap {
+		.el-radio-group {
+			width: 100%;
+			text-align: center;
+		}
 	}
+
 }
 </style>
 <style lang="less" scoped>
@@ -330,8 +591,13 @@ export default {
 		//padding-top: 10px;
 
 	  .tree-class {
-	    height: calc(100vh - 240px);
+	    height: calc(100vh - 250px);
 	    overflow-y: auto;
+	    margin-top: 10px;
+	  }
+
+	  .point-tree {
+			height: calc(100vh - 300px);
 	  }
 
 	  .search-class {
@@ -343,13 +609,26 @@ export default {
 			cursor: pointer;
 	  }
 
+	  .search-wrap {
+	  	margin-top: 10px;
+	  }
+
 	}
 
+	.wrap {
 
-
-  .table-wrap {
     height: calc(100vh - 200px);
+    
+    .search-class {
+      width: 160px;
+    }
+
+      
+
   }
+
+
+
 
 
   }
