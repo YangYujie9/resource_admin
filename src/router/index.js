@@ -77,6 +77,11 @@ Vue.use(VueRouter)
         path: 'resourceManagement',
         name: 'resourceManagement',
         component: ()=>import('@/views/audit_management/resource_management'),
+      },
+      {
+        path: 'questionManagement',
+        name: 'questionManagement',
+        component: ()=>import('@/views/audit_management/question_management'),
       }
 
     ]

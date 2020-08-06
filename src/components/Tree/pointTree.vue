@@ -149,7 +149,7 @@ export default {
           this.originalTreeData = treeData;
 
         }
-        console.log(this.originalTreeData)
+        // console.log(this.originalTreeData)
 
       }
       

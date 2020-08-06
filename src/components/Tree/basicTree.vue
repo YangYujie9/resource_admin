@@ -241,7 +241,7 @@ export default {
 <style lang="less">
 .block {
   .el-tree-node__content {
-    height: 44px;
+    height: 36px;
   }
   .el-tree-node__expand-icon {
     color: #333333;

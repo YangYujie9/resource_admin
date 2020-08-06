@@ -229,12 +229,14 @@ export default {
 
     // 分页
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
+      this.search.size = val
+      // console.log(`每页 ${val} 条`);
       this.getTableData()
     },
     // 分页
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      this.search.page = val
+      // console.log(`当前页: ${val}`);
       this.getTableData()
     },
 
@@ -338,6 +340,7 @@ export default {
           if(data.status == '200') {
 
             this.tableData = data.data.content
+            this.total = data.data.totalElements
 
 
           } else {

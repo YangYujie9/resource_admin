@@ -55,26 +55,31 @@
       </div>
       <div slot="right">
         <div class="right-header">
-          <span>资源审核列表 </span>
+          <span>题库审核 </span>
           <span style="margin-left: 20px;" v-show="activeType == 'organizations'">{{schoolsName}}</span>
         </div>
 
         <div class="wrap" ref="wrap">
           <div class="search-wrap" ref="search_wrap">
             <el-form :inline="true" :model="search" class="demo-form-inline" size="mini">
-              <el-form-item label="类型">
-                <el-select v-model="search.type"class="search-class" @change="getTableData" clearable placeholder="类型">
-                  <el-option v-for="list in typeList" :label="list" :value="list" :key="list"></el-option>
+              <el-form-item label="学科" v-show="activeType == 'organizations'">
+                <el-select v-model="search.subjectId" placeholder="学科" class="search-class" @change="getTableData" clearable>
+                  <el-option v-for="list in orgSubjectsList" :label="list.subjectName" :value="list.subjectId.id" :key="list.subjectId.id"></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="公开">
-                <el-select v-model="search.openState" placeholder="公开" class="search-class" @change="getTableData" clearable>
-                  <el-option v-for="list in openList" :label="list" :value="list" :key="list"></el-option>
+              <el-form-item label="题型">
+                <el-select v-model="search.type"class="search-class" @change="getTableData" clearable placeholder="题型">
+                  <el-option v-for="list in typeList" :label="list" :value="list" :key="list"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="状态">
                 <el-select v-model="search.applyState" placeholder="状态" class="search-class" @change="getTableData" clearable>
                   <el-option v-for="list in statusLiist" :label="list" :value="list" :key="list"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="难度">
+                <el-select v-model="search.difficultyType" placeholder="难度" class="search-class" @change="getTableData" clearable>
+                  <el-option v-for="list in difficultyLiist" :label="list" :value="list" :key="list"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="上传时间">
@@ -89,63 +94,101 @@
 						      end-placeholder="结束日期">
 						    </el-date-picker>
               </el-form-item>
-
+             <el-form-item >
+	            <span class="ansbtn" v-show="!isAnswer" @click="isAnswer=true">
+			          <i class="iconfont iconxianshi" style="position: relative;top:1px"></i> 
+			          显示答案
+			        </span>
+			        <span class="ansbtn" v-show="isAnswer" @click="isAnswer=false">
+			          <i class="iconfont iconyincang"></i> 
+			          隐藏答案
+        			</span>
+              </el-form-item>
             </el-form>
-          </div>
-          <div class="table-wrap" ref="table_warp">
-            <el-table
-              :data="tableData"
-              :height="table_height"
-              ref="multipleTable"
-              :cell-style="tableCellStyle"
-              border>
-              <el-table-column
-                type="selection">
-              </el-table-column>
-              <el-table-column
-                  label="文件名"
-                  prop="name"
-                  sortable>
-                </el-table-column>
-  <!--             <el-table-column
-                prop="resourceName"
-                sortable
-                label="栏目">
-              </el-table-column>  -->
-              <el-table-column
-                prop="resourceName"
-                label="类型"
-                width="200">
-              </el-table-column>
-              <el-table-column
-                prop="applyName"
-                label="状态"
-                sortable>
-                
-              </el-table-column>
 
-              <el-table-column
-                prop=""
-                label="操作">
-                <template slot-scope="scope">
-                  <div style="cursor: pointer;width: 100%;display: flex;justify-content: space-around;">
-                  	<!-- <el-button type="text">详情</el-button> -->
-                  	<el-button type="text" @click="deleteResource(scope.row)">删除</el-button>
-                  	<el-button type="text" @click="groundResource(scope.row)" v-if="scope.row.applyState=='Undercarriage'||scope.row.applyState=='Audit'" >上架</el-button>
-                  	<el-button type="text" @click="underResource(scope.row)" v-else>下架</el-button>
-                  	<el-button type="text" @click="recommendResource(scope.row)"v-if="scope.row.applyState=='Grounding'" >推荐</el-button>
-                  	<el-button type="text" @click="notRecommendResource(scope.row)" v-if="scope.row.applyState=='Recommend'">取消推荐</el-button>
-                  	<el-button type="text" @click="rejectResource(scope.row)" v-if="scope.row.applyState=='Audit'">打回</el-button>
-                  </div>
-                </template>
-              </el-table-column>
-            </el-table>
-
+ 
           </div>
+			    <div class="content-wrap"  ref="table_warp" :style="{height:table_height+'px'}">
+			      <div>
+			        <el-card class="box-card" shadow="hover" v-for="i in 10">
+			          <section class="content"   v-show="!isAnswer">
+			            <div class="qt1">
+			              <img src="@/assets/test1.png" />
+			              When $a \ne 0$, there are two solutions to \(ax^2 + bx + c = 0\) and they are
+			              $x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$
+			              1、“实际平均续航里程”是指电动汽车的行驶总里程与充电次数的比值，是反映电动汽车性能的重要指标．某汽车生产厂家为了解某型号电动汽车的“实际平均续航里程”，收集了使用该型号电动汽车1年以上的部分客户的相关数据，按年龄不超过40岁和年龄在40岁以上将客户分为A，B两组，从A，B组各抽取10位客户的电动汽车的“实际平均续航里程”数据整理成图，其中“⊙”表示A组的客户，“*”表示B组的客户．
+			            </div>
+			            <div class="qt2">
+			              <ul>
+			                <li style="width: 24%;" class="selectoption">
+			                  A.
+			                  <img src="@/assets/test1.png" />
+			                </li>
+			                <li style="width: 24%;" class="selectoption">
+			                  B.
+			                  <img src="@/assets/test1.png" />
+			                </li>
+			                <li style="width: 24%;" class="selectoption">
+			                  C.
+			                  <img src="@/assets/test1.png" />
+			                </li>
+			                <li style="width: 24%;" class="selectoption">
+			                  D.
+			                  <img src="@/assets/test1.png" />
+			                </li>
+			              </ul>
+			            </div>
+			          </section>
+
+
+			          <section class="content" v-show="isAnswer">
+			            <div class="qt2 top"></div>
+
+			            <div class="middle">
+			              <div>
+			                <p class="title">【知识点】</p>
+			                <p>B．教室内课桌的高度约为80dmB．教室内课桌的高度约为80dmB．教室内课桌的高度约为80dmB．教室内课桌的高度约为80dmB．教室内课桌的高度约为80dm</p>
+			              </div>
+
+			              <div>
+			                <p class="title">【答案】</p>
+			              </div>
+			              <div>
+			                <p class="title">【分析】</p>
+			              </div>
+			              <div>
+			                <p class="title">【详解】</p>
+			              </div>
+			              <div>
+			                <p class="title">【点睛】</p>
+			              </div>
+			              <p class="tag">2019~山东省高中二期中</p>
+			            </div>
+			          </section>
+			          <section class="foot-wrap">
+			            <div class="pt1">
+			              <div>状态：待审核</div>
+			              <div>
+			              	<el-button type="text">审批打回</el-button>
+			              	<el-button type="text">删除</el-button>
+			              </div>
+			              <div>
+			              	<span>上传：2020/04/08</span>
+			              	<span>难度：一般</span>
+			              	<span>题型：单选题</span>
+			              </div>
+			            </div>
+
+			          </section>
+			        </el-card>
+			      </div>
+
+
+			    </div>
+
           <div class="pagination">
             <div>
               <el-checkbox v-model="checked" @change="toggleSelection">全选</el-checkbox>
-       <!--        /*/*<el-button type="text" @click="deleteResource()" >删除</el-button>*/*/ -->
        				<el-button type="text" @click="deleteResource()" style="margin-left: 20px;">删除</el-button>
             	<el-button type="text" @click="groundResource()">上架</el-button>
             	<el-button type="text" @click="underResource()">下架</el-button>
@@ -230,8 +273,9 @@ export default {
       },
       search: {
       	type:'',
-      	openState:'',
+      	subjectId:'',
       	applyState:'',
+      	difficultyType:'',
       	time:'',
       	page:1,
       	size:10
@@ -243,9 +287,12 @@ export default {
     	typeList:['课件','学案','教案','套题试卷','微课','教学反思'],
     	openList:['私有','学校共享','完全公开'],
     	statusLiist:['待审核','已上架','已下架','已推荐'],
+    	difficultyLiist: ['容易','较易','一般','较难','难'],
     	currentPoint:'',
     	currentNode:'',
     	schoolsName:'',
+    	isAnswer:false,
+    	orgSubjectsList:[],
 
 
 
@@ -273,6 +320,8 @@ export default {
       'getuserInfo',
 
     ]),
+
+
 
   },
   mounted() {
@@ -318,19 +367,25 @@ export default {
     changeTabs(tab) {
     	this.activeType = tab
     	this.getTableData()
+    	this.$nextTick(()=>{
+	      this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight -40
+	      // 
+	    })
     },
 
 
     defaultSelectNode(node) {
     	this.currentNode = node
     	this.schoolsName = node.name
+    	this.getSubjectByOrg()
     	this.getTableData()
     },
 
     orgNodeClick(data) {
     	this.currentNode = data
     	this.schoolsName = data.name
-    	this.getTableData()
+    	this.getSubjectByOrg()
+    	this.getSubjectByOrg()
     },
 
     defaultPointNode(node) {
@@ -415,7 +470,35 @@ export default {
 
         	this.subjectsList = data.data
         	this.filter.subject = this.subjectsList[0]
-        	this.getPonitTree()
+        	
+
+
+          } else {
+            return this.$message({
+              message: data.msg,
+              type:'error'
+            })
+          }
+          
+        })
+      .catch(()=>{
+        return this.$message({
+          message:'接口报错',
+          type:'error'
+        })
+      })
+  	},
+  	getSubjectByOrg() {
+  		
+
+      this.$http.get(`/api/internal/schools/${this.currentNode.id}/subjects`)
+      .then((data)=>{
+        if(data.status == '200') {
+
+
+        	this.orgSubjectsList = data.data.content
+        	// this.search.subjectId = this.subjectsList[0].
+        	// this.getPonitTree()
 
 
           } else {
@@ -537,11 +620,11 @@ export default {
       this.checked = false
       let params = {
       	schoolId: this.currentNode.id,
-
-				resourceType: this.search.type,
+      	subjectId: this.search.subjectId,
+				questionType: this.search.type,
+				difficultyType: this.search.difficultyType,
 				chapterId: this.currentPoint.id,
 				knowledgeId: this.currentPoint.id,
-				openState: this.search.openState,
 				applyState: this.search.applyState,
 				startTime:this.search.time? this.search.time[0]:'',
 				endTime: this.search.time?this.search.time[1]:'',
@@ -563,7 +646,7 @@ export default {
     		}
     	}
     
-      this.$http.get(`/api/internal/resources/resourceList`,{params})
+      this.$http.get(`/api/internal/question/questions`,{params})
       .then((data)=>{
         if(data.status == '200') {
 
@@ -994,6 +1077,10 @@ export default {
 		}
 	}
 
+	.el-card__body {
+		padding:0px;
+	}
+
 }
 </style>
 <style lang="less" scoped>
@@ -1025,6 +1112,9 @@ export default {
 
 	  .search-wrap {
 	  	margin-top: 10px;
+
+			
+
 	  }
 
 	}
@@ -1032,12 +1122,140 @@ export default {
 	.wrap {
 
     height: calc(100vh - 200px);
+
+    .content-wrap {
+	    // margin-top: 20px;
+	    border: 1px solid #e2e2e2;
+	    padding: 0 20px 20px 20px;
+	    // background-color: #f2f5fc;
+	    overflow-y: auto;
+
+
+		  .box-card {
+		    margin-top: 15px;
+		    border-radius: 8px;
+		    position: relative;
+
+
+		    .content {
+		      font-size: 1rem;
+		      display: block;
+		      padding: 20px;
+		      line-height: 28px;
+		      letter-spacing: 1px;
+		      word-break: break-all;
+		      font-family: "JyeMath", "JyeMathLetters", "Times New Roman", "微软雅黑",
+		        Arial, "宋体";
+		      -webkit-font-smoothing: antialiased;
+		      // border-radius: 50% 0;
+
+		      .qt1 {
+		        overflow: hidden;
+		        zoom: 1;
+		        clear: both;
+		        line-height: 28px;
+		        font-size: 1rem;
+		        //padding: 20px;
+		        position: relative;
+		        word-break: break-word;
+		        padding-bottom: 20px;
+		        cursor: pointer;
+
+		        img {
+		          float: right;
+		          position: relative;
+		        }
+		      }
+
+		      .qt2 {
+		        //padding: 0px 20px 20px 20px;
+
+		        ul {
+		          display: flex;
+		          flex-wrap: wrap;
+		          justify-content: space-around;
+
+		          .selectoption {
+		            vertical-align: middle;
+		            font-size: 14px;
+		            padding: 2px;
+
+		            label {
+		              line-height: 24px;
+		            }
+		          }
+		        }
+		      }
+
+		      .top {
+		        border-bottom: 1px dashed #dbdee4;
+		        padding-bottom: 20px;
+		      }
+
+		      .middle {
+		        div {
+		          display: flex;
+
+		          .title {
+		            flex-shrink: 0;
+		            color: #22a9e8;
+		            font-weight: 600;
+		          }
+		        }
+
+		        .tag {
+		          padding-left: 10px;
+		          color: #828282;
+		          font-size: 0.9rem;
+		        }
+		      }
+		    }
+
+		    .foot-wrap {
+		      padding: 5px 20px;
+		      background-color: #eee;
+		      display: flex;
+		      justify-content: space-between;
+		      line-height: 24px;
+		      color: #828282;
+		      font-size: 0.8rem;
+
+		      .pt1 {
+		      	width: 100%;
+		        display: flex;
+		        justify-content: space-between;
+		        align-items:center;
+
+		        span {
+		        	margin-left: 20px;
+		        }
+		      }
+
+		      .pt2 span {
+		        margin-right: 15px;
+		        cursor: pointer;
+
+		        i {
+		          font-size: 1rem;
+		        }
+		      }
+
+		      .iconcolor {
+		        color: #789ef6;
+		      }
+		    }
+		  }
+    }
     
     .search-class {
       width: 160px;
     }
 
-      
+  
+		.ansbtn {
+			cursor: pointer;
+			font-size: 0.9rem;
+		}
 
   }
 
