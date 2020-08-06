@@ -22,8 +22,8 @@
         <span class="active-wrap" v-if="enableEdit">
           
           <i class="iconfont iconiconjia actclass" v-show="data.memberType == 'Organization'" @click="appendNode(node,data)"></i>
-          <i class="iconfont iconbianji actclass" @click="editNode(node,data)"></i>
-          <i class="iconfont iconshanchu-copy" @click="deleteNode(node,data)"></i>
+          <i class="iconfont iconbianji actclass" @click="editNode(node,data)" v-if="data.resourceId.id!=1"></i>
+          <i class="iconfont iconshanchu-copy" @click="deleteNode(node,data)" v-if="data.resourceId.id!=1"></i>
           <!-- <el-button type="text" size="mini" @click="() => append(data)"><i class="iconfont iconbianji"></i></el-button>
           <el-button type="text" size="mini" @click="() => remove(node, data)"><i class="iconfont iconshanchu-copy"></i></el-button> -->
         </span>

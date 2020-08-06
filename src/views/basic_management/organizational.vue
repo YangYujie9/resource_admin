@@ -61,6 +61,9 @@
               <el-table-column
                 prop="school.name"
                 label="所属组织">
+                <template slot-scope="scope">
+                  <span>{{scope.row.school ? scope.row.school.name : scope.row.organization.name}}</span>
+                </template>
               </el-table-column>
               <el-table-column
                 prop="enabled"
@@ -339,7 +342,6 @@ export default {
   mounted() {
     this.$nextTick(()=>{
       this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight -40
-      console.log(this.table_height)
     })
 
 
@@ -360,7 +362,6 @@ export default {
     },
 
     defaultSelectNode(node){
-      console.log(node)
       this.currentNode = node
       this.getTableData()
     },
@@ -694,7 +695,6 @@ export default {
     
     // 删除组织/删除学校
     deleteOrg(node){
-      console.log(node)
       // if(this.orgForm.type == 'Organization') {
       this.$confirm('确认删除该节点?', '提示', {
         confirmButtonText: '确定',

@@ -22,7 +22,7 @@
         </span>
         <span class="active-wrap" v-if="enableEdit">
           
-          <i class="iconfont iconiconjia actclass"  @click.prevent.stop="appendNode(node,data)"></i>
+          <i class="iconfont iconiconjia actclass"  @click.prevent.stop="appendNode(node,data)" v-if="node.level<4"></i>
           <i class="iconfont iconbianji actclass" @click.prevent.stop="editNode(node,data)"  v-if="data.parentId.id!='0'"></i>
           <i class="iconfont iconshanchu-copy" @click.prevent.stop="deleteNode(node,data)" v-if="data.parentId.id!='0'"></i>
           <!-- <el-button type="text" size="mini" @click="() => append(data)"><i class="iconfont iconbianji"></i></el-button>
@@ -101,7 +101,6 @@ export default {
     },
     treeData: {
       handler: function(newVal, oldVal) {
-
           this.initTreeData(JSON.parse(JSON.stringify(newVal)));
           this.currenttNode = this.defaultSelectedNode
           this.$emit('selectnode',this.currenttNode )
@@ -142,6 +141,7 @@ export default {
           // node.expand = true; /*默认展开顶级节点*/
           this.defaultSelectedNode = node;
           this.constructTreeData(node, data.members);
+
           treeData.push(node);
           if (!this.defaultRoot) {
             this.firstSchool = this.deepFirstSearch(node);
@@ -149,6 +149,7 @@ export default {
           this.originalTreeData = treeData;
 
         }
+        console.log(this.originalTreeData)
 
       }
       

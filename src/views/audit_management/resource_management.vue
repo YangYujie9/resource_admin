@@ -39,8 +39,8 @@
 	            </top-popover>
 	            <div class="search-wrap">
 	              <el-radio-group v-model="knowType" size="mini" @change="getPonitTree">
-	                <el-radio-button label="chapter">章节目录</el-radio-button>
-	                <el-radio-button label="knowPoint">知识点</el-radio-button>
+	                <el-radio-button label="Chapter">章节目录</el-radio-button>
+	                <el-radio-button label="Knowledge">知识点</el-radio-button>
 	              </el-radio-group>
               </div>
 	            <div class="tree-class point-tree">
@@ -101,25 +101,24 @@
               </el-table-column>
               <el-table-column
                   label="文件名"
-                  prop="personal.fullName"
+                  prop="name"
                   sortable>
                 </el-table-column>
-              <el-table-column
-                prop="username"
+  <!--             <el-table-column
+                prop="resourceName"
                 sortable
                 label="栏目">
-              </el-table-column> 
+              </el-table-column>  -->
               <el-table-column
-                prop="school.name"
-                label="类型">
+                prop="resourceName"
+                label="类型"
+                width="200">
               </el-table-column>
               <el-table-column
-                prop="enabled"
+                prop="applyName"
                 label="状态"
                 sortable>
-                <template slot-scope="scope">
-                  <span>{{scope.row.enabled ? '正常' : '冻结'}}</span>
-                </template>
+                
               </el-table-column>
 
               <el-table-column
@@ -127,11 +126,13 @@
                 label="操作">
                 <template slot-scope="scope">
                   <div style="cursor: pointer;width: 100%;display: flex;justify-content: space-around;">
- <!--                    <i class="iconfont iconbianji icon-active" @click="editUserDialog(scope.row)"></i>
-                    <i class="iconfont iconshanchu-copy icon-active" @click="deleteUser(scope.row)"></i>
-                    <i class="iconfont iconsuo icon-active" style="" v-if="!scope.row.enabled" @click="UnLockUser(scope.row)"></i>
-                    <i class="iconfont iconkaisuo icon-active" v-if="scope.row.enabled" @click="lockUser(scope.row)"></i>
-                    <i class="iconfont icon_zhongzhi icon-active" @click="resetpassDialog(scope.row)"></i> -->
+                  	<!-- <el-button type="text">详情</el-button> -->
+                  	<el-button type="text" @click="deleteResource(scope.row)">删除</el-button>
+                  	<el-button type="text" @click="groundResource(scope.row)" v-if="scope.row.applyState=='Undercarriage'||scope.row.applyState=='Audit'" >上架</el-button>
+                  	<el-button type="text" @click="underResource(scope.row)" v-else>下架</el-button>
+                  	<el-button type="text" @click="recommendResource(scope.row)"v-if="scope.row.applyState=='Grounding'" >推荐</el-button>
+                  	<el-button type="text" @click="notRecommendResource(scope.row)" v-if="scope.row.applyState=='Recommend'">取消推荐</el-button>
+                  	<el-button type="text" @click="rejectResource(scope.row)" v-if="scope.row.applyState=='Audit'">打回</el-button>
                   </div>
                 </template>
               </el-table-column>
@@ -141,7 +142,13 @@
           <div class="pagination">
             <div>
               <el-checkbox v-model="checked" @change="toggleSelection">全选</el-checkbox>
-              <el-button type="text" @click="deleteUser()" style="margin-left: 20px;">删除</el-button>
+       <!--        /*/*<el-button type="text" @click="deleteResource()" >删除</el-button>*/*/ -->
+       				<el-button type="text" @click="deleteResource()" style="margin-left: 20px;">删除</el-button>
+            	<el-button type="text" @click="groundResource()" v-show="search.applyState=='已下架'||search.applyState=='待审核'">上架</el-button>
+            	<el-button type="text" @click="underResource()" v-show="search.applyState=='已上架'||search.applyState=='已推荐'">下架</el-button>
+            	<el-button type="text" @click="recommendResource()" v-show="search.applyState=='已上架'">推荐</el-button>
+            	<el-button type="text" @click="notRecommendResource()" v-show="search.applyState=='已推荐'">取消推荐</el-button>
+            	<el-button type="text" @click="rejectResource()" v-show="search.applyState=='待审核'">打回</el-button>
             </div>
             <el-pagination
               @size-change="handleSizeChange"
@@ -213,7 +220,7 @@ export default {
       gradesList:[],
       subjectsList:[],
       pointData:[],
-      knowType:'chapter',
+      knowType:"Chapter",
       current: {
       	gradeName:'',
       	subjectName:''
@@ -232,24 +239,15 @@ export default {
     	table_height:300,
     	typeList:['课件','学案','教案','套题试卷','微课','教学反思'],
     	openList:['私有','学校共享','完全公开'],
-    	statusLiist:['已推荐','下架','待审核','审核通过（已上架）','审核通过（私有）'],
+    	statusLiist:['待审核','已上架','已下架','已推荐'],
     	currentPoint:'',
     	currentNode:'',
     	schoolsName:'',
 
 
 
-    	
-    	data:[],
-    	
-    	subjects:[],
-    	dialogVisible:false,
-    	subject:{
-    		learningSection:'',
-    		subjectName: ''
-    	},
-    	
-    	list:[1,2,3]
+
+
 
 
 
@@ -334,11 +332,16 @@ export default {
 
     defaultPointNode(node) {
     	this.currentPoint = node
-    	this.getTableData()
+
+    	if(node.memberType == this.knowType) {
+    		this.getTableData()
+    	}
+    	
     },
 
     pointNodeClick(data) {
     	this.currentPoint = data
+    	this.getTableData()
     },
 
   	getlearningSection() {
@@ -431,12 +434,10 @@ export default {
   	getPonitTree() {
 
   		this.pointData = []
-
-  		if(this.knowType == 'chapter') {
+  		if(this.knowType == "Chapter") {
 	      this.$http.get(`/api/internal/chapter/chapterTree?subjectName=${this.filter.subject}&grade=${this.filter.grade.key}`)
 	      .then((data)=>{
 	        if(data.status == '200') {
-
 	        	this.pointData = data.data
 
 
@@ -458,7 +459,6 @@ export default {
 	      this.$http.get(`/api/internal/knowledge/knowledgeTree?subjectName=${this.filter.subject}&grade=${this.filter.grade.key}`)
 	      .then((data)=>{
 	        if(data.status == '200') {
-
 	        	this.pointData = data.data
 
 
@@ -535,8 +535,8 @@ export default {
 
     	}else if(this.activeType == 'knowledge') {
     		params.schoolId = ''
-    		
-    		if(this.knowType == 'chapter') {
+
+    		if(this.knowType == "Chapter") {
     			params.knowledgeId = ''
     		}else {
     			params.chapterId = ''
@@ -565,7 +565,401 @@ export default {
           type:'error'
         })
       })
-    }
+    },
+    //删除
+    deleteResource(row) {
+    	this.$confirm('确认删除资源吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+	    	if(row) {
+					this.$http.delete(`/api/internal/resources/${row.resourceId}`)
+		      .then((data)=>{
+		        if(data.status == '200') {
+		        	this.getTableData()
+		        	this.$message({
+		              message: "删除成功",
+		              type:'success'
+		          })
+
+
+		          } else {
+		            return this.$message({
+		              message: data.msg,
+		              type:'error'
+		            })
+		          }
+		          
+		        })
+		      .catch(()=>{
+		        return this.$message({
+		          message:'接口报错',
+		          type:'error'
+		        })
+		      })    	
+		    }else {
+
+
+          let selectData = this.$refs.multipleTable.store.states.selection
+          let ids = selectData.reduce((prev,current)=>{
+            prev.push(current.resourceId)
+            return prev
+          },[])
+
+
+					this.$http.delete(`/api/internal/resources/batchDelete`,{
+            data: ids
+          })
+		      .then((data)=>{
+		        if(data.status == '200') {
+		        	this.getTableData()
+		        	this.$message({
+		              message: "删除成功",
+		              type:'success'
+		          })
+
+
+		          } else {
+		            return this.$message({
+		              message: data.msg,
+		              type:'error'
+		            })
+		          }
+		          
+		        })
+		      .catch(()=>{
+		        return this.$message({
+		          message:'接口报错',
+		          type:'error'
+		        })
+		      }) 
+
+		    }
+		  })
+	      
+    },
+    //上架
+    groundResource(row) {
+    	if(row) {
+					this.$http.put(`/api/internal/resources/${row.resourceId}/grounding`)
+		      .then((data)=>{
+		        if(data.status == '200') {
+		        	this.getTableData()
+		        	this.$message({
+		              message: "上架成功",
+		              type:'success'
+		          })
+
+
+		          } else {
+		            return this.$message({
+		              message: data.msg,
+		              type:'error'
+		            })
+		          }
+		          
+		        })
+		      .catch(()=>{
+		        return this.$message({
+		          message:'接口报错',
+		          type:'error'
+		        })
+		      })    	
+		    }else {
+
+		    	
+          let selectData = this.$refs.multipleTable.store.states.selection
+          let ids = selectData.reduce((prev,current)=>{
+            prev.push(current.resourceId)
+            return prev
+          },[])
+
+
+					this.$http.put(`/api/internal/resources/batchGrounding`,ids)
+		      .then((data)=>{
+		        if(data.status == '200') {
+		        	this.getTableData()
+		        	this.$message({
+		              message: "上架成功",
+		              type:'success'
+		          })
+
+
+		          } else {
+		            return this.$message({
+		              message: data.msg,
+		              type:'error'
+		            })
+		          }
+		          
+		        })
+		      .catch(()=>{
+		        return this.$message({
+		          message:'接口报错',
+		          type:'error'
+		        })
+		      }) 
+
+		  }
+    },
+    //下架
+    underResource(row) {
+    	if(row) {
+					this.$http.put(`/api/internal/resources/${row.resourceId}/undercarriage`)
+		      .then((data)=>{
+		        if(data.status == '200') {
+		        	this.getTableData()
+		        	this.$message({
+		              message: "下架成功",
+		              type:'success'
+		          })
+
+
+		          } else {
+		            return this.$message({
+		              message: data.msg,
+		              type:'error'
+		            })
+		          }
+		          
+		        })
+		      .catch(()=>{
+		        return this.$message({
+		          message:'接口报错',
+		          type:'error'
+		        })
+		      })    	
+		    }else {
+
+		    	
+          let selectData = this.$refs.multipleTable.store.states.selection
+          let ids = selectData.reduce((prev,current)=>{
+            prev.push(current.resourceId)
+            return prev
+          },[])
+
+
+					this.$http.put(`/api/internal/resources/batchUndercarriage`,ids)
+		      .then((data)=>{
+		        if(data.status == '200') {
+		        	this.getTableData()
+		        	this.$message({
+		              message: "下架成功",
+		              type:'success'
+		          })
+
+
+		          } else {
+		            return this.$message({
+		              message: data.msg,
+		              type:'error'
+		            })
+		          }
+		          
+		        })
+		      .catch(()=>{
+		        return this.$message({
+		          message:'接口报错',
+		          type:'error'
+		        })
+		      }) 
+
+		  }
+    },
+    //推荐
+    recommendResource(row) {
+    	if(row) {
+					this.$http.put(`/api/internal/resources/${row.resourceId}/recommend`)
+		      .then((data)=>{
+		        if(data.status == '200') {
+		        	this.getTableData()
+		        	this.$message({
+		              message: "推荐成功",
+		              type:'success'
+		          })
+
+
+		          } else {
+		            return this.$message({
+		              message: data.msg,
+		              type:'error'
+		            })
+		          }
+		          
+		        })
+		      .catch(()=>{
+		        return this.$message({
+		          message:'接口报错',
+		          type:'error'
+		        })
+		      })    	
+		    }else {
+
+		    	
+          let selectData = this.$refs.multipleTable.store.states.selection
+          let ids = selectData.reduce((prev,current)=>{
+            prev.push(current.resourceId)
+            return prev
+          },[])
+
+
+					this.$http.put(`/api/internal/resources/batchRecommend`,ids)
+		      .then((data)=>{
+		        if(data.status == '200') {
+		        	this.getTableData()
+		        	this.$message({
+		              message: "推荐成功",
+		              type:'success'
+		          })
+
+
+		          } else {
+		            return this.$message({
+		              message: data.msg,
+		              type:'error'
+		            })
+		          }
+		          
+		        })
+		      .catch(()=>{
+		        return this.$message({
+		          message:'接口报错',
+		          type:'error'
+		        })
+		      }) 
+
+		  }
+    },
+    //取消推荐
+    notRecommendResource(row) {
+    	if(row) {
+					this.$http.put(`/api/internal/resources/${row.resourceId}/notRecommend`)
+		      .then((data)=>{
+		        if(data.status == '200') {
+		        	this.getTableData()
+		        	this.$message({
+		              message: "取消推荐成功",
+		              type:'success'
+		          })
+
+
+		          } else {
+		            return this.$message({
+		              message: data.msg,
+		              type:'error'
+		            })
+		          }
+		          
+		        })
+		      .catch(()=>{
+		        return this.$message({
+		          message:'接口报错',
+		          type:'error'
+		        })
+		      })    	
+		    }else {
+
+		    	
+          let selectData = this.$refs.multipleTable.store.states.selection
+          let ids = selectData.reduce((prev,current)=>{
+            prev.push(current.resourceId)
+            return prev
+          },[])
+
+
+					this.$http.put(`/api/internal/resources/batchNotRecommend`,ids)
+		      .then((data)=>{
+		        if(data.status == '200') {
+		        	this.getTableData()
+		        	this.$message({
+		              message: "取消推荐成功",
+		              type:'success'
+		          })
+
+
+		          } else {
+		            return this.$message({
+		              message: data.msg,
+		              type:'error'
+		            })
+		          }
+		          
+		        })
+		      .catch(()=>{
+		        return this.$message({
+		          message:'接口报错',
+		          type:'error'
+		        })
+		      }) 
+
+		  }
+    },
+    //打回
+    rejectResource(row) {
+   	if(row) {
+					this.$http.put(`/api/internal/resources/${row.resourceId}/reject`)
+		      .then((data)=>{
+		        if(data.status == '200') {
+		        	this.getTableData()
+		        	this.$message({
+		              message: "打回成功",
+		              type:'success'
+		          })
+
+
+		          } else {
+		            return this.$message({
+		              message: data.msg,
+		              type:'error'
+		            })
+		          }
+		          
+		        })
+		      .catch(()=>{
+		        return this.$message({
+		          message:'接口报错',
+		          type:'error'
+		        })
+		      })    	
+		    }else {
+
+		    	
+          let selectData = this.$refs.multipleTable.store.states.selection
+          let ids = selectData.reduce((prev,current)=>{
+            prev.push(current.resourceId)
+            return prev
+          },[])
+
+
+					this.$http.put(`/api/internal/resources/batchReject`,ids)
+		      .then((data)=>{
+		        if(data.status == '200') {
+		        	this.getTableData()
+		        	this.$message({
+		              message: "打回成功",
+		              type:'success'
+		          })
+
+
+		          } else {
+		            return this.$message({
+		              message: data.msg,
+		              type:'error'
+		            })
+		          }
+		          
+		        })
+		      .catch(()=>{
+		        return this.$message({
+		          message:'接口报错',
+		          type:'error'
+		        })
+		      }) 
+
+		  }
+    },
+
 
 
   }
