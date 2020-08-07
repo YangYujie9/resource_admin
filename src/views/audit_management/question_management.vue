@@ -1104,6 +1104,13 @@ export default {
 		padding:0px;
 	}
 
+  .foot-wrap {
+    .el-button{
+      font-size: 0.8rem;
+    }
+    
+  }
+
 }
 </style>
 <style lang="less" scoped>
