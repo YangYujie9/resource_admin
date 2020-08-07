@@ -126,7 +126,7 @@
                         <span>{{item.value}}</span> 
 			                  <!-- <img src="@/assets/test1.png" /> -->
 			                </li>
-<!-- 			                <li style="width: 24%;" class="selectoption">
+			                <!-- <li style="width: 24%;" class="selectoption">
 			                  B.
 			                 <img src="@/assets/test1.png" />
 			                </li>
@@ -140,6 +140,41 @@
 			                </li> -->
 			              </ul>
 			            </div>
+
+                  <!-- 小题 -->
+                  <div class="" v-if="list.smallQuestions.length" style="margin-top: 20px;">
+                    <div v-for="(list1,index1) in list.smallQuestions">
+
+                      <div class="qt1">
+                        <!-- <img src="@/assets/test1.png" /> -->
+                        <span>{{index1+1}}</span><span>、</span>
+                        {{list1.name}}
+                      </div>
+                      <div class="qt2" v-if="list1.options.length">
+                        <ul>
+                          <li style="width: 24%;" class="selectoption" v-for="item in list.selectoption">
+
+                            <span>{{item.word}}</span>
+                            <span>、</span>
+                            <span>{{item.value}}</span> 
+                            <!-- <img src="@/assets/test1.png" /> -->
+                          </li>
+                          <!-- <li style="width: 24%;" class="selectoption">
+                            B.
+                           <img src="@/assets/test1.png" />
+                          </li>
+                          <li style="width: 24%;" class="selectoption">
+                            C.
+                            <img src="@/assets/test1.png" /> 
+                          </li>
+                          <li style="width: 24%;" class="selectoption">
+                            D.
+                            <img src="@/assets/test1.png" /> 
+                          </li> -->
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
 			          </section>
 
 
@@ -157,7 +192,9 @@
 			              <div v-if="list.fillAnswers.length">
 			                <p class="title">【答案】</p>
 			                <p>
-			                	<span>{{list.answers.join()}}</span>
+			                	<span v-for="(item,index1) in list.answers">
+                         <span v-if="index1!=0">{{index1}}、</span><span style="margin-left: 0px;">{{item}}</span>
+                        </span>
 			                </p>
 			              </div>
 			              <div>
@@ -714,30 +751,10 @@ export default {
       .then((data)=>{
         if(data.status == '200') {
         	data.data.content.forEach(item=>{
-
-            //选项
-            item.selectoption = []
-            if(item.options.length) {
-              item.options.forEach(item1=>{
-                for(let key in item1) {
-                  item.selectoption.push({word:key,value:item1[key]})
-                }
-              })
-            }
-
-            //答案
             item.answers = []
-            item.fillAnswers.forEach(item1=>{
-              for(let key in item1) {
-                item.answers.push(item1[key])
-              }
-            })
+            this.handleQuestion(item,item)
 
-            //知识点
-            item.knowledgesPoint = []
-            item.knowledges.forEach(item1=>{
-              item.knowledgesPoint.push(item1.name)
-            })
+
 
 
         		item.check = false
@@ -762,6 +779,42 @@ export default {
           type:'error'
         })
       })
+    },
+
+    handleQuestion(item,item0) {
+      //选项
+      item.selectoption = []
+      if(item.options && item.options.length) {
+        item.options.forEach(item1=>{
+          for(let key in item1) {
+            item.selectoption.push({word:key,value:item1[key]})
+          }
+        })
+      }
+      //答案
+      //item.answers = []
+      if(item.fillAnswers && item.fillAnswers.length) {
+        item.fillAnswers.forEach(item1=>{
+          for(let key in item1) {
+            item0.answers.push(item1[key])
+          }
+        })
+      }
+
+      //知识点
+      item.knowledgesPoint = []
+      if(item.knowledges && item.knowledges.length) {
+        item.knowledges.forEach(item1=>{
+          item.knowledgesPoint.push(item1.name)
+        })
+      }
+
+      if(item.smallQuestions && item.smallQuestions.length) {
+        item.smallQuestions.forEach(item1=>{
+          this.handleQuestion(item1,item)
+        })
+        
+      }
     },
     //删除
     deleteQuestion(questionId) {
