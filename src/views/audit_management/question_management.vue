@@ -142,7 +142,7 @@
 			            </div>
 
                   <!-- 小题 -->
-                  <div class="" v-if="list.smallQuestions.length" style="margin-top: 20px;">
+                  <div class="" v-if="list.smallQuestions.length" style="margin-top: 10px;">
                     <div v-for="(list1,index1) in list.smallQuestions">
 
                       <div class="qt1">
@@ -152,7 +152,7 @@
                       </div>
                       <div class="qt2" v-if="list1.options.length">
                         <ul>
-                          <li style="width: 24%;" class="selectoption" v-for="item in list.selectoption">
+                          <li style="width: 24%;" class="selectoption" v-for="item in list1.selectoption">
 
                             <span>{{item.word}}</span>
                             <span>、</span>
@@ -189,11 +189,12 @@
 			                </p>
 			              </div>
 
-			              <div v-if="list.fillAnswers.length">
+			              <div v-if="list.fillAnswers.length ||list.smallQuestions.length">
 			                <p class="title">【答案】</p>
 			                <p>
 			                	<span v-for="(item,index1) in list.answers">
-                         <span v-if="index1!=0">{{index1}}、</span><span style="margin-left: 0px;">{{item}}</span>
+                         <span v-if="list.smallQuestions.length"  style="margin-left: 0px;">{{index1+1}}、</span>
+                         <span style="margin-left: 0px;">{{item}}</span>
                         </span>
 			                </p>
 			              </div>
@@ -759,6 +760,7 @@ export default {
 
         		item.check = false
         	})
+          console.log(data.data.content)
 
           this.tableData = data.data.content
           this.total = data.data.totalElements
@@ -784,6 +786,7 @@ export default {
     handleQuestion(item,item0) {
       //选项
       item.selectoption = []
+      console.log(item)
       if(item.options && item.options.length) {
         item.options.forEach(item1=>{
           for(let key in item1) {
