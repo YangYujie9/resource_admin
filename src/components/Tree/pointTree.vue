@@ -16,7 +16,7 @@
       @node-click="handleNodeClick"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span class="nodetree">
+        <span class="nodetree" >
           
           {{ node.label }}
         </span>
@@ -25,8 +25,7 @@
           <i class="iconfont iconiconjia actclass"  @click.prevent.stop="appendNode(node,data)" v-if="node.level<4"></i>
           <i class="iconfont iconbianji actclass" @click.prevent.stop="editNode(node,data)"  v-if="data.parentId.id!='0'"></i>
           <i class="iconfont iconshanchu-copy" @click.prevent.stop="deleteNode(node,data)" v-if="data.parentId.id!='0'"></i>
-          <!-- <el-button type="text" size="mini" @click="() => append(data)"><i class="iconfont iconbianji"></i></el-button>
-          <el-button type="text" size="mini" @click="() => remove(node, data)"><i class="iconfont iconshanchu-copy"></i></el-button> -->
+
         </span>
       </span>
     </el-tree>

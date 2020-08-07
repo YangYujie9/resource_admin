@@ -11,7 +11,7 @@ menu, nav, output, ruby, section, summary, time, mark, audio, video {
     padding: 0;
     border: 0;
     box-sizing: border-box;
-    font-family:"微软雅黑", Arial,"宋体";
+    /*font-family:"Microsoft YaHei", Arial, "宋体";*/
     
     
 }
@@ -19,6 +19,7 @@ menu, nav, output, ruby, section, summary, time, mark, audio, video {
 body {
   padding-right: 0px !important;
   color: #333333;
+  font-family:"Microsoft YaHei",Arial,Helvetica,sans-serif,"宋体";
   
   
 }
@@ -30,6 +31,7 @@ html,body{
   width:100%;
   height:100%;
   overflow: hidden; 
+  font-size: 14px;
 }
 /*.v-modal {
   background-color: transparent;

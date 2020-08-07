@@ -16,7 +16,7 @@
 
         </div>
         <div class="wrap" ref="wrap">
-          <div class="search-wrap" ref="search_wrap">
+          <div class="search-wrap radio-button" ref="search_wrap">
   	        <el-radio-group v-model="gradeId" @change="get_class_list">
   			      <el-radio-button v-for="list in gradeList" :label="list.gradeId.id" :key="list.gradeId.id">{{list.gradeName}}</el-radio-button>
   	

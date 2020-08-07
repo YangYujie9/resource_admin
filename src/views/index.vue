@@ -24,7 +24,7 @@
 					<span style="margin-left: 20px;">{{getuserInfo.username}}</span>
 				</div>
 				
-				<i class="iconfont iconsanheng1" style=";cursor: pointer;" @click="isCollapse=!isCollapse"></i>
+				<i class="iconfont iconsanheng1" style="cursor: pointer;" @click="$store.commit('setisCollapse')"></i>
 			</div>
 
 			<p style="margin-left: 80px;">教育管理平台  > 基础管理</p>
@@ -39,7 +39,6 @@
 						<el-menu
 					      default-active="2"
 					      :collapse="isCollapse"
-					      :default-openeds="['1','2','3','4']"
 					      :default-active="defaultActive"
 					      class="el-menu-vertical-demo"
 					      @select="handleSelect">
@@ -84,7 +83,7 @@
 					          
 					          <el-menu-item index="/administrator/passwordReview">密码审核</el-menu-item>
 					          <el-menu-item index="/administrator/resourceManagement">资源管理</el-menu-item>
-					          <el-menu-item index="/administrator">题库管理</el-menu-item>
+					          <el-menu-item index="/administrator/questionManagement">题库管理</el-menu-item>
 				
 					        </el-menu-item-group>
 	
@@ -123,7 +122,6 @@ export default {
 
   data() {
     return {
-      isCollapse: true,
       defaultActive: '/administrator/rolemanagement',
     };
 
@@ -131,7 +129,8 @@ export default {
   computed: {
     
     ...mapGetters([
-      'getuserInfo',
+      'isCollapse',
+      'getuserInfo'
 
     ]),
 
@@ -221,7 +220,10 @@ export default {
 	.el-submenu__title {
 		width: 200px;
 	}
-
+	.el-submenu .el-menu-item {
+		height: 46px;
+		line-height: 46px;
+	}
 	.el-menu-item-group__title {
 		display: none;
 	}

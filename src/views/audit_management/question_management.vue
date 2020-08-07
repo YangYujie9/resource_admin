@@ -31,7 +31,7 @@
 	                  </el-radio-group>
 
 	                  <p>科目：</p>
-	                  <el-radio-group v-model="filter.subject" size="mini" @change="getPonitTree">
+	                  <el-radio-group v-model="filter.subject" size="mini" @change="changeSubject">
 	                    <el-radio-button :label="item" v-for="item in subjectsList"></el-radio-button>
 	                  </el-radio-group>
 	                </div>
@@ -63,13 +63,13 @@
           <div class="search-wrap" ref="search_wrap">
             <el-form :inline="true" :model="search" class="demo-form-inline" size="mini">
               <el-form-item label="学科" v-show="activeType == 'organizations'">
-                <el-select v-model="search.subjectId" placeholder="学科" class="search-class" @change="getTableData" clearable>
-                  <el-option v-for="list in orgSubjectsList" :label="list.subjectName" :value="list.subjectId.id" :key="list.subjectId.id"></el-option>
+                <el-select v-model="search.subject" placeholder="学科" class="search-class" @change="getQuestionType" clearable 		value-key="subjectId.id">
+                  <el-option v-for="list in orgSubjectsList" :label="list.subjectName" :value="list" :key="list.subjectId.id" ></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="题型">
                 <el-select v-model="search.type"class="search-class" @change="getTableData" clearable placeholder="题型">
-                  <el-option v-for="list in typeList" :label="list" :value="list" :key="list"></el-option>
+                  <el-option v-for="list in questionTypeList" :label="list" :value="list" :key="list"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="状态">
@@ -110,17 +110,16 @@
           </div>
 			    <div class="content-wrap"  ref="table_warp" :style="{height:table_height+'px'}">
 			      <div>
-			        <el-card class="box-card" shadow="hover" v-for="i in 10">
+			        <el-card class="box-card" shadow="hover" v-for="list in tableData">
+			        	<el-checkbox v-model="list.check" style="" class="check-class" @change="handleCheckedChange"></el-checkbox>
 			          <section class="content"   v-show="!isAnswer">
 			            <div class="qt1">
-			              <img src="@/assets/test1.png" />
-			              When $a \ne 0$, there are two solutions to \(ax^2 + bx + c = 0\) and they are
-			              $x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$
-			              1、“实际平均续航里程”是指电动汽车的行驶总里程与充电次数的比值，是反映电动汽车性能的重要指标．某汽车生产厂家为了解某型号电动汽车的“实际平均续航里程”，收集了使用该型号电动汽车1年以上的部分客户的相关数据，按年龄不超过40岁和年龄在40岁以上将客户分为A，B两组，从A，B组各抽取10位客户的电动汽车的“实际平均续航里程”数据整理成图，其中“⊙”表示A组的客户，“*”表示B组的客户．
+			              <!-- <img src="@/assets/test1.png" /> -->
+			              {{list.name}}
 			            </div>
 			            <div class="qt2">
 			              <ul>
-			                <li style="width: 24%;" class="selectoption">
+<!-- 			                <li style="width: 24%;" class="selectoption">
 			                  A.
 			                  <img src="@/assets/test1.png" />
 			                </li>
@@ -135,7 +134,7 @@
 			                <li style="width: 24%;" class="selectoption">
 			                  D.
 			                  <img src="@/assets/test1.png" />
-			                </li>
+			                </li> -->
 			              </ul>
 			            </div>
 			          </section>
@@ -147,35 +146,41 @@
 			            <div class="middle">
 			              <div>
 			                <p class="title">【知识点】</p>
-			                <p>B．教室内课桌的高度约为80dmB．教室内课桌的高度约为80dmB．教室内课桌的高度约为80dmB．教室内课桌的高度约为80dmB．教室内课桌的高度约为80dm</p>
+			                <p>
+			                	<span v-for="item in list.knowledges">{{item.name}}</span>
+			                </p>
 			              </div>
 
 			              <div>
 			                <p class="title">【答案】</p>
+			                <p v-if="list.fillAnswers.length>0">
+			                	<span v-for="item in list.fillAnswers"></span>{{item}}
+			                </p>
 			              </div>
 			              <div>
 			                <p class="title">【分析】</p>
+			                <p>{{list.analysis}}</p>
 			              </div>
 			              <div>
 			                <p class="title">【详解】</p>
+			                <p>{{list.detailedAnalysis}}</p>
 			              </div>
-			              <div>
-			                <p class="title">【点睛】</p>
-			              </div>
-			              <p class="tag">2019~山东省高中二期中</p>
+
 			            </div>
 			          </section>
 			          <section class="foot-wrap">
 			            <div class="pt1">
-			              <div>状态：待审核</div>
+			              <div>状态：{{list.applyStateName}}</div>
 			              <div>
-			              	<el-button type="text">审批打回</el-button>
-			              	<el-button type="text">删除</el-button>
+			              	<el-button type="text" v-if="list.applyState == 'Audit' || list.applyState == 'Undercarriage'" @click="groundQuestion(list.questionId)">上架</el-button>
+			              	<el-button type="text" v-if="list.applyState == 'Grounding'" @click="underQuestion(list.questionId)">下架</el-button>
+			              	<el-button type="text" v-if="list.applyState == 'Audit'" @click="rejectQuestion(list.questionId)">审批打回</el-button>
+			              	<el-button type="text" @click="deleteQuestion(list.questionId)">删除</el-button>
 			              </div>
 			              <div>
-			              	<span>上传：2020/04/08</span>
-			              	<span>难度：一般</span>
-			              	<span>题型：单选题</span>
+			              	<span>上传：{{list.createTime}}</span>
+			              	<span>难度：{{list.difficultyTypeName}}</span>
+			              	<span>题型：{{list.questionTypeName}}</span>
 			              </div>
 			            </div>
 
@@ -188,13 +193,11 @@
 
           <div class="pagination">
             <div>
-              <el-checkbox v-model="checked" @change="toggleSelection">全选</el-checkbox>
-       				<el-button type="text" @click="deleteResource()" style="margin-left: 20px;">删除</el-button>
-            	<el-button type="text" @click="groundResource()">上架</el-button>
-            	<el-button type="text" @click="underResource()">下架</el-button>
-            	<el-button type="text" @click="recommendResource()">推荐</el-button>
-            	<el-button type="text" @click="notRecommendResource()">取消推荐</el-button>
-            	<el-button type="text" @click="rejectResource()">打回</el-button>
+              <el-checkbox v-model="checkAll" @change="handleCheckAllChange" :indeterminate="isIndeterminate">全选</el-checkbox>
+       				<el-button type="text" @click="deleteQuestion()" style="margin-left: 20px;">删除</el-button>
+            	<el-button type="text" @click="groundQuestion()">上架</el-button>
+            	<el-button type="text" @click="underQuestion()">下架</el-button>
+            	<el-button type="text" @click="rejectQuestion()">打回</el-button>
             </div>
             <el-pagination
               @size-change="handleSizeChange"
@@ -244,6 +247,7 @@ export default {
   data() {
 
     return {
+    	isIndeterminate:false,
     	activeType:'organizations',
     	orgData: [],
     	filterText:'',
@@ -273,7 +277,7 @@ export default {
       },
       search: {
       	type:'',
-      	subjectId:'',
+      	subject:'',
       	applyState:'',
       	difficultyType:'',
       	time:'',
@@ -281,12 +285,11 @@ export default {
       	size:10
       },
       total:0,
-      checked:'',
+      checkAll:'',
     	tableData:[],
     	table_height:300,
-    	typeList:['课件','学案','教案','套题试卷','微课','教学反思'],
-    	openList:['私有','学校共享','完全公开'],
-    	statusLiist:['待审核','已上架','已下架','已推荐'],
+    	questionTypeList:[],
+    	statusLiist:['待审核','已上架','已下架'],
     	difficultyLiist: ['容易','较易','一般','较难','难'],
     	currentPoint:'',
     	currentNode:'',
@@ -367,10 +370,16 @@ export default {
     changeTabs(tab) {
     	this.activeType = tab
     	this.getTableData()
+    	this.getQuestionType()
     	this.$nextTick(()=>{
 	      this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight -40
 	      // 
 	    })
+    },
+
+    changeSubject() {
+    	this.getPonitTree()
+    	this.getQuestionType()
     },
 
 
@@ -385,7 +394,7 @@ export default {
     	this.currentNode = data
     	this.schoolsName = data.name
     	this.getSubjectByOrg()
-    	this.getSubjectByOrg()
+    	this.getTableData()
     },
 
     defaultPointNode(node) {
@@ -470,7 +479,9 @@ export default {
 
         	this.subjectsList = data.data
         	this.filter.subject = this.subjectsList[0]
-        	
+        	this.getQuestionType()
+        	this.getPonitTree()
+
 
 
           } else {
@@ -499,6 +510,44 @@ export default {
         	this.orgSubjectsList = data.data.content
         	// this.search.subjectId = this.subjectsList[0].
         	// this.getPonitTree()
+
+
+          } else {
+            return this.$message({
+              message: data.msg,
+              type:'error'
+            })
+          }
+          
+        })
+      .catch(()=>{
+        return this.$message({
+          message:'接口报错',
+          type:'error'
+        })
+      })
+  	},
+
+  	getQuestionType() {
+  		let subjectName = ''
+  		if(this.activeType == 'organizations') {
+  			subjectName = this.search.subject.subjectName
+  		}else {
+  			subjectName = this.filter.subject
+  		}
+
+  		if(!subjectName) {
+  			return false
+  		}
+
+      this.$http.get(`/api/open/common/subjectQuestionType?subjectName=${subjectName}`)
+      .then((data)=>{
+        if(data.status == '200') {
+
+
+        	this.questionTypeList = data.data
+        	this.getTableData()
+
 
 
           } else {
@@ -568,19 +617,30 @@ export default {
 
   	},
 
-    toggleSelection() {
-
-      // this.$refs.multipleTable.toggleAllSelection()
-        if (this.checked) {
-          this.tableData.forEach(row => {
-            this.$refs.multipleTable.toggleRowSelection(row,true);
-          });
-        } else {
-          this.$refs.multipleTable.clearSelection();
-        }
-
-
+  	//全选
+    handleCheckAllChange(val) {
+    	if(val) {
+    		this.tableData.forEach(item=>{
+    			item.check = true
+    		})
+    	}else {
+    		this.tableData.forEach(item=>{
+    			item.check = false
+    		})    	
+    	}
+      this.isIndeterminate = false;
     },
+
+
+    handleCheckedChange() {
+  	  let checked = this.tableData.filter(item=>{
+  			return item.check
+  		})
+
+      this.checkAll = checked.length === this.tableData.length;
+      this.isIndeterminate = checked.length > 0 && checked.length < this.tableData.length;
+    },
+
 
     // 分页
     handleSizeChange(val) {
@@ -620,7 +680,7 @@ export default {
       this.checked = false
       let params = {
       	schoolId: this.currentNode.id,
-      	subjectId: this.search.subjectId,
+      	subjectId: this.search.subject?this.search.subject.subjectId.id:'',
 				questionType: this.search.type,
 				difficultyType: this.search.difficultyType,
 				chapterId: this.currentPoint.id,
@@ -638,6 +698,7 @@ export default {
 
     	}else if(this.activeType == 'knowledge') {
     		params.schoolId = ''
+    		params.subjectId = ''
 
     		if(this.knowType == "Chapter") {
     			params.knowledgeId = ''
@@ -649,9 +710,12 @@ export default {
       this.$http.get(`/api/internal/question/questions`,{params})
       .then((data)=>{
         if(data.status == '200') {
-
+        	data.data.content.forEach(item=>{
+        		item.check = false
+        	})
           this.tableData = data.data.content
           this.total = data.data.totalElements
+          this.checkAll = false
 
 
         } else {
@@ -670,14 +734,14 @@ export default {
       })
     },
     //删除
-    deleteResource(row) {
+    deleteQuestion(questionId) {
     	this.$confirm('确认删除资源吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-	    	if(row) {
-					this.$http.delete(`/api/internal/resources/${row.resourceId}`)
+	    	if(questionId) {
+					this.$http.delete(`/api/internal/question/${questionId}`)
 		      .then((data)=>{
 		        if(data.status == '200') {
 		        	this.getTableData()
@@ -704,14 +768,16 @@ export default {
 		    }else {
 
 
-          let selectData = this.$refs.multipleTable.store.states.selection
-          let ids = selectData.reduce((prev,current)=>{
-            prev.push(current.resourceId)
-            return prev
-          },[])
 
 
-					this.$http.delete(`/api/internal/resources/batchDelete`,{
+
+          let ids = []
+          this.tableData.forEach(item=>{
+            item.check? ids.push(item.questionId):null
+          })
+
+
+					this.$http.delete(`/api/internal/question/batchDelete`,{
             data: ids
           })
 		      .then((data)=>{
@@ -742,10 +808,11 @@ export default {
 		  })
 	      
     },
+
     //上架
-    groundResource(row) {
-    	if(row) {
-					this.$http.put(`/api/internal/resources/${row.resourceId}/grounding`)
+    groundQuestion(questionId) {
+    	if(questionId) {
+					this.$http.put(`/api/internal/question/${questionId}/grounding`)
 		      .then((data)=>{
 		        if(data.status == '200') {
 		        	this.getTableData()
@@ -772,14 +839,12 @@ export default {
 		    }else {
 
 		    	
-          let selectData = this.$refs.multipleTable.store.states.selection
-          let ids = selectData.reduce((prev,current)=>{
-            prev.push(current.resourceId)
-            return prev
-          },[])
+          let ids = []
+          this.tableData.forEach(item=>{
+            item.check? ids.push(item.questionId):null
+          })
 
-
-					this.$http.put(`/api/internal/resources/batchGrounding`,ids)
+					this.$http.put(`/api/internal/question/batchGrounding`,ids)
 		      .then((data)=>{
 		        if(data.status == '200') {
 		        	this.getTableData()
@@ -806,10 +871,11 @@ export default {
 
 		  }
     },
+
     //下架
-    underResource(row) {
-    	if(row) {
-					this.$http.put(`/api/internal/resources/${row.resourceId}/undercarriage`)
+    underQuestion(questionId) {
+    	if(questionId) {
+					this.$http.put(`/api/internal/question/${questionId}/undercarriage`)
 		      .then((data)=>{
 		        if(data.status == '200') {
 		        	this.getTableData()
@@ -836,14 +902,13 @@ export default {
 		    }else {
 
 		    	
-          let selectData = this.$refs.multipleTable.store.states.selection
-          let ids = selectData.reduce((prev,current)=>{
-            prev.push(current.resourceId)
-            return prev
-          },[])
+          let ids = []
+          this.tableData.forEach(item=>{
+            item.check? ids.push(item.questionId):null
+          })
 
 
-					this.$http.put(`/api/internal/resources/batchUndercarriage`,ids)
+					this.$http.put(`/api/internal/question/batchUndercarriage`,ids)
 		      .then((data)=>{
 		        if(data.status == '200') {
 		        	this.getTableData()
@@ -870,138 +935,11 @@ export default {
 
 		  }
     },
-    //推荐
-    recommendResource(row) {
-    	if(row) {
-					this.$http.put(`/api/internal/resources/${row.resourceId}/recommend`)
-		      .then((data)=>{
-		        if(data.status == '200') {
-		        	this.getTableData()
-		        	this.$message({
-		              message: "推荐成功",
-		              type:'success'
-		          })
 
-
-		          } else {
-		            return this.$message({
-		              message: data.msg,
-		              type:'error'
-		            })
-		          }
-		          
-		        })
-		      .catch(()=>{
-		        return this.$message({
-		          message:'接口报错',
-		          type:'error'
-		        })
-		      })    	
-		    }else {
-
-		    	
-          let selectData = this.$refs.multipleTable.store.states.selection
-          let ids = selectData.reduce((prev,current)=>{
-            prev.push(current.resourceId)
-            return prev
-          },[])
-
-
-					this.$http.put(`/api/internal/resources/batchRecommend`,ids)
-		      .then((data)=>{
-		        if(data.status == '200') {
-		        	this.getTableData()
-		        	this.$message({
-		              message: "推荐成功",
-		              type:'success'
-		          })
-
-
-		          } else {
-		            return this.$message({
-		              message: data.msg,
-		              type:'error'
-		            })
-		          }
-		          
-		        })
-		      .catch(()=>{
-		        return this.$message({
-		          message:'接口报错',
-		          type:'error'
-		        })
-		      }) 
-
-		  }
-    },
-    //取消推荐
-    notRecommendResource(row) {
-    	if(row) {
-					this.$http.put(`/api/internal/resources/${row.resourceId}/notRecommend`)
-		      .then((data)=>{
-		        if(data.status == '200') {
-		        	this.getTableData()
-		        	this.$message({
-		              message: "取消推荐成功",
-		              type:'success'
-		          })
-
-
-		          } else {
-		            return this.$message({
-		              message: data.msg,
-		              type:'error'
-		            })
-		          }
-		          
-		        })
-		      .catch(()=>{
-		        return this.$message({
-		          message:'接口报错',
-		          type:'error'
-		        })
-		      })    	
-		    }else {
-
-		    	
-          let selectData = this.$refs.multipleTable.store.states.selection
-          let ids = selectData.reduce((prev,current)=>{
-            prev.push(current.resourceId)
-            return prev
-          },[])
-
-
-					this.$http.put(`/api/internal/resources/batchNotRecommend`,ids)
-		      .then((data)=>{
-		        if(data.status == '200') {
-		        	this.getTableData()
-		        	this.$message({
-		              message: "取消推荐成功",
-		              type:'success'
-		          })
-
-
-		          } else {
-		            return this.$message({
-		              message: data.msg,
-		              type:'error'
-		            })
-		          }
-		          
-		        })
-		      .catch(()=>{
-		        return this.$message({
-		          message:'接口报错',
-		          type:'error'
-		        })
-		      }) 
-
-		  }
-    },
     //打回
-    rejectResource(row) {
-   	if(row) {
-					this.$http.put(`/api/internal/resources/${row.resourceId}/reject`)
+    rejectQuestion(questionId) {
+   		if(questionId) {
+					this.$http.put(`/api/internal/question/${questionId}/reject`)
 		      .then((data)=>{
 		        if(data.status == '200') {
 		        	this.getTableData()
@@ -1028,14 +966,13 @@ export default {
 		    }else {
 
 		    	
-          let selectData = this.$refs.multipleTable.store.states.selection
-          let ids = selectData.reduce((prev,current)=>{
-            prev.push(current.resourceId)
-            return prev
-          },[])
+          let ids = []
+          this.tableData.forEach(item=>{
+            item.check? ids.push(item.questionId):null
+          })
 
 
-					this.$http.put(`/api/internal/resources/batchReject`,ids)
+					this.$http.put(`/api/internal/question/batchReject`,ids)
 		      .then((data)=>{
 		        if(data.status == '200') {
 		        	this.getTableData()
@@ -1060,8 +997,8 @@ export default {
 		        })
 		      }) 
 
-		  }
-    },
+			  }
+	    },
 
 
 
@@ -1126,7 +1063,7 @@ export default {
     .content-wrap {
 	    // margin-top: 20px;
 	    border: 1px solid #e2e2e2;
-	    padding: 0 20px 20px 20px;
+	    padding: 0 20px 20px 36px;
 	    // background-color: #f2f5fc;
 	    overflow-y: auto;
 
@@ -1135,7 +1072,13 @@ export default {
 		    margin-top: 15px;
 		    border-radius: 8px;
 		    position: relative;
-
+		    overflow: visible;
+				
+				.check-class {
+					position: absolute;
+					left: -25px;
+					top:20px;
+				}
 
 		    .content {
 		      font-size: 1rem;
@@ -1193,21 +1136,28 @@ export default {
 		      }
 
 		      .middle {
+		      	margin-top: 10px;
 		        div {
 		          display: flex;
+		          font-size: 0.9rem;
 
 		          .title {
 		            flex-shrink: 0;
 		            color: #22a9e8;
-		            font-weight: 600;
+		            font-weight: 550;
+		            // font-size: 0.8rem;
+		          }
+
+		          span {
+		          	margin-left: 10px;
+
+		          	&:first-clild {
+									margin-left: 0px;
+		          	}
 		          }
 		        }
 
-		        .tag {
-		          padding-left: 10px;
-		          color: #828282;
-		          font-size: 0.9rem;
-		        }
+	
 		      }
 		    }
 

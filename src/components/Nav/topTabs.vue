@@ -146,7 +146,7 @@ export default {
   }
 }
 </style>
-<style>
+<!-- <style>
   .report-form .el-tabs--left .el-tabs__active-bar.is-left, .el-tabs--left .el-tabs__nav-wrap.is-left::after {
     right: 2px;
   }
@@ -176,75 +176,5 @@ export default {
     margin-bottom: 14px;
     line-height: 19px;
   }
-</style>
-<style spoced lang="less">
-.report-form {
-    width: 100%;
-    height: calc(100vh - 10px); 
-    position: relative;
-    padding-top: 20px;
-    display: flex;
-    padding-left: 10px;
-    padding-right: 10px;
-    background: rgba(255, 255, 255, 0.8);
+</style> -->
 
-    
-
-   &-left {
-    height: 90%;
-    width: 40px;
-    position: relative;
-    border: 1px solid #eeeeee;
-
-
-        p { 
-            font-size: 14px; 
-            word-wrap: break-word; 
-            letter-spacing: 10px; 
-            padding-top: 4px;
-            padding-bottom:4px;
-            margin-bottom: 14px;
-            line-height: 19px;
-            &.active {
-                color: #409eff;
-            }
-        } 
-   }
-
-   &-right {
-     width: calc(100vw - 40px);
-     height: 90%;
-     border: 1px solid #eeeeee;
-     border-left: 0px;
-     padding: 10px;
-     padding-top: 0px;
-
-     .top-head-setting {
-          height: 36px;
-          border-bottom: 1px solid #e2e2e2;
-          padding-left: 30px;
-          position: relative;
-          font-size: 14px;
-
-          .list {
-              display: inline-block;
-              min-width: 60px;
-              line-height: 36px;
-              height: 100%;
-              text-align: center;
-              margin-right: 34px;
-              padding-left: 6px;
-              padding-right: 6px;
-
-
-              &.activex {
-                  color: #409eff;
-              }
-              
-          }
-      }
-
-   }
-}
-  
-</style>
