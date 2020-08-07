@@ -1,5 +1,3 @@
-
-
 <template>
   <div class="admini">
 		<div class="header">
@@ -27,7 +25,7 @@
 				<i class="iconfont iconsanheng1" style="cursor: pointer;" @click="$store.commit('setisCollapse')"></i>
 			</div>
 
-			<p style="margin-left: 80px;">教育管理平台  > 基础管理</p>
+			<p style="margin-left: 80px;">教育管理平台  > {{title}}</p>
 
 			<el-button size="mini" type="text" style="position: absolute;right: 20px;top: 20px;color: #ffffff;" @click="exit()">退出登陆</el-button>
 		</div>
@@ -123,6 +121,7 @@ export default {
   data() {
     return {
       defaultActive: '/administrator/rolemanagement',
+      title:'',
     };
 
   },
@@ -137,7 +136,16 @@ export default {
   },
   mounted() {
   	this.defaultActive = this.$route.fullPath
-  },
+  	if(this.$route.fullPath.indexOf('rolemanagement')>-1 ||this.$route.fullPath.indexOf('subjectManagement')>-1||this.$route.fullPath.indexOf('organizational')>-1||this.$route.fullPath.indexOf('classManagement')>-1||this.$route.fullPath.indexOf('userManagement')>-1||this.$route.fullPath.indexOf('siteManagement')>-1||this.$route.fullPath.indexOf('chapterKnow')>-1||this.$route.fullPath.indexOf('knowledgePoint')>-1) {
+  		this.title = "基础管理"
+  	}else if(this.$route.fullPath.indexOf('passwordReview')>-1 ||this.$route.fullPath.indexOf('resourceManagement')>-1 ||this.$route.fullPath.indexOf('questionManagement')>-1 ){
+  		this.title = "审核管理"
+  	}else if (this.$route.fullPath.indexOf('systemConfig')>-1){
+  		this.title = "系统配置"
+
+  	}
+  	
+  }, 
   methods: {
 
   	      //退出登录
@@ -166,9 +174,15 @@ export default {
 
 
 
-
             
+            if(key.indexOf('rolemanagement')>-1 ||key.indexOf('subjectManagement')>-1||key.indexOf('organizational')>-1||key.indexOf('classManagement')>-1||key.indexOf('userManagement')>-1||key.indexOf('siteManagement')>-1||key.indexOf('chapterKnow')>-1||key.indexOf('knowledgePoint')>-1) {
+				  		this.title = "基础管理"
+				  	}else if(key.indexOf('passwordReview')>-1 ||key.indexOf('resourceManagement')>-1 ||key.indexOf('questionManagement')>-1 ){
+				  		this.title = "审核管理"
+				  	}else if (key.indexOf('systemConfig')>-1){
+				  		this.title = "系统配置"
 
+				  	}
 
 
             if (key.indexOf('/')==0) {

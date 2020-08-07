@@ -32,7 +32,7 @@
 
 	                  <p>科目：</p>
 	                  <el-radio-group v-model="filter.subject" size="mini" @change="changeSubject">
-	                    <el-radio-button :label="item" v-for="item in subjectsList"></el-radio-button>
+	                    <el-radio-button :label="item" :key="item" v-for="item in subjectsList"></el-radio-button>
 	                  </el-radio-group>
 	                </div>
 	              </div>
@@ -55,7 +55,7 @@
       </div>
       <div slot="right">
         <div class="right-header">
-          <span>题库审核 </span>
+          <span>题目审核 </span>
           <span style="margin-left: 20px;" v-show="activeType == 'organizations'">{{schoolsName}}</span>
         </div>
 
@@ -117,23 +117,26 @@
 			              <!-- <img src="@/assets/test1.png" /> -->
 			              {{list.name}}
 			            </div>
-			            <div class="qt2">
+			            <div class="qt2" v-if="list.options.length">
 			              <ul>
-<!-- 			                <li style="width: 24%;" class="selectoption">
-			                  A.
-			                  <img src="@/assets/test1.png" />
+			                <li style="width: 24%;" class="selectoption" v-for="item in list.selectoption">
+
+                        <span>{{item.word}}</span>
+                        <span>、</span>
+                        <span>{{item.value}}</span> 
+			                  <!-- <img src="@/assets/test1.png" /> -->
 			                </li>
-			                <li style="width: 24%;" class="selectoption">
+<!-- 			                <li style="width: 24%;" class="selectoption">
 			                  B.
-			                  <img src="@/assets/test1.png" />
+			                 <img src="@/assets/test1.png" />
 			                </li>
 			                <li style="width: 24%;" class="selectoption">
 			                  C.
-			                  <img src="@/assets/test1.png" />
+			                  <img src="@/assets/test1.png" /> 
 			                </li>
 			                <li style="width: 24%;" class="selectoption">
 			                  D.
-			                  <img src="@/assets/test1.png" />
+			                  <img src="@/assets/test1.png" /> 
 			                </li> -->
 			              </ul>
 			            </div>
@@ -147,14 +150,14 @@
 			              <div>
 			                <p class="title">【知识点】</p>
 			                <p>
-			                	<span v-for="item in list.knowledges">{{item.name}}</span>
+			                	<span>{{list.knowledgesPoint.join('')}}</span>
 			                </p>
 			              </div>
 
-			              <div>
+			              <div v-if="list.fillAnswers.length">
 			                <p class="title">【答案】</p>
-			                <p v-if="list.fillAnswers.length>0">
-			                	<span v-for="item in list.fillAnswers"></span>{{item}}
+			                <p>
+			                	<span>{{list.answers.join()}}</span>
 			                </p>
 			              </div>
 			              <div>
@@ -290,7 +293,7 @@ export default {
     	table_height:300,
     	questionTypeList:[],
     	statusLiist:['待审核','已上架','已下架'],
-    	difficultyLiist: ['容易','较易','一般','较难','难'],
+    	difficultyLiist: ['易','较易','一般','较难','难'],
     	currentPoint:'',
     	currentNode:'',
     	schoolsName:'',
@@ -711,8 +714,35 @@ export default {
       .then((data)=>{
         if(data.status == '200') {
         	data.data.content.forEach(item=>{
+
+            //选项
+            item.selectoption = []
+            if(item.options.length) {
+              item.options.forEach(item1=>{
+                for(let key in item1) {
+                  item.selectoption.push({word:key,value:item1[key]})
+                }
+              })
+            }
+
+            //答案
+            item.answers = []
+            item.fillAnswers.forEach(item1=>{
+              for(let key in item1) {
+                item.answers.push(item1[key])
+              }
+            })
+
+            //知识点
+            item.knowledgesPoint = []
+            item.knowledges.forEach(item1=>{
+              item.knowledgesPoint.push(item1.name)
+            })
+
+
         		item.check = false
         	})
+
           this.tableData = data.data.content
           this.total = data.data.totalElements
           this.checkAll = false
@@ -1101,7 +1131,7 @@ export default {
 		        //padding: 20px;
 		        position: relative;
 		        word-break: break-word;
-		        padding-bottom: 20px;
+		        padding-bottom: 10px;
 		        cursor: pointer;
 
 		        img {
