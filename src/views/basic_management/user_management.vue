@@ -1054,38 +1054,84 @@ export default {
     importUsers(event) {
 
       let file = event.target.files[0]
+      if(this.search.roleTpye=='student') {
 
-      uploadFilesBySteaps({
-        file: file,
-        uploadUrl: `api/internal/schools/${this.currentNode.id}/students/importStudent`,
-        limitSize: null
-      }).then((uploadResponse)=>{
+        uploadFilesBySteaps({
+          file: file,
+          uploadUrl: `api/internal/schools/${this.currentNode.id}/students/importStudent`,
+          limitSize: null
+        }).then((uploadResponse)=>{
 
-        // this.getStudents();
-        if(uploadResponse[0].importResult === 'All'){
-          this.getTableData()
-          this.$message.success('导入成功');
+          // this.getStudents();
+          if(uploadResponse[0].importResult === 'All'){
+            this.getTableData()
+            this.$message.success('导入成功');
 
-        }else if(uploadResponse[0].importResult === 'Part') {
+          }else if(uploadResponse[0].importResult === 'Part') {
 
-          this.$confirm(`导入成功${uploadResponse[0].successCount}条数据，导入失败${uploadResponse[0].errorCount}条数据，是否下载失败记录并重新上传？`, '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            // type: 'warning'
-          }).then(() => {
+            this.$confirm(`导入成功${uploadResponse[0].successCount}条数据，导入失败${uploadResponse[0].errorCount}条数据，是否下载失败记录并重新上传？`, '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              // type: 'warning'
+            }).then(() => {
 
-            downloadExcelImportFailRecord({
-              fileName: uploadResponse[0].errorRecordFileName
-            })
+              this.$http.download(`/api/internal/schools/downloadExcelImportFailRecord`,{
+                fileName: uploadResponse[0].errorRecordFileName
+              })
 
-          }).catch(() => {
-     
-          });
+            }).catch(() => {
+       
+            });
 
 
+          }
+
+          event.target = ''
+        })
+        return false
+
+
+      }else if(this.search.roleTpye=='teacher') {
+
+        uploadFilesBySteaps({
+          file: file,
+          uploadUrl: `/api/internal/schools/${this.currentNode.id}/teachers/importTeacher`,
+          limitSize: null
+        }).then((uploadResponse)=>{
+
+          // this.getStudents();
+          if(uploadResponse[0].importResult === 'All'){
+            this.getTableData()
+            this.$message.success('导入成功');
+
+          }else if(uploadResponse[0].importResult === 'Part') {
+
+            this.$confirm(`导入成功${uploadResponse[0].successCount}条数据，导入失败${uploadResponse[0].errorCount}条数据，是否下载失败记录并重新上传？`, '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              // type: 'warning'
+            }).then(() => {
+
+              this.$http.download(`/api/internal/schools/downloadExcelImportFailRecord`,{
+                fileName: uploadResponse[0].errorRecordFileName
+              })
+
+ 
+
+            }).catch(() => {
+       
+            });
+
+
+          }
+        })
+        return false
         }
-      })
-      return false
+
+
+        event.target = ''
+
+
     },
 
     exportUsers() {

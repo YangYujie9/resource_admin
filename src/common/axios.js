@@ -116,15 +116,15 @@ export default {
   /**
    * post
    */
-  post: function (url, _queryParams, _bodyParams, httpConfig = {}) {
-    return axiosService.post(url, _bodyParams, { httpConfig: Object.assign({}, httpConfig, {queryData: _queryParams}) })
+  post: function (url, _bodyParams, httpConfig = {}) {
+    return axiosService.post(url, _bodyParams, { httpConfig: Object.assign({}, httpConfig) })
   },
 
   /**
    * put
    */
-  put: function (url, _queryParams, _bodyParams, httpConfig = {}) {
-    return axiosService.put(url, _bodyParams, { httpConfig: Object.assign({}, httpConfig, {queryData: _queryParams}) })
+  put: function (url, _bodyParams, httpConfig = {}) {
+    return axiosService.put(url, _bodyParams, { httpConfig: Object.assign({}, httpConfig) })
   },
 
   /**
