@@ -576,7 +576,7 @@ export default {
           page: this.search.page - 1,
           size: this.search.size,
         }
-        this.$http.get(`/api/internal/schools/${this.currentNode.id}/students`,{params})
+        this.$http.get(`/api/internal/schools/${this.currentNode.id}/students`,params)
         .then((data)=>{
 
 
@@ -601,7 +601,7 @@ export default {
           page: this.search.page - 1,
           size: this.search.size,
         }
-        this.$http.get(`/api/internal/schools/${this.currentNode.id}/teachers`,{params})
+        this.$http.get(`/api/internal/schools/${this.currentNode.id}/teachers`,params)
         .then((data)=>{
 
 

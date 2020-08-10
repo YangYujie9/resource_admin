@@ -563,7 +563,7 @@ export default {
     		}
     	}
     
-      this.$http.get(`/api/internal/resources/resourceList`,{params})
+      this.$http.get(`/api/internal/resources/resourceList`,params)
       .then((data)=>{
         if(data.status == '200') {
 

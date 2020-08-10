@@ -571,6 +571,7 @@ export default {
 
   	getQuestionType() {
   		let subjectName = ''
+      this.questionTypeList = []
   		if(this.activeType == 'organizations') {
   			subjectName = this.search.subject.subjectName
   		}else {
@@ -748,7 +749,7 @@ export default {
     		}
     	}
     
-      this.$http.get(`/api/internal/question/questions`,{params})
+      this.$http.get(`/api/internal/question/questions`,params)
       .then((data)=>{
         if(data.status == '200') {
         	data.data.content.forEach(item=>{

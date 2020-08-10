@@ -334,7 +334,7 @@ export default {
           page: this.search.page - 1,
           size: this.search.size,
         }
-        this.$http.get(`/api/internal/schools/${this.currentNode.id}/verifyUsers`,{params})
+        this.$http.get(`/api/internal/schools/${this.currentNode.id}/verifyUsers`,params)
         .then((data)=>{
 
           if(data.status == '200') {

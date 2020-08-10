@@ -102,10 +102,12 @@ export default {
    * @param { ?Object } _bodyParams body参数
    * @param { ?Object } httpConfig 自定义其他配置
    */
+  // get: function (url, _queryParams, _bodyParams, httpConfig = {}) {
+  //   return axiosService.get(url, { params: _queryParams, httpConfig: httpConfig})
+  // },
   get: function (url, _queryParams, _bodyParams, httpConfig = {}) {
     return axiosService.get(url, { params: _queryParams, httpConfig: httpConfig})
   },
-
   /**
    * delete
    */
@@ -116,15 +118,15 @@ export default {
   /**
    * post
    */
-  post: function (url, _bodyParams, httpConfig = {}) {
-    return axiosService.post(url, _bodyParams, { httpConfig: Object.assign({}, httpConfig) })
+  post: function (url, _bodyParams, _queryParams, httpConfig = {}) {
+    return axiosService.post(url, _bodyParams, { httpConfig: Object.assign({}, httpConfig, {queryData: _queryParams}) })
   },
 
   /**
    * put
    */
-  put: function (url, _bodyParams, httpConfig = {}) {
-    return axiosService.put(url, _bodyParams, { httpConfig: Object.assign({}, httpConfig) })
+  put: function (url, _bodyParams, _queryParams, httpConfig = {}) {
+    return axiosService.put(url, _bodyParams, { httpConfig: Object.assign({}, httpConfig, {queryData: _queryParams}) })
   },
 
   /**

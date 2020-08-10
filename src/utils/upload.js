@@ -40,7 +40,7 @@ export const uploadFilesBySteaps = async ({file, uploadUrl, limitSize=null, call
  */
 const uploadFn = ({uploadUrl, currenyIndex, totalPieces, formData, callBack, errBack, httpConfig}) =>{
   return new Promise((resolve, reject)=>{
-    $http.post(uploadUrl, { partNumber: currenyIndex + 1, lastPart: currenyIndex == (totalPieces - 1) }, formData, httpConfig).then((uploadResponse)=>{
+    $http.post(uploadUrl, formData, { partNumber: currenyIndex + 1, lastPart: currenyIndex == (totalPieces - 1) }, httpConfig).then((uploadResponse)=>{
       callBack && callBack();
       resolve(Object.assign({}, uploadResponse.data));
     }).catch((uploadErr)=>{
