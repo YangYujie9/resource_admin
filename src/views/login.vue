@@ -103,11 +103,7 @@ export default {
 };
 </script>
 <style lang="less">
-.login {
-	.el-form-item {
-		margin-bottom: 12px;
-	}
-}
+
 </style>
 <style lang="less" scoped>
 .login {
@@ -156,6 +152,6 @@ export default {
   cursor: pointer;
 }
 .center .el-input {
-  line-height: 60px;
+  line-height: 50px;
 }
 </style>

@@ -12,7 +12,16 @@
         <div class="right-header">
           <span>用户管理 </span>
           <span style="margin-left: 20px;">{{schoolsName}}</span>
-          <el-button size="mini" style="margin-left: 20px;" @click="add_user_dialog"><i class="el-icon-plus"></i> 新增用户</el-button>
+          <div style="position: absolute;top: 0px;right: 0px;">
+            <el-button size="mini" type="primary" style="position: relative;"><i class="iconfont iconshangchuan"></i> 导入
+              <input style="left:0px" type="file" class="inpucus cursor" @change="importUsers($event)" />
+            </el-button>
+            <el-button size="mini" @click="exportUsers" type="primary"><i class="iconfont iconxiazai"></i> 导出</el-button>
+            <el-button size="mini" @click="downloadTemplate" type="primary"><i class="iconfont iconwendang"></i> 模版下载</el-button>
+            <el-button size="mini" @click="add_user_dialog" type="primary"><i class="iconfont iconiconjia"></i> 新增用户</el-button>
+           
+          </div>
+          
 
         </div>
         <div class="wrap" ref="wrap">
@@ -53,6 +62,12 @@
               <el-form-item>
                 <el-button type="primary" @click="getTableData">查询</el-button>
               </el-form-item>
+<!--               <el-form-item>
+                <el-button type="primary" @click="getTableData"></el-button>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="getTableData">查询</el-button>
+              </el-form-item> -->
             </el-form>
           </div>
 
@@ -271,6 +286,7 @@
   import { mapGetters } from 'vuex'
   import rightNav from '@/components/Nav/rightNav'
   import basicTree from '@/components/Tree/basicTree'
+  import {uploadFilesBySteaps} from '@/utils/upload.js'
 
 export default {
 
@@ -397,17 +413,9 @@ export default {
     getOrgTree(){
       this.$http.get(`/api/internal/organizations/tree`)
       .then((data)=>{
-        if(data.status == '200') {
 
           this.data = data.data
 
-
-        } else {
-          return this.$message({
-            message: data.msg,
-            type:'error'
-          })
-        }
         
       })
       .catch(()=>{
@@ -475,19 +483,12 @@ export default {
       this.$http.get(`/api/internal/schools/${this.currentNode.id}/grades`)
       .then((data)=>{
 
-        if(data.status == '200') {
 
           this.gradeList = data.data.content
           // this.gradeId = this.gradeList[0].gradeId.id
           // this.get_class_list()
 
 
-        } else {
-          return this.$message({
-            message: data.msg,
-            type:'error'
-          })
-        }
         
       })
       .catch(()=>{
@@ -522,7 +523,6 @@ export default {
       this.$http.get(`/api/internal/grades/${gradeId}/classes`)
       .then((data)=>{
 
-        if(data.status == '200') {
 
 
          if(this.isAdd || this.isEdit) {
@@ -532,15 +532,7 @@ export default {
             this.searchClassList = data.data.content
             this.getTableData()
           }
-          
 
-
-        } else {
-          return this.$message({
-            message: data.msg,
-            type:'error'
-          })
-        }
         
       })
       .catch(()=>{
@@ -556,17 +548,10 @@ export default {
       this.$http.get(`/api/internal/schools/${this.currentNode.id}/subjects`)
       .then((data)=>{
 
-        if(data.status == '200') {
 
           this.subjectList = data.data.content
           
 
-        } else {
-          return this.$message({
-            message: data.msg,
-            type:'error'
-          })
-        }
         
       })
       .catch(()=>{
@@ -593,18 +578,10 @@ export default {
         this.$http.get(`/api/internal/schools/${this.currentNode.id}/students`,{params})
         .then((data)=>{
 
-          if(data.status == '200') {
 
             this.tableData = data.data.content
             this.total = data.data.totalElements
 
-
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
           
         })
         .catch(()=>{
@@ -626,17 +603,11 @@ export default {
         this.$http.get(`/api/internal/schools/${this.currentNode.id}/teachers`,{params})
         .then((data)=>{
 
-          if(data.status == '200') {
 
             this.tableData = data.data.content
             this.total = data.data.totalElements
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
+ 
           
         })
         .catch(()=>{
@@ -704,7 +675,6 @@ export default {
 
               .then((data)=>{
 
-                if(data.status == '200') {
 
                   this.getTableData()
                   this.isEdit = false
@@ -714,14 +684,6 @@ export default {
                     type:'success'
                   })
 
-
-
-                } else {
-                  return this.$message({
-                    message: data.msg,
-                    type:'error'
-                  })
-                }
                 
               })
               .catch(()=>{
@@ -746,7 +708,6 @@ export default {
 
                 this.getTableData()
 
-                if(data.status == '200') {
                   this.dialogVisible = false
                   this.isEdit = false
                   this.$message({
@@ -755,12 +716,6 @@ export default {
                   })
 
 
-                } else {
-                  return this.$message({
-                    message: data.msg,
-                    type:'error'
-                  })
-                }
                 
               })
               .catch(()=>{
@@ -787,7 +742,6 @@ export default {
 
               .then((data)=>{
 
-                if(data.status == '200') {
 
                   this.getTableData()
                   this.isAdd = false
@@ -799,12 +753,6 @@ export default {
 
 
 
-                } else {
-                  return this.$message({
-                    message: data.msg,
-                    type:'error'
-                  })
-                }
                 
               })
               .catch(()=>{
@@ -876,7 +824,6 @@ export default {
           if(this.search.roleTpye=='student') {
             this.$http.delete(`/api/internal/schools/${this.currentNode.id}/students/${row.id}`)
             .then((data)=>{
-              if(data.status == '200') {
 
                   this.$message({
                     message:'删除成功',
@@ -885,12 +832,6 @@ export default {
                   this.getTableData()
 
 
-                } else {
-                  return this.$message({
-                    message: data.msg,
-                    type:'error'
-                  })
-                }
                 
               })
             .catch(()=>{
@@ -902,7 +843,6 @@ export default {
           }else if(this.search.roleTpye=='teacher') {
             this.$http.delete(`/api/internal/schools/${this.currentNode.id}/teachers/${row.id}`)
             .then((data)=>{
-              if(data.status == '200') {
 
                   this.$message({
                     message:'删除成功',
@@ -911,12 +851,6 @@ export default {
                   this.getTableData()
 
 
-                } else {
-                  return this.$message({
-                    message: data.msg,
-                    type:'error'
-                  })
-                }
                 
               })
             .catch(()=>{
@@ -945,7 +879,6 @@ export default {
               data: ids
             })
             .then((data)=>{
-              if(data.status == '200') {
 
                   
                   this.$message({
@@ -955,12 +888,6 @@ export default {
                   this.getTableData()
 
 
-                } else {
-                  return this.$message({
-                    message: data.msg,
-                    type:'error'
-                  })
-                }
                 
               })
             .catch(()=>{
@@ -974,7 +901,6 @@ export default {
               data: ids
             })
             .then((data)=>{
-              if(data.status == '200') {
 
                   
                   this.$message({
@@ -984,12 +910,6 @@ export default {
                   this.getTableData()
 
 
-                } else {
-                  return this.$message({
-                    message: data.msg,
-                    type:'error'
-                  })
-                }
                 
               })
             .catch(()=>{
@@ -1011,7 +931,6 @@ export default {
       this.$http.put(`/api/internal/user/${row.userId}/disable`)
 
       .then((data)=>{
-        if(data.status == '200') {
 
             this.$message({
               message:'禁用成功',
@@ -1020,12 +939,6 @@ export default {
             this.getTableData()
 
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
           
         })
       .catch(()=>{
@@ -1040,7 +953,6 @@ export default {
       this.$http.put(`/api/internal/user/${row.userId}/enable`)
 
       .then((data)=>{
-        if(data.status == '200') {
 
             this.$message({
               message:'启用成功',
@@ -1049,12 +961,7 @@ export default {
             this.getTableData()
 
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
+
           
         })
       .catch(()=>{
@@ -1090,7 +997,6 @@ export default {
 
         .then((data)=>{
 
-          if(data.status == '200') {
 
             this.getTableData()
 
@@ -1102,13 +1008,6 @@ export default {
             })
 
 
-
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
           
         })
         .catch(()=>{
@@ -1126,7 +1025,6 @@ export default {
 
         .then((data)=>{
 
-          if(data.status == '200') {
 
             this.getTableData()
 
@@ -1139,12 +1037,6 @@ export default {
 
 
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
           
         })
         .catch(()=>{
@@ -1157,7 +1049,73 @@ export default {
 
 
       
-    }
+    },
+
+    importUsers(event) {
+
+      let file = event.target.files[0]
+
+      uploadFilesBySteaps({
+        file: file,
+        uploadUrl: `api/internal/schools/${this.currentNode.id}/students/importStudent`,
+        limitSize: null
+      }).then((uploadResponse)=>{
+
+        // this.getStudents();
+        if(uploadResponse[0].importResult === 'All'){
+          this.getTableData()
+          this.$message.success('导入成功');
+
+        }else if(uploadResponse[0].importResult === 'Part') {
+
+          this.$confirm(`导入成功${uploadResponse[0].successCount}条数据，导入失败${uploadResponse[0].errorCount}条数据，是否下载失败记录并重新上传？`, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            // type: 'warning'
+          }).then(() => {
+
+            downloadExcelImportFailRecord({
+              fileName: uploadResponse[0].errorRecordFileName
+            })
+
+          }).catch(() => {
+     
+          });
+
+
+        }
+      })
+      return false
+    },
+
+    exportUsers() {
+
+      if(this.search.roleTpye=='student') {
+
+        this.$http.download(`/api/internal/schools/${this.currentNode.id}/students/exportStudent`)
+
+
+
+      }else if(this.search.roleTpye=='teacher') {
+
+        this.$http.download(`/api/internal/schools/${this.currentNode.id}/teachers/exportTeacher`)
+      }
+    },
+
+    downloadTemplate() {
+
+      if(this.search.roleTpye=='student') {
+
+        this.$http.download(`/api/internal/schools/${this.currentNode.id}/students/downloadImportStudentTemplate`)
+
+
+
+      }else if(this.search.roleTpye=='teacher') {
+
+        this.$http.download(`/api/internal/schools/${this.currentNode.id}/teachers/downloadImportTeacherTemplate`)
+      }
+ 
+    },
 
 
 

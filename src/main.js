@@ -4,7 +4,7 @@ import router from './router'
 import store from './store'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import erpAxios from './common/http'
+import erpAxios from './common/axios'
 import plugins from './utils/globalComponents'   //全局组件
 import './assets/css/reset.css'
 

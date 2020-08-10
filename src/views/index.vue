@@ -213,10 +213,11 @@ export default {
 	.inpucus {
     opacity: 0;
     background: red;
-    width: 60px;
-    height: 26px;
+    width: 100%;
+    height: 100%;
     z-index: 10;
     position: absolute;
+    cursor: pointer;
     left: 240px;
     top: 0px;
 
