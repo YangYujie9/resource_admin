@@ -235,7 +235,7 @@
           </div>
           <span slot="footer" class="dialog-footer">
             <el-button @click="dialogVisible = false" size="mini">取 消</el-button>
-            <el-button type="primary" @click="add_user" size="mini">确 定</el-button>
+            <el-button type="primary" @click="add_user" :disabled="isFlag" size="mini">确 定</el-button>
           </span>
         </el-dialog>
 
@@ -322,6 +322,7 @@ export default {
       schoolsName:'',
       isEdit: false,
       isReset:false,
+      isFlag: false,
       editUserId:'',
       gradeList:[],
       subjectList:[],
@@ -655,6 +656,8 @@ export default {
 
     add_user() {
 
+      this.isFlag = true
+
       this.$refs['usersForm'].validate((valid) => {
         if (valid) {
 
@@ -679,6 +682,7 @@ export default {
                   this.getTableData()
                   this.isEdit = false
                   this.dialogVisible = false
+                  this.isFlag = false
                   this.$message({
                     message: '学生修改成功',
                     type:'success'
@@ -710,6 +714,7 @@ export default {
 
                   this.dialogVisible = false
                   this.isEdit = false
+                  this.isFlag = false
                   this.$message({
                     message: '老师修改成功',
                     type:'success'
@@ -745,7 +750,9 @@ export default {
 
                   this.getTableData()
                   this.isAdd = false
+                  
                   this.dialogVisible = false
+                  this.isFlag = false
                   this.$message({
                     message: '学生新增成功',
                     type:'success'
@@ -779,8 +786,8 @@ export default {
 
                 this.getTableData()
                 this.isAdd = false
-                if(data.status == '200') {
                   this.dialogVisible = false
+                  this.isFlag = false
 
                   this.$message({
                     message: '老师新增成功',
@@ -788,12 +795,6 @@ export default {
                   })
 
 
-                } else {
-                  return this.$message({
-                    message: data.msg,
-                    type:'error'
-                  })
-                }
                 
               })
               .catch(()=>{
@@ -1052,10 +1053,9 @@ export default {
     },
 
     importUsers(event) {
-
       let file = event.target.files[0]
+      // console.log(file)
       if(this.search.roleTpye=='student') {
-
         uploadFilesBySteaps({
           file: file,
           uploadUrl: `api/internal/schools/${this.currentNode.id}/students/importStudent`,
@@ -1086,8 +1086,9 @@ export default {
 
           }
 
-          event.target = ''
+          
         })
+        event.target.value = ''
         return false
 
 
@@ -1125,11 +1126,11 @@ export default {
 
           }
         })
+        event.target.value = ''
         return false
         }
 
 
-        event.target = ''
 
 
     },
