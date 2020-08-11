@@ -2,22 +2,31 @@
   <div class="system">
     <rightNav>
       <div slot="left">
-        <p class="right-header">自动审核 </p>
+        <p class="right-header">站点管理 </p>
+        <div class="meau-wrap">
+          <ul>
+            <li v-for="list in meauList" :class="{activemeau:list.check}" @click="changeType(list)">{{list.label}}</li>
+          </ul>
+        </div>
 
-		  	  <el-radio-group v-model="automaticCheck" @change="setVerifyConfiguration">
-			      <el-radio-button label="1" >是</el-radio-button>
-			      <el-radio-button label="0" >否</el-radio-button>
 
-			    </el-radio-group>
+
+ 
       
       </div>
       <div slot="right">
-        <div class="right-header">
-          <span>题目难度 </span>
-          
+        <p class="right-header">{{title}} </p>
 
-        </div>
-        <div class="wrap">
+        <div v-show="title=='自动审核设置'">
+        
+
+          <el-radio-group v-model="automaticCheck" @change="setVerifyConfiguration">
+            <el-radio-button label="1" >是</el-radio-button>
+            <el-radio-button label="0" >否</el-radio-button>
+
+          </el-radio-group>
+        </div> 
+        <div class="wrap" v-show="title=='题目难度设置'">
 <!--           <ul>
           	<li v-for="list in difficultyList" :key="list.key">
           		<p style="width: 100px;">{{list.value}}</p>
@@ -102,7 +111,16 @@ export default {
       	key: '',
       	value:'',
       	description:''
-      }
+      },
+      meauList: [{
+          label:'自动审核设置',
+          check: true
+        },{
+          label:'题目难度设置',
+          check: false
+        }
+      ],
+      title:'自动审核设置'
 
 
 
@@ -135,7 +153,14 @@ export default {
 
   },
   methods: {
+    changeType(list) {
+      this.meauList.forEach(item=>{
+        item.check = false
+      })
 
+      list.check = true
+      this.title = list.label
+    },
   	getVerifyConfiguration() {
 
 		  this.$http.get(`/api/internal/configuration/configs/VerifyConfiguration`)
@@ -293,7 +318,7 @@ export default {
 .system {
 
 	.el-radio-group {
-		width: 100%;
+		width: 400px;
 	}
 
 	.el-radio-button {
@@ -330,6 +355,25 @@ export default {
 
   .input-class {
     width: 280px;
+  }
+
+  .meau-wrap {
+    height: calc(100vh - 240px);
+    overflow-y: auto;
+    padding-left: 20px;
+
+    .activemeau {
+      color:#409EFF;
+    }
+
+    ul li {
+      height: 40px;
+      cursor: pointer;
+
+      &:hover {
+        color:#409EFF;
+      }
+    }
   }
   .wrap {
 

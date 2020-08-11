@@ -119,7 +119,7 @@
 			            </div>
 			            <div class="qt2" v-if="list.options.length">
 			              <ul>
-			                <li style="width: 24%;" class="selectoption" v-for="item in list.selectoption">
+			                <li style="width: 100%;" class="selectoption" v-for="item in list.selectoption">
 
                         <span>{{item.word}}</span>
                         <span>、</span>
@@ -152,7 +152,7 @@
                       </div>
                       <div class="qt2" v-if="list1.options.length">
                         <ul>
-                          <li style="width: 24%;" class="selectoption" v-for="item in list1.selectoption">
+                          <li style="width: 100%;" class="selectoption" v-for="item in list1.selectoption">
 
                             <span>{{item.word}}</span>
                             <span>、</span>
