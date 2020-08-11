@@ -109,7 +109,10 @@
  
           </div>
 			    <div class="content-wrap"  ref="table_warp" :style="{height:table_height+'px'}">
-			      <div>
+            <div v-if="tableData.length==0">
+              <div style="height: 300px;line-height: 300px;text-align: center;">暂无数据</div>
+            </div>
+			      <div v-else>
 			        <el-card class="box-card" shadow="hover" v-for="list in tableData">
 			        	<el-checkbox v-model="list.check" style="" class="check-class" @change="handleCheckedChange"></el-checkbox>
 			          <section class="content"   v-show="!isAnswer">
