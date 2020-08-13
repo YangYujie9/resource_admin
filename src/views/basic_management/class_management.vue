@@ -228,20 +228,10 @@ export default {
           this.get_class_list()
 
 
-        } else {
-          return this.$message({
-            message: data.msg,
-            type:'error'
-          })
-        }
+        } 
         
       })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
     },
 
     get_class_list() {
@@ -267,20 +257,10 @@ export default {
           this.tableData = data.data.content
 
 
-        } else {
-          return this.$message({
-            message: data.msg,
-            type:'error'
-          })
-        }
+        } 
         
       })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
 
     },
 
@@ -301,20 +281,10 @@ export default {
 					this.subjectList = data.data
           
 
-        } else {
-          return this.$message({
-            message: data.msg,
-            type:'error'
-          })
-        }
+        } 
         
       })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
     },
     add_class_dialog() {
     	this.dislogTitle = '新增班级'
@@ -362,7 +332,6 @@ export default {
 
     	if(this.isEdit) {
     		//编辑
-
     		this.$http.put(`/api/internal/classes/${this.editClassId}`,{
 	    		className: this.classes.name,
 	    		giveLessonCommands: giveLessonCommands
@@ -383,20 +352,10 @@ export default {
 	          this.get_class_list()
 	          
 
-	        } else {
-	          return this.$message({
-	            message: data.msg,
-	            type:'error'
-	          })
-	        }
+	        } 
 	        
 	      })
-	      .catch(()=>{
-	        return this.$message({
-	          message:'接口报错',
-	          type:'error'
-	        })
-	      })
+
     	}else {
     		//新增
 	    	this.$http.post(`/api/internal/grades/${this.gradeId}/classes`,{
@@ -418,20 +377,10 @@ export default {
 	          this.get_class_list()
 	          
 
-	        } else {
-	          return this.$message({
-	            message: data.msg,
-	            type:'error'
-	          })
-	        }
+	        } 
 	        
 	      })
-	      .catch(()=>{
-	        return this.$message({
-	          message:'接口报错',
-	          type:'error'
-	        })
-	      })
+
     	}
 
     },
@@ -460,20 +409,10 @@ export default {
 	          this.get_class_list()
 	          
 
-	        } else {
-	          return this.$message({
-	            message: data.msg,
-	            type:'error'
-	          })
-	        }
+	        } 
 	        
 	      })
-	      .catch(()=>{
-	        return this.$message({
-	          message:'接口报错',
-	          type:'error'
-	        })
-	      })
+
 
       })
 		},

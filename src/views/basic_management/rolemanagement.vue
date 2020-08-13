@@ -205,20 +205,9 @@ export default {
         .then((data)=>{
           if(data.status == '200') {
             this.tableData = data.data
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
-          
+          } 
         })
-        .catch(()=>{
-          return this.$message({
-            message:'接口报错',
-            type:'error'
-          })
-        })
+  
     },
 
     // 添加角色

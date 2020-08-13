@@ -379,26 +379,15 @@ export default {
 
       this.$http.get(`/api/internal/configuration/logo`)
       .then((data)=>{
-        if(data.status == '200') {
 
 
         	this.site = data.data
         	this.oldSite = JSON.parse(JSON.stringify(data.data))
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
+
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
   	},
 		deleteFile(type) {
 
@@ -448,7 +437,6 @@ export default {
           //临时存储二进制流
           type == "picture" ?that.site.picture = base64Str:that.site.icon = base64Str
 
-          console.log(that.site.icon)
       };
       // type == "picture" ?this.site.picture = src:this.site.icon = src
 
@@ -477,7 +465,6 @@ export default {
 
   		this.$http.put(`/api/internal/configuration/configs/LogoConfiguration`,info)
       .then((data)=>{
-        if(data.status == '200') {
 
         	this.getSiteInfo()
 					this.$message({
@@ -486,20 +473,9 @@ export default {
 	  			})
 
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
   	},
 
 
@@ -537,7 +513,6 @@ export default {
 	  			url: this.navigation.url
 	  		})
 	      .then((data)=>{
-	        if(data.status == '200') {
 	        	this.navigationId =''
 						this.dialogVisible = false
 						this.getnavigationBar()
@@ -547,20 +522,9 @@ export default {
 		  			})
 
 
-	          } else {
-	            return this.$message({
-	              message: data.msg,
-	              type:'error'
-	            })
-	          }
 	          
 	        })
-	      .catch(()=>{
-	        return this.$message({
-	          message:'接口报错',
-	          type:'error'
-	        })
-	      })
+
 
   		}else {
   			
@@ -570,7 +534,6 @@ export default {
 	  			url: this.navigation.url
 	  		})
 	      .then((data)=>{
-	        if(data.status == '200') {
 
 						this.dialogVisible = false
 
@@ -581,20 +544,9 @@ export default {
 		  			})
 
 
-	          } else {
-	            return this.$message({
-	              message: data.msg,
-	              type:'error'
-	            })
-	          }
 	          
 	        })
-	      .catch(()=>{
-	        return this.$message({
-	          message:'接口报错',
-	          type:'error'
-	        })
-	      })
+
   		}
 
   	},
@@ -608,7 +560,6 @@ export default {
 
   		this.$http.get(`/api/internal/navigationBar`)
   		.then((data)=>{
-        if(data.status == '200') {
         	if(data.data.length) {
         		data.data.forEach(list=> {
         			list.navigationType == "TopNavigationBar"?this.topData.push(list):this.cateageData.push(list)
@@ -618,28 +569,15 @@ export default {
         	//console.log(this.topData,this.cateageData)
         	
 
-
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
   	},
 
   	lockNav(row) {
       this.$http.put(`/api/internal/navigationBar/${row.navigationId.id}/disable`)
 
       .then((data)=>{
-        if(data.status == '200') {
 
 						this.getnavigationBar()
             this.$message({
@@ -647,29 +585,16 @@ export default {
               type:'success'
             })
             
-
-
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
           
-        })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
       })
+
+
     },
 
     UnLockNav(row) {
       this.$http.put(`/api/internal/navigationBar/${row.navigationId.id}/enable`)
 
       .then((data)=>{
-        if(data.status == '200') {
 
         		this.getnavigationBar()
 
@@ -680,20 +605,9 @@ export default {
             
 
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
     },
 
     upsort(row,index) {
@@ -701,24 +615,13 @@ export default {
       this.$http.put(`/api/internal/navigationBar/${row.navigationId.id}/turnUpNavigationBar/${index}`)
 
       .then((data)=>{
-        if(data.status == '200') {
 
         		this.getnavigationBar()
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
+
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
     },
 
 
@@ -727,24 +630,11 @@ export default {
       this.$http.put(`/api/internal/navigationBar/${row.navigationId.id}/turnDownNavigationBar/${index+2}`)
 
       .then((data)=>{
-        if(data.status == '200') {
 
-        		this.getnavigationBar()
-
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
-          
-        })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
+        this.getnavigationBar()
       })
+
+
     },
 
 

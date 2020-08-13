@@ -387,22 +387,13 @@ export default {
 
             this.tableData = data.data.content
             this.total = data.data.totalElements
+            this.search.page = 1
 
 
-          } else {
-              return this.$message({
-                message: data.msg,
-                type:'error'
-              })
-          }
+          } 
             
           })
-        .catch(()=>{
-          return this.$message({
-            message:'接口报错',
-            type:'error'
-          })
-        })
+
       }else {
         this.$http.get(`/api/internal/organizations/${this.currentNode.id}/users?account=${this.search.account}&name=${this.search.name}&userRole=${this.search.type}&enabled=${this.search.status}&page=${this.search.page-1}&size=${this.search.size}`)
         .then((data)=>{
@@ -410,22 +401,13 @@ export default {
 
             this.tableData = data.data.content
             this.total = data.data.totalElements
+            this.search.page = 1
 
 
-          } else {
-              return this.$message({
-                message: data.msg,
-                type:'error'
-              })
-          }
+          } 
             
           })
-        .catch(()=>{
-          return this.$message({
-            message:'接口报错',
-            type:'error'
-          })
-        })
+    
       }
 
 
@@ -440,20 +422,10 @@ export default {
           this.data = data.data
 
 
-        } else {
-          return this.$message({
-            message: data.msg,
-            type:'error'
-          })
-        }
+        } 
         
       })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
 
     },
         // 显示添加组织弹窗
@@ -479,13 +451,7 @@ export default {
               this.isEdit = true
               this.orgDialogVisible = true
 
-            } else {
-              return this.$message({
-                message: data.msg,
-                type:'error'
-              })
-            }
-            
+            } 
           })
         }else {
           this.orgForm.name = val.name
@@ -543,21 +509,10 @@ export default {
               this.getOrgTree()
 
 
-            } else {
-              return this.$message({
-                message: data.msg,
-                type:'error'
-              })
-            }
+            } 
             
           })
 
-          .catch(()=>{
-            return this.$message({
-              message:'接口报错',
-              type:'error'
-            })
-          })
 
         }else {
           //添加组织
@@ -579,20 +534,10 @@ export default {
               this.getOrgTree()
 
 
-            } else {
-              return this.$message({
-                message: data.msg,
-                type:'error'
-              })
-            }
+            } 
             
           })
-          .catch(()=>{
-            return this.$message({
-              message:'接口报错',
-              type:'error'
-            })
-          })
+
 
 
         }
@@ -629,21 +574,11 @@ export default {
               this.getOrgTree()
 
 
-            } else {
-              return this.$message({
-                message: data.msg,
-                type:'error'
-              })
-            }
+            } 
             
           })
 
-          .catch(()=>{
-            return this.$message({
-              message:'接口报错',
-              type:'error'
-            })
-          })
+
 
         }else {
           //添加学校
@@ -667,20 +602,10 @@ export default {
               this.getOrgTree()
 
 
-            } else {
-              return this.$message({
-                message: data.msg,
-                type:'error'
-              })
-            }
+            } 
             
           })
-          .catch(()=>{
-            return this.$message({
-              message:'接口报错',
-              type:'error'
-            })
-          })
+
 
 
         }
@@ -719,12 +644,7 @@ export default {
               this.getOrgTree()
 
 
-            } else {
-              return this.$message({
-                message: data.msg,
-                type:'error'
-              })
-            }
+            } 
             
           })
 
@@ -742,12 +662,7 @@ export default {
               this.getOrgTree()
 
 
-            } else {
-              return this.$message({
-                message: data.msg,
-                type:'error'
-              })
-            }
+            } 
             
           })
         }
@@ -861,20 +776,10 @@ export default {
                   this.getTableData()
 
 
-                } else {
-                  return this.$message({
-                    message: data.msg,
-                    type:'error'
-                  })
-                }
+                } 
                 
               })
-              .catch(()=>{
-                return this.$message({
-                  message:'接口报错',
-                  type:'error'
-                })
-              })
+      
 
 
           }else if(this.isReset) {
@@ -894,21 +799,9 @@ export default {
                   this.getTableData()
 
 
-                } else {
-                  return this.$message({
-                    message: data.msg,
-                    type:'error'
-                  })
-                }
-                
+                } 
               })
-              .catch(()=>{
-                return this.$message({
-                  message:'接口报错',
-                  type:'error'
-                })
-              })
-
+   
           }else {
             //新增用户
 
@@ -936,20 +829,10 @@ export default {
                   this.getTableData()
 
 
-                } else {
-                  return this.$message({
-                    message: data.msg,
-                    type:'error'
-                  })
                 }
                 
               })
-              .catch(()=>{
-                return this.$message({
-                  message:'接口报错',
-                  type:'error'
-                })
-              })
+  
 
             }else {
               this.$http.post(`/api/internal/organizations/${this.currentNode.id}/users`,{
@@ -976,20 +859,10 @@ export default {
                   this.getTableData()
 
 
-                } else {
-                  return this.$message({
-                    message: data.msg,
-                    type:'error'
-                  })
-                }
+                } 
                 
               })
-              .catch(()=>{
-                return this.$message({
-                  message:'接口报错',
-                  type:'error'
-                })
-              })
+
             }
           }
 
@@ -1023,20 +896,10 @@ export default {
                 this.getTableData()
 
 
-              } else {
-                return this.$message({
-                  message: data.msg,
-                  type:'error'
-                })
-              }
+              } 
               
             })
-          .catch(()=>{
-            return this.$message({
-              message:'接口报错',
-              type:'error'
-            })
-          })
+
 
         }else {
      
@@ -1061,20 +924,10 @@ export default {
                 this.getTableData()
 
 
-              } else {
-                return this.$message({
-                  message: data.msg,
-                  type:'error'
-                })
-              }
+              } 
               
             })
-          .catch(()=>{
-            return this.$message({
-              message:'接口报错',
-              type:'error'
-            })
-          })
+
         }
       })
     },
@@ -1092,20 +945,10 @@ export default {
             this.getTableData()
 
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
+          } 
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
     },
 
     UnLockUser(row) {
@@ -1121,20 +964,10 @@ export default {
             this.getTableData()
 
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
+          } 
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
     }
   }
 

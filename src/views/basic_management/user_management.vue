@@ -50,7 +50,7 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="状态">
-                <el-select v-model="search.enabled" placeholder="状态" class="search-class" @change="getTableData">
+                <el-select v-model="search.enabled" placeholder="状态" class="search-class" @change="getTableData" clearable>
                   <el-option label="冻结" value="0"></el-option>
                   <el-option label="正常" value="1"></el-option>
                   <el-option label="新用户" value="2"></el-option>
@@ -147,8 +147,8 @@
                   <div style="cursor: pointer;width: 100%;display: flex;justify-content: space-around;">
                     <i class="iconfont iconbianji icon-active" @click="editUserDialog(scope.row)"></i>
                     <i class="iconfont iconshanchu-copy icon-active" @click="deleteUser(scope.row)"></i>
-                    <i class="iconfont iconsuo icon-active"  v-if="search.enabled =='0'" @click="UnLockUser(scope.row)"></i>
-                    <i class="iconfont iconkaisuo icon-active" v-else @click="lockUser(scope.row)"></i>
+                    <i class="iconfont iconsuo icon-active"  v-if="!scope.row.enabled" @click="UnLockUser(scope.row)"></i>
+                    <i class="iconfont iconkaisuo icon-active" v-if="scope.row.enabled" @click="lockUser(scope.row)"></i>
                     <i class="iconfont icon_zhongzhi icon-active" @click="resetpassDialog(scope.row)"></i>
                   </div>
 
@@ -336,7 +336,7 @@ export default {
         classId:'',
         name:'',
         subjectId:'',
-        enabled:'1',
+        enabled:'',
         page:1,
         size:10
       },
@@ -419,12 +419,7 @@ export default {
 
         
       })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
 
     },
     toggleSelection() {
@@ -492,12 +487,7 @@ export default {
 
         
       })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
     },
 
     get_class_list(gradeId) {
@@ -508,7 +498,7 @@ export default {
 
 
       if(this.isAdd || this.isEdit) {
-        this.userForm.classId = ''
+        //this.userForm.classId = ''
 
       }else {
         this.search.classId = ''
@@ -527,7 +517,16 @@ export default {
 
 
          if(this.isAdd || this.isEdit) {
-            this.classList = data.data.content
+
+          this.classList = data.data.content
+
+          if(this.isEdit) {
+            this.userForm.classId = this.classList.length? this.userForm.classId:''
+            console.log(this.classList,this.userForm.classId)
+            this.dialogVisible = true
+          }
+            
+            
 
           }else {
             this.searchClassList = data.data.content
@@ -536,12 +535,7 @@ export default {
 
         
       })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
 
     },
 
@@ -555,12 +549,7 @@ export default {
 
         
       })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
     },
 
     getTableData() {
@@ -582,15 +571,10 @@ export default {
 
             this.tableData = data.data.content
             this.total = data.data.totalElements
-
+            this.search.page = 1
           
         })
-        .catch(()=>{
-          return this.$message({
-            message:'接口报错',
-            type:'error'
-          })
-        })
+
       }else if(this.search.roleTpye=='teacher') {
 
 
@@ -607,16 +591,18 @@ export default {
 
             this.tableData = data.data.content
             this.total = data.data.totalElements
+            this.search.page = 1
 
  
           
         })
-        .catch(()=>{
-          return this.$message({
-            message:'接口报错',
-            type:'error'
-          })
-        })
+        // .catch(()=>{
+        //   return this.$message({
+        //     message:'接口报错',
+        //     type:'error'
+        //   })
+        // })
+
       }
     },
 
@@ -646,9 +632,9 @@ export default {
       this.userForm.subjectId = row.subject?row.subject.id:''
       this.userForm.phoneNumber = row.person.phoneNumber
       this.userForm.email = row.person.email
+      this.get_class_list(this.userForm.gradeId)
 
-
-      this.dialogVisible = true
+      
     },
 
 
@@ -690,12 +676,7 @@ export default {
 
                 
               })
-              .catch(()=>{
-                return this.$message({
-                  message:'接口报错',
-                  type:'error'
-                })
-              })
+      
 
 
             }else if(this.userForm.userRole=='teacher') {
@@ -723,12 +704,7 @@ export default {
 
                 
               })
-              .catch(()=>{
-                return this.$message({
-                  message:'接口报错',
-                  type:'error'
-                })
-              })
+
             }
           }else {
             if(this.userForm.userRole=='student') {
@@ -762,12 +738,6 @@ export default {
 
                 
               })
-              .catch(()=>{
-                return this.$message({
-                  message:'接口报错',
-                  type:'error'
-                })
-              })
 
 
             }else if(this.userForm.userRole=='teacher') {
@@ -797,12 +767,7 @@ export default {
 
                 
               })
-              .catch(()=>{
-                return this.$message({
-                  message:'接口报错',
-                  type:'error'
-                })
-              })
+       
             }          
           }
 
@@ -835,12 +800,7 @@ export default {
 
                 
               })
-            .catch(()=>{
-              return this.$message({
-                message:'接口报错',
-                type:'error'
-              })
-            })
+
           }else if(this.search.roleTpye=='teacher') {
             this.$http.delete(`/api/internal/schools/${this.currentNode.id}/teachers/${row.id}`)
             .then((data)=>{
@@ -854,12 +814,7 @@ export default {
 
                 
               })
-            .catch(()=>{
-              return this.$message({
-                message:'接口报错',
-                type:'error'
-              })
-            })
+   
 
           }
 
@@ -891,12 +846,7 @@ export default {
 
                 
               })
-            .catch(()=>{
-              return this.$message({
-                message:'接口报错',
-                type:'error'
-              })
-            })
+
           }else if(this.search.roleTpye=='teacher') {
             this.$http.delete(`/api/internal/schools/${this.currentNode.id}/teachers`,{
               data: ids
@@ -913,12 +863,7 @@ export default {
 
                 
               })
-            .catch(()=>{
-              return this.$message({
-                message:'接口报错',
-                type:'error'
-              })
-            })
+  
 
           }
 
@@ -942,12 +887,7 @@ export default {
 
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
     },
 
     UnLockUser(row) {
@@ -965,12 +905,7 @@ export default {
 
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
     },
 
     resetpassDialog(row) {
@@ -1011,12 +946,7 @@ export default {
 
           
         })
-        .catch(()=>{
-          return this.$message({
-            message:'接口报错',
-            type:'error'
-          })
-        })
+
 
 
       }else if(this.resetForm.userRole=='teacher') {
@@ -1040,12 +970,7 @@ export default {
 
           
         })
-        .catch(()=>{
-          return this.$message({
-            message:'接口报错',
-            type:'error'
-          })
-        })
+
       }  
 
 

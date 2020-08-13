@@ -86,10 +86,14 @@ axiosService.interceptors.response.use(
         return response.data;
       }
     }
+        // console.log(response)
+
   },
   error => {
+
     error.config.httpConfig.loading //&& iView.LoadingBar.error();
     !error.config.httpConfig.clsoeMessage && Message.error(error.code === 'ECONNABORTED' ? '请求超时' : '网络异常' );
+
     return Promise.reject(error)
   }
 )

@@ -199,20 +199,10 @@ export default {
         	this.getGrades()
         	
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
+          } 
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
   	},
 
 
@@ -228,20 +218,10 @@ export default {
         	this.getSubject()
 
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
+          } 
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
   	},
 
   	getSubject() {
@@ -257,20 +237,10 @@ export default {
         	this.getknowPointTree()
 
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
+          } 
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
   	},
 
   	getknowPointTree() {
@@ -283,20 +253,10 @@ export default {
         	this.treeData = data.data
 
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
+          } 
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
   	},
 
   	showDialog(data,flag) {
@@ -334,20 +294,10 @@ export default {
 	        	// this.treeData = data.data
 
 
-	          } else {
-	            return this.$message({
-	              message: data.msg,
-	              type:'error'
-	            })
-	          }
+	          } 
 	          
 	        })
-	      .catch(()=>{
-	        return this.$message({
-	          message:'接口报错',
-	          type:'error'
-	        })
-	      })
+	 
   		}else {
 	  		this.$http.put(`/api/internal/knowledge/${this.selectId}`,{
 	      	name: this.knowPoint.name,
@@ -365,20 +315,10 @@ export default {
 	        	// this.treeData = data.data
 
 
-	          } else {
-	            return this.$message({
-	              message: data.msg,
-	              type:'error'
-	            })
-	          }
+	          } 
 	          
 	        })
-	      .catch(()=>{
-	        return this.$message({
-	          message:'接口报错',
-	          type:'error'
-	        })
-	      })
+
   		}
 
   	},
@@ -402,20 +342,9 @@ export default {
 	        	// this.treeData = data.data
 
 
-	          } else {
-	            return this.$message({
-	              message: data.msg,
-	              type:'error'
-	            })
-	          }
-	          
+	          } 
 	        })
-	      .catch(()=>{
-	        return this.$message({
-	          message:'接口报错',
-	          type:'error'
-	        })
-	      })
+
 	    })
   	}
 

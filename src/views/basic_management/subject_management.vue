@@ -156,20 +156,10 @@ export default {
           this.data = data.data
 
 
-        } else {
-          return this.$message({
-            message: data.msg,
-            type:'error'
-          })
-        }
+        } 
         
       })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
 
     },
 
@@ -195,20 +185,10 @@ export default {
           this.tableData = data.data.content
 
 
-        } else {
-          return this.$message({
-            message: data.msg,
-            type:'error'
-          })
-        }
+        } 
         
       })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
     },
 
     add_subject() {

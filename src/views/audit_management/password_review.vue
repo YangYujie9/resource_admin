@@ -197,20 +197,10 @@ export default {
           this.data = data.data
 
 
-        } else {
-          return this.$message({
-            message: data.msg,
-            type:'error'
-          })
-        }
+        } 
         
       })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
 
     },
     toggleSelection() {
@@ -260,27 +250,14 @@ export default {
       this.$http.get(`/api/internal/schools/${this.currentNode.id}/grades`)
       .then((data)=>{
 
-        if(data.status == '200') {
 
           this.gradeList = data.data.content
           // this.gradeId = this.gradeList[0].gradeId.id
           // this.get_class_list()
 
-
-        } else {
-          return this.$message({
-            message: data.msg,
-            type:'error'
-          })
-        }
         
       })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
     },
 
     get_class_list() {
@@ -295,27 +272,14 @@ export default {
       this.$http.get(`/api/internal/grades/${this.search.gradeId}/classes`)
       .then((data)=>{
 
-        if(data.status == '200') {
 
           this.classList = data.data.content
       		this.getTableData()
           
 
-
-        } else {
-          return this.$message({
-            message: data.msg,
-            type:'error'
-          })
-        }
         
       })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
 
     },
 
@@ -337,26 +301,15 @@ export default {
         this.$http.get(`/api/internal/schools/${this.currentNode.id}/verifyUsers`,params)
         .then((data)=>{
 
-          if(data.status == '200') {
 
             this.tableData = data.data.content
             this.total = data.data.totalElements
+            this.search.page = 1
 
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
           
         })
-        .catch(()=>{
-          return this.$message({
-            message:'接口报错',
-            type:'error'
-          })
-        })
+
  
     },
 
@@ -373,7 +326,6 @@ export default {
 
           this.$http.put(`/api/internal/schools/${row.userId.id}/verify`)
           .then((data)=>{
-            if(data.status == '200') {
 
                 this.$message({
                   message:'密码重置成功',
@@ -382,20 +334,10 @@ export default {
                 this.getTableData()
 
 
-              } else {
-                return this.$message({
-                  message: data.msg,
-                  type:'error'
-                })
-              }
+
               
             })
-          .catch(()=>{
-            return this.$message({
-              message:'接口报错',
-              type:'error'
-            })
-          })
+
  
 
 
@@ -415,7 +357,6 @@ export default {
               data: ids
             })
             .then((data)=>{
-              if(data.status == '200') {
 
                   
                   this.$message({
@@ -425,26 +366,14 @@ export default {
                   this.getTableData()
 
 
-                } else {
-                  return this.$message({
-                    message: data.msg,
-                    type:'error'
-                  })
-                }
                 
               })
-            .catch(()=>{
-              return this.$message({
-                message:'接口报错',
-                type:'error'
-              })
-            })
+
           }else if(this.search.roleTpye=='teacher') {
             this.$http.delete(`/api/internal/schools/${this.currentNode.id}/teachers`,{
               data: ids
             })
             .then((data)=>{
-              if(data.status == '200') {
 
                   
                   this.$message({
@@ -454,20 +383,9 @@ export default {
                   this.getTableData()
 
 
-                } else {
-                  return this.$message({
-                    message: data.msg,
-                    type:'error'
-                  })
-                }
                 
               })
-            .catch(()=>{
-              return this.$message({
-                message:'接口报错',
-                type:'error'
-              })
-            })
+
 
           }
 

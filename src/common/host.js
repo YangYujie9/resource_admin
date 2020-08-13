@@ -1,9 +1,7 @@
-// mock http://dev.jfedu.com:9001
-// 开发环境 http://172.16.6.136:8888*
-// 前端用户环境 http://172.16.6.33:8888
-// 用户前端 http://172.16.6.33:8888
-// 康例启 http://172.16.31.87:9999
-// 李虹菲 http://172.16.8.216:9999
+//彭。http://192.168.2.63:8888
+//高。http://192.168.2.21:8888
+
+
 import resourceConfig from './resourceConfig';
 
 let hostUrl = "";

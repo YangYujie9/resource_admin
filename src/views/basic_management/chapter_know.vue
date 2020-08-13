@@ -224,20 +224,10 @@ export default {
         	this.getSubject()
 
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
+          } 
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
   	},
 
   	getSubject() {
@@ -253,20 +243,10 @@ export default {
         	this.getchapterTree()
 
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
           }
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
   	},
 
   	getchapterTree() {
@@ -279,20 +259,10 @@ export default {
         	this.treeData = data.data
 
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
+          } 
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
   	},
 
   	showDialog(data,flag) {
@@ -330,20 +300,10 @@ export default {
 	        	// this.treeData = data.data
 
 
-	          } else {
-	            return this.$message({
-	              message: data.msg,
-	              type:'error'
-	            })
-	          }
+	          } 
 	          
 	        })
-	      .catch(()=>{
-	        return this.$message({
-	          message:'接口报错',
-	          type:'error'
-	        })
-	      })
+
   		}else {
 	  		this.$http.put(`/api/internal/chapter/${this.selectId}`,{
 	      	name: this.chapter.name,
@@ -361,20 +321,10 @@ export default {
 	        	// this.treeData = data.data
 
 
-	          } else {
-	            return this.$message({
-	              message: data.msg,
-	              type:'error'
-	            })
-	          }
+	          } 
 	          
 	        })
-	      .catch(()=>{
-	        return this.$message({
-	          message:'接口报错',
-	          type:'error'
-	        })
-	      })
+
   		}
 
   	},
@@ -398,20 +348,10 @@ export default {
 	        	// this.treeData = data.data
 
 
-	          } else {
-	            return this.$message({
-	              message: data.msg,
-	              type:'error'
-	            })
-	          }
+	          } 
 	          
 	        })
-	      .catch(()=>{
-	        return this.$message({
-	          message:'接口报错',
-	          type:'error'
-	        })
-	      })
+
 	    })
   	}
 

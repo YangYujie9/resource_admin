@@ -298,20 +298,10 @@ export default {
           this.orgData = data.data
 
 
-        } else {
-          return this.$message({
-            message: data.msg,
-            type:'error'
-          })
         }
         
       })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
 
     },
 
@@ -359,20 +349,10 @@ export default {
         	this.getGrades()
         	
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
           }
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
   	},
 
 
@@ -390,20 +370,9 @@ export default {
         	this.getSubject()
 
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
           }
-          
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
   	},
 
   	getSubject() {
@@ -418,20 +387,10 @@ export default {
         	this.getPonitTree()
 
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
+          } 
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
   	},
 
   	getPonitTree() {
@@ -444,20 +403,10 @@ export default {
 	        	this.pointData = data.data
 
 
-	          } else {
-	            return this.$message({
-	              message: data.msg,
-	              type:'error'
-	            })
-	          }
+	          } 
 	          
 	        })
-	      .catch(()=>{
-	        return this.$message({
-	          message:'接口报错',
-	          type:'error'
-	        })
-	      })  		
+  		
 	    }else {
 	      this.$http.get(`/api/internal/knowledge/knowledgeTree?subjectName=${this.filter.subject}&grade=${this.filter.grade.key}`)
 	      .then((data)=>{
@@ -465,20 +414,10 @@ export default {
 	        	this.pointData = data.data
 
 
-	          } else {
-	            return this.$message({
-	              message: data.msg,
-	              type:'error'
-	            })
-	          }
+	          } 
 	          
 	        })
-	      .catch(()=>{
-	        return this.$message({
-	          message:'接口报错',
-	          type:'error'
-	        })
-	      })
+
 	    }
 
 
@@ -569,22 +508,13 @@ export default {
 
           this.tableData = data.data.content
           this.total = data.data.totalElements
+          this.search.page = 1
 
 
-        } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-        }
+        } 
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
     },
     //删除
     deleteResource(row) {
@@ -604,20 +534,10 @@ export default {
 		          })
 
 
-		          } else {
-		            return this.$message({
-		              message: data.msg,
-		              type:'error'
-		            })
-		          }
+		          } 
 		          
 		        })
-		      .catch(()=>{
-		        return this.$message({
-		          message:'接口报错',
-		          type:'error'
-		        })
-		      })    	
+   	
 		    }else {
 
 
@@ -640,20 +560,10 @@ export default {
 		          })
 
 
-		          } else {
-		            return this.$message({
-		              message: data.msg,
-		              type:'error'
-		            })
-		          }
+		          } 
 		          
 		        })
-		      .catch(()=>{
-		        return this.$message({
-		          message:'接口报错',
-		          type:'error'
-		        })
-		      }) 
+
 
 		    }
 		  })
@@ -672,20 +582,10 @@ export default {
 		          })
 
 
-		          } else {
-		            return this.$message({
-		              message: data.msg,
-		              type:'error'
-		            })
-		          }
+		          } 
 		          
 		        })
-		      .catch(()=>{
-		        return this.$message({
-		          message:'接口报错',
-		          type:'error'
-		        })
-		      })    	
+		         	
 		    }else {
 
 		    	
@@ -706,20 +606,10 @@ export default {
 		          })
 
 
-		          } else {
-		            return this.$message({
-		              message: data.msg,
-		              type:'error'
-		            })
-		          }
+		          } 
 		          
 		        })
-		      .catch(()=>{
-		        return this.$message({
-		          message:'接口报错',
-		          type:'error'
-		        })
-		      }) 
+
 
 		  }
     },
@@ -736,20 +626,10 @@ export default {
 		          })
 
 
-		          } else {
-		            return this.$message({
-		              message: data.msg,
-		              type:'error'
-		            })
 		          }
 		          
 		        })
-		      .catch(()=>{
-		        return this.$message({
-		          message:'接口报错',
-		          type:'error'
-		        })
-		      })    	
+   	
 		    }else {
 
 		    	
@@ -770,20 +650,10 @@ export default {
 		          })
 
 
-		          } else {
-		            return this.$message({
-		              message: data.msg,
-		              type:'error'
-		            })
-		          }
+		          } 
 		          
 		        })
-		      .catch(()=>{
-		        return this.$message({
-		          message:'接口报错',
-		          type:'error'
-		        })
-		      }) 
+
 
 		  }
     },
@@ -800,20 +670,10 @@ export default {
 		          })
 
 
-		          } else {
-		            return this.$message({
-		              message: data.msg,
-		              type:'error'
-		            })
-		          }
+		          } 
 		          
 		        })
-		      .catch(()=>{
-		        return this.$message({
-		          message:'接口报错',
-		          type:'error'
-		        })
-		      })    	
+	 	
 		    }else {
 
 		    	
@@ -834,20 +694,10 @@ export default {
 		          })
 
 
-		          } else {
-		            return this.$message({
-		              message: data.msg,
-		              type:'error'
-		            })
-		          }
+		          } 
 		          
 		        })
-		      .catch(()=>{
-		        return this.$message({
-		          message:'接口报错',
-		          type:'error'
-		        })
-		      }) 
+		 
 
 		  }
     },
@@ -864,20 +714,10 @@ export default {
 		          })
 
 
-		          } else {
-		            return this.$message({
-		              message: data.msg,
-		              type:'error'
-		            })
-		          }
+		          } 
 		          
 		        })
-		      .catch(()=>{
-		        return this.$message({
-		          message:'接口报错',
-		          type:'error'
-		        })
-		      })    	
+   	
 		    }else {
 
 		    	
@@ -898,20 +738,10 @@ export default {
 		          })
 
 
-		          } else {
-		            return this.$message({
-		              message: data.msg,
-		              type:'error'
-		            })
-		          }
+		          } 
 		          
 		        })
-		      .catch(()=>{
-		        return this.$message({
-		          message:'接口报错',
-		          type:'error'
-		        })
-		      }) 
+
 
 		  }
     },
@@ -928,20 +758,10 @@ export default {
 		          })
 
 
-		          } else {
-		            return this.$message({
-		              message: data.msg,
-		              type:'error'
-		            })
-		          }
+		          } 
 		          
 		        })
-		      .catch(()=>{
-		        return this.$message({
-		          message:'接口报错',
-		          type:'error'
-		        })
-		      })    	
+  	
 		    }else {
 
 		    	
@@ -962,20 +782,10 @@ export default {
 		          })
 
 
-		          } else {
-		            return this.$message({
-		              message: data.msg,
-		              type:'error'
-		            })
-		          }
+		          } 
 		          
 		        })
-		      .catch(()=>{
-		        return this.$message({
-		          message:'接口报错',
-		          type:'error'
-		        })
-		      }) 
+
 
 		  }
     },

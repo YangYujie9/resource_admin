@@ -171,20 +171,10 @@ export default {
         	this.automaticCheck = data.data.configItems[0].value
 
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
+          } 
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
   	},
 
   	setVerifyConfiguration() {
@@ -203,20 +193,10 @@ export default {
 	            message:'自动审核修改成功',
 	            type:'success'
 	          })
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
+          } 
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
   	},
 
 
@@ -233,20 +213,10 @@ export default {
         	this.difficultyList = data.data.configItems
 
 
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
+          } 
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
   	},
   	editDifficulty(row) {
 
@@ -289,20 +259,10 @@ export default {
 	          })
 
 	          this.getDifficultyConfig()
-          } else {
-            return this.$message({
-              message: data.msg,
-              type:'error'
-            })
-          }
+          } 
           
         })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })	      
+      
 
 
   	},
