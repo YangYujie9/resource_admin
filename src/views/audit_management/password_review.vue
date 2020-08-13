@@ -18,7 +18,7 @@
           <div class="search-wrap" ref="search_wrap">
             <el-form :inline="true" :model="search" class="demo-form-inline" size="mini">
               <el-form-item label="角色">
-                <el-select v-model="search.roleTpye"class="search-class" @change="getTableData">
+                <el-select v-model="search.roleTpye"class="search-class" @change="resetPage">
                   <el-option label="学生" value="Student"></el-option>
                   <el-option label="老师" value="Teacher"></el-option>
                 </el-select>
@@ -30,7 +30,7 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="班级" v-show="search.roleTpye=='Student'">
-                <el-select v-model="search.classId"class="search-class" @change="getTableData" clearable>
+                <el-select v-model="search.classId"class="search-class" @change="resetPage" clearable>
                   <el-option v-for="list in classList" :label="list.className" :value="list.classId.id" :key="list.classId.id"></el-option>
                 </el-select>
               </el-form-item>
@@ -43,7 +43,7 @@
                 <el-input v-model="search.name" placeholder="姓名" class="search-class" clearable></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="getTableData">查询</el-button>
+                <el-button type="primary" @click="resetPage">查询</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -221,7 +221,7 @@ export default {
     handleSizeChange(val) {
       this.search.size = val
       // console.log(`每页 ${val} 条`);
-      this.getTableData()
+      this.resetPage()
     },
     // 分页
     handleCurrentChange(val) {
@@ -243,7 +243,7 @@ export default {
       this.currentNode = data
       this.schoolsName = data.name
       this.get_grade_list()
-      this.getTableData()  
+      this.resetPage()  
     },
 
     get_grade_list() {
@@ -265,6 +265,7 @@ export default {
       this.search.classId = ''
 
       if(!this.search.gradeId) {
+        this.getTableData()
       	return false
       }
       
@@ -283,7 +284,10 @@ export default {
 
     },
 
-
+    resetPage() {
+      this.search.page = 1
+      this.getTableData()
+    },
 
     getTableData() {
 
@@ -304,7 +308,6 @@ export default {
 
             this.tableData = data.data.content
             this.total = data.data.totalElements
-            this.search.page = 1
 
 
           

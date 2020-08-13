@@ -28,7 +28,7 @@
           <div class="search-wrap" ref="search_wrap">
             <el-form :inline="true" :model="search" class="demo-form-inline" size="mini">
               <el-form-item label="角色">
-                <el-select v-model="search.roleTpye"class="search-class" @change="getTableData">
+                <el-select v-model="search.roleTpye"class="search-class" @change="resetPage">
                   <el-option label="学生" value="student"></el-option>
                   <el-option label="老师" value="teacher"></el-option>
                 </el-select>
@@ -40,17 +40,17 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="班级" v-show="search.roleTpye=='student'">
-                <el-select v-model="search.classId"class="search-class" @change="getTableData" clearable>
+                <el-select v-model="search.classId"class="search-class" @change="resetPage" clearable>
                   <el-option v-for="list in searchClassList" :label="list.className" :value="list.classId.id" :key="list.classId.id"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="学科"  v-show="search.roleTpye=='teacher'">
-                <el-select v-model="search.subjectId"class="search-class" @change="getTableData" clearable>
+                <el-select v-model="search.subjectId"class="search-class" @change="resetPage" clearable>
                   <el-option v-for="list in subjectList" :label="list.subjectName" :value="list.subjectId.id" :key="list.subjectId.id"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="状态">
-                <el-select v-model="search.enabled" placeholder="状态" class="search-class" @change="getTableData" clearable>
+                <el-select v-model="search.enabled" placeholder="状态" class="search-class" @change="resetPage" clearable>
                   <el-option label="冻结" value="0"></el-option>
                   <el-option label="正常" value="1"></el-option>
                   <el-option label="新用户" value="2"></el-option>
@@ -60,7 +60,7 @@
                 <el-input v-model="search.name" placeholder="请输入姓名" class="search-class" clearable></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="getTableData">查询</el-button>
+                <el-button type="primary" @click="resetPage">查询</el-button>
               </el-form-item>
 <!--               <el-form-item>
                 <el-button type="primary" @click="getTableData"></el-button>
@@ -440,7 +440,7 @@ export default {
     handleSizeChange(val) {
       this.search.size = val
       // console.log(`每页 ${val} 条`);
-      this.getTableData()
+      this.resetPage()
     },
     // 分页
     handleCurrentChange(val) {
@@ -464,7 +464,7 @@ export default {
       this.schoolsName = data.name
       this.get_grade_list()
       this.get_subject_list()
-      this.getTableData() 
+      this.resetPage() 
       // this.search.roleTpye = 'student'
       this.search.gradeId = ''
       this.search.classId = ''
@@ -490,6 +490,12 @@ export default {
 
     },
 
+
+    resetPage() {
+      this.search.page = 1
+      this.getTableData()
+    },
+
     get_class_list(gradeId) {
 
 
@@ -506,7 +512,8 @@ export default {
 
       if(!gradeId) {
 
-        return false
+        this.resetPage()
+        return
       } 
       
       
@@ -522,7 +529,7 @@ export default {
 
           if(this.isEdit) {
             this.userForm.classId = this.classList.length? this.userForm.classId:''
-            console.log(this.classList,this.userForm.classId)
+            // console.log(this.classList,this.userForm.classId)
             this.dialogVisible = true
           }
             
@@ -530,6 +537,7 @@ export default {
 
           }else {
             this.searchClassList = data.data.content
+            this.search.page = 1
             this.getTableData()
           }
 
@@ -571,7 +579,7 @@ export default {
 
             this.tableData = data.data.content
             this.total = data.data.totalElements
-            this.search.page = 1
+            
           
         })
 
@@ -591,7 +599,7 @@ export default {
 
             this.tableData = data.data.content
             this.total = data.data.totalElements
-            this.search.page = 1
+            // this.search.page = 1
 
  
           

@@ -68,24 +68,24 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="题型">
-                <el-select v-model="search.type"class="search-class" @change="getTableData" clearable placeholder="题型">
+                <el-select v-model="search.type"class="search-class" @change="resetPage" clearable placeholder="题型">
                   <el-option v-for="list in questionTypeList" :label="list" :value="list" :key="list"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="状态">
-                <el-select v-model="search.applyState" placeholder="状态" class="search-class" @change="getTableData" clearable>
+                <el-select v-model="search.applyState" placeholder="状态" class="search-class" @change="resetPage" clearable>
                   <el-option v-for="list in statusLiist" :label="list" :value="list" :key="list"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="难度">
-                <el-select v-model="search.difficultyType" placeholder="难度" class="search-class" @change="getTableData" clearable>
+                <el-select v-model="search.difficultyType" placeholder="难度" class="search-class" @change="resetPage" clearable>
                   <el-option v-for="list in difficultyLiist" :label="list" :value="list" :key="list"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="上传时间">
 						    <el-date-picker
 						      v-model="search.time"
-						      @change="getTableData"
+						      @change="resetPage"
 						      style="width: 220px;"
 						      value-format="yyyy-MM-dd"
 						      type="daterange"
@@ -403,7 +403,7 @@ export default {
 
     changeTabs(tab) {
     	this.activeType = tab
-    	this.getTableData()
+    	this.resetPage()
     	this.getQuestionType()
     	this.$nextTick(()=>{
 	      this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight -40
@@ -428,7 +428,7 @@ export default {
     	this.currentNode = data
     	this.schoolsName = data.name
     	this.getSubjectByOrg()
-    	this.getTableData()
+    	this.resetPage()
     },
 
     defaultPointNode(node) {
@@ -442,7 +442,7 @@ export default {
 
     pointNodeClick(data) {
     	this.currentPoint = data
-    	this.getTableData()
+    	this.resetPage()
     },
 
   	getlearningSection() {
@@ -521,6 +521,8 @@ export default {
   	},
 
   	getQuestionType() {
+
+      this.search.type = ''
   		let subjectName = ''
       this.questionTypeList = []
   		if(this.activeType == 'organizations') {
@@ -530,6 +532,7 @@ export default {
   		}
 
   		if(!subjectName) {
+        this.resetPage()
   			return false
   		}
 
@@ -608,7 +611,7 @@ export default {
     handleSizeChange(val) {
     	this.search.size = val
       // console.log(`每页 ${val} 条`);
-      this.getTableData()
+      this.resetPage()
     },
     // 分页
     handleCurrentChange(val) {
@@ -631,7 +634,10 @@ export default {
     	}
     },
 
-
+    resetPage() {
+      this.search.page = 1
+      this.getTableData()
+    },
     getTableData() {
 
     	if(!this.currentNode && !this.currentPoint && !this.filter.subject) {
@@ -686,8 +692,7 @@ export default {
           this.tableData = data.data.content
           this.total = data.data.totalElements
           this.checkAll = false
-          this.search.page = 1
-          // this.search.size = 10
+
 
 
         } 

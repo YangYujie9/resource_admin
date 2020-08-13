@@ -18,12 +18,12 @@
           <div class="search-wrap" ref="search_wrap">
             <el-form :inline="true" :model="search" class="demo-form-inline" size="mini">
               <el-form-item label="类型">
-                <el-select v-model="search.type"class="search-class" @change="getTableData">
+                <el-select v-model="search.type"class="search-class" @change="resetPage">
                   <el-option v-for="list in typeList" :label="list.label" :value="list.key" :key="list.key"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="状态">
-                <el-select v-model="search.status" placeholder="状态" class="search-class" @change="getTableData">
+                <el-select v-model="search.status" placeholder="状态" class="search-class" @change="resetPage">
                   <el-option label="冻结" value="0"></el-option>
                   <el-option label="正常" value="1"></el-option>
                 </el-select>
@@ -35,7 +35,7 @@
                 <el-input v-model="search.name" placeholder="请输入姓名" class="search-class"></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="getTableData">查询</el-button>
+                <el-button type="primary" @click="resetPage">查询</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -368,14 +368,17 @@ export default {
     handleNodeClick(data) {
 
       this.currentNode = data
-      this.getTableData()
+      this.resetPage()
     },
     getuserType(type) {
       let name = this.typeList.filter(list=> list.value == type)
       return name[0].label
     },
 
-
+    resetPage() {
+      this.search.page = 1
+      this.getTableData()
+    },
     getTableData() {
 
       this.tableData = []
@@ -387,7 +390,6 @@ export default {
 
             this.tableData = data.data.content
             this.total = data.data.totalElements
-            this.search.page = 1
 
 
           } 
@@ -401,7 +403,6 @@ export default {
 
             this.tableData = data.data.content
             this.total = data.data.totalElements
-            this.search.page = 1
 
 
           } 
@@ -692,7 +693,7 @@ export default {
     handleSizeChange(val) {
       this.search.size = val
       // console.log(`每页 ${val} 条`);
-      this.getTableData()
+      this.resetPage()
     },
     // 分页
     handleCurrentChange(val) {
