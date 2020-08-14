@@ -45,7 +45,7 @@
 				<p class="right-header">学科列表 <i class="iconfont iconxiangzuo1 showicon" @click="subjectShow=false"></i></p>
 				<div class="list-wrap">
 					<el-radio-group v-model="subjectId" @change="getchapterTree">
-			      <el-radio-button v-for="list in subjectsList" :label="list" :key="list"></el-radio-button>
+			      <el-radio-button v-for="list in subjectsList" :label="list.key" :key="list.key">{{list.value}}</el-radio-button>
 
 			    </el-radio-group>
 		  	</div>
@@ -238,7 +238,7 @@ export default {
 
 
         	this.subjectsList = data.data
-        	this.subjectId = this.subjectsList[0]
+        	this.subjectId = this.subjectsList[0].key
 
         	this.getchapterTree()
 
@@ -251,8 +251,8 @@ export default {
 
   	getchapterTree() {
 
-
-      this.$http.get(`/api/internal/chapter/chapterTree?subjectName=${this.subjectId}&grade=${this.gradeId}`)
+      this.treeData = []
+      this.$http.get(`/api/internal/chapter/chapterTree?subjectCode=${this.subjectId}&grade=${this.gradeId}`)
       .then((data)=>{
         if(data.status == '200') {
 

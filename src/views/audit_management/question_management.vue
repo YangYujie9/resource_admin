@@ -17,7 +17,7 @@
 						<div v-show="activeType == 'knowledge'">
 							<top-popover>
 	              <div slot="reference" class="search-class">
-	                <p v-if="filter.grade">{{filter.grade.value}}</p><p>{{filter.subject}}</p>
+	                <p v-if="filter.grade">{{filter.grade.value}}</p><p v-if="filter.subject">{{filter.subject.value}}</p>
 	              </div>
 	              <div slot="popover">
 	                <div>
@@ -32,7 +32,7 @@
 
 	                  <p>科目：</p>
 	                  <el-radio-group v-model="filter.subject" size="mini" @change="changeSubject">
-	                    <el-radio-button :label="item" :key="item" v-for="item in subjectsList"></el-radio-button>
+	                    <el-radio-button :label="item" :key="item.key" v-for="item in subjectsList">{{item.value}}</el-radio-button>
 	                  </el-radio-group>
 	                </div>
 	              </div>
@@ -528,7 +528,7 @@ export default {
   		if(this.activeType == 'organizations') {
   			subjectName = this.search.subject.subjectName
   		}else {
-  			subjectName = this.filter.subject
+  			subjectName = this.filter.subject.key
   		}
 
   		if(!subjectName) {
@@ -536,7 +536,7 @@ export default {
   			return false
   		}
 
-      this.$http.get(`/api/open/common/subjectQuestionType?subjectName=${subjectName}`)
+      this.$http.get(`/api/open/common/subjectQuestionType?subjectCode=${subjectName}`)
       .then((data)=>{
         if(data.status == '200') {
 
@@ -556,7 +556,7 @@ export default {
 
   		this.pointData = []
   		if(this.knowType == "Chapter") {
-	      this.$http.get(`/api/internal/chapter/chapterTree?subjectName=${this.filter.subject}&grade=${this.filter.grade.key}`)
+	      this.$http.get(`/api/internal/chapter/chapterTree?subjectCode=${this.filter.subject.key}&grade=${this.filter.grade.key}`)
 	      .then((data)=>{
 	        if(data.status == '200') {
 	        	this.pointData = data.data
@@ -567,7 +567,7 @@ export default {
 	        })
  		
 	    }else {
-	      this.$http.get(`/api/internal/knowledge/knowledgeTree?subjectName=${this.filter.subject}&grade=${this.filter.grade.key}`)
+	      this.$http.get(`/api/internal/knowledge/knowledgeTree?subjectCode=${this.filter.subject.key}&grade=${this.filter.grade.key}`)
 	      .then((data)=>{
 	        if(data.status == '200') {
 	        	this.pointData = data.data
