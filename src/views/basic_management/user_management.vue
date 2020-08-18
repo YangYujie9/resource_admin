@@ -235,7 +235,7 @@
           </div>
           <span slot="footer" class="dialog-footer">
             <el-button @click="dialogVisible = false" size="mini">取 消</el-button>
-            <el-button type="primary" @click="add_user" :disabled="isFlag" size="mini">确 定</el-button>
+            <el-button type="primary" @click="add_userDebounce"  size="mini">确 定</el-button>
           </span>
         </el-dialog>
 
@@ -287,7 +287,7 @@
   import rightNav from '@/components/Nav/rightNav'
   import basicTree from '@/components/Tree/basicTree'
   import {uploadFilesBySteaps} from '@/utils/upload.js'
-
+  import { VueDebounce } from '@/utils/public.js'
 export default {
 
   data() {
@@ -322,7 +322,6 @@ export default {
       schoolsName:'',
       isEdit: false,
       isReset:false,
-      isFlag: false,
       editUserId:'',
       gradeList:[],
       subjectList:[],
@@ -616,6 +615,9 @@ export default {
 
     add_user_dialog() {
       this.editUserId = ''
+      this.userForm.gradeId = ''
+      this.userForm.subjectId = ''
+      this.userForm.userRole = this.search.roleTpye
       this.dislogTitle = '添加用户'
       this.isEdit = false
       this.isAdd = true
@@ -647,10 +649,9 @@ export default {
 
 
 
-
+    add_userDebounce: VueDebounce('add_user',200),
     add_user() {
 
-      this.isFlag = true
 
       this.$refs['usersForm'].validate((valid) => {
         if (valid) {
@@ -676,7 +677,7 @@ export default {
                   this.getTableData()
                   this.isEdit = false
                   this.dialogVisible = false
-                  this.isFlag = false
+                 
                   this.$message({
                     message: '学生修改成功',
                     type:'success'
@@ -703,7 +704,6 @@ export default {
 
                   this.dialogVisible = false
                   this.isEdit = false
-                  this.isFlag = false
                   this.$message({
                     message: '老师修改成功',
                     type:'success'
@@ -736,7 +736,6 @@ export default {
                   this.isAdd = false
                   
                   this.dialogVisible = false
-                  this.isFlag = false
                   this.$message({
                     message: '学生新增成功',
                     type:'success'
@@ -765,7 +764,6 @@ export default {
                 this.getTableData()
                 this.isAdd = false
                   this.dialogVisible = false
-                  this.isFlag = false
 
                   this.$message({
                     message: '老师新增成功',
