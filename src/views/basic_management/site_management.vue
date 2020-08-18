@@ -43,7 +43,7 @@
 									<div class="logo-div-right">请上传jpg,gif,png格式的图片。logo图片尺寸建议不超过250 x 50px。图片大小建议不超过2MB</div>	
 								</div>
 						  </el-form-item>
-						  <el-form-item label="浏览器图标：">
+						  <!-- <el-form-item label="浏览器图标：">
 								<div class="logo-div">
 									<div class="logo-div-left">
 										<img :src="site.icon" alt="" width="110px" height="30px">
@@ -58,7 +58,7 @@
 									</div>
 									<div class="logo-div-right">建议上传icon格式的图标文件，支持ico，jpg，gif，png等格式，建议尺寸32 x 32px。</div>	
 								</div>
-						  </el-form-item>
+						  </el-form-item> -->
 <!-- 						  <el-form-item label="校本LOGO：">
 								<div class="logo-div">
 									<div class="logo-div-left">
