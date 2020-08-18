@@ -116,17 +116,17 @@
 			        <el-card class="box-card" shadow="hover" v-for="list in tableData">
 			        	<el-checkbox v-model="list.check" style="" class="check-class" @change="handleCheckedChange"></el-checkbox>
 			          <section class="content"   v-show="!isAnswer">
-			            <div class="qt1">
+			            <div class="qt1" v-html="list.name">
 			              <!-- <img src="@/assets/test1.png" /> -->
-			              {{list.name}}
+	
 			            </div>
 			            <div class="qt2" v-if="list.options.length">
 			              <ul>
 			                <li style="width: 100%;" class="selectoption" v-for="item in list.selectoption">
 
-                        <span>{{item.word}}</span>
+                        <span>{{item.key}}</span>
                         <span>、</span>
-                        <span>{{item.value}}</span> 
+                        <span v-html="item.value"></span> 
 			                  <!-- <img src="@/assets/test1.png" /> -->
 			                </li>
 			                <!-- <li style="width: 24%;" class="selectoption">
@@ -151,29 +151,19 @@
                       <div class="qt1">
                         <!-- <img src="@/assets/test1.png" /> -->
                         <span>{{index1+1}}</span><span>、</span>
-                        {{list1.name}}
+                        <span v-html="list1.name"></span>
                       </div>
                       <div class="qt2" v-if="list1.options.length">
                         <ul>
                           <li style="width: 100%;" class="selectoption" v-for="item in list1.selectoption">
 
-                            <span>{{item.word}}</span>
+                            <span>{{item.key}}</span>
                             <span>、</span>
-                            <span>{{item.value}}</span> 
+                            <span v-html="item.value"></span> 
                             <!-- <img src="@/assets/test1.png" /> -->
                           </li>
-                          <!-- <li style="width: 24%;" class="selectoption">
-                            B.
-                           <img src="@/assets/test1.png" />
-                          </li>
-                          <li style="width: 24%;" class="selectoption">
-                            C.
-                            <img src="@/assets/test1.png" /> 
-                          </li>
-                          <li style="width: 24%;" class="selectoption">
-                            D.
-                            <img src="@/assets/test1.png" /> 
-                          </li> -->
+     
+     
                         </ul>
                       </div>
                     </div>
@@ -188,7 +178,7 @@
 			              <div>
 			                <p class="title">【知识点】</p>
 			                <p>
-			                	<span>{{list.knowledgesPoint.join('')}}</span>
+			                	<span>{{list.chaptersPoint.join()}}</span>
 			                </p>
 			              </div>
 
@@ -203,11 +193,11 @@
 			              </div>
 			              <div>
 			                <p class="title">【分析】</p>
-			                <p>{{list.analysis}}</p>
+			                <p v-html="list.analysis"></p>
 			              </div>
 			              <div>
 			                <p class="title">【详解】</p>
-			                <p>{{list.detailedAnalysis}}</p>
+			                <p v-html="list.detailedAnalysis"></p>
 			              </div>
 
 			            </div>
@@ -702,13 +692,12 @@ export default {
     },
 
     handleQuestion(item,item0) {
-      //选项
       item.selectoption = []
-      console.log(item)
       if(item.options && item.options.length) {
         item.options.forEach(item1=>{
+          // item.selectoption.push(item1)
           for(let key in item1) {
-            item.selectoption.push({word:key,value:item1[key]})
+            item.selectoption.push({key:key,value:item1[key]})
           }
         })
       }
@@ -716,26 +705,30 @@ export default {
       //item.answers = []
       if(item.fillAnswers && item.fillAnswers.length) {
         item.fillAnswers.forEach(item1=>{
-          for(let key in item1) {
-            item0.answers.push(item1[key])
-          }
+          item0.answers.push(item1.value)
+          // for(let key in item1) {
+          //   item0.answers.push(item1[key])
+          // }
         })
       }
 
       //知识点
-      item.knowledgesPoint = []
-      if(item.knowledges && item.knowledges.length) {
-        item.knowledges.forEach(item1=>{
-          item.knowledgesPoint.push(item1.name)
+      item.chaptersPoint = []
+      if(item.chapters && item.chapters.length) {
+        item.chapters.forEach(item1=>{
+          item.chaptersPoint.push(item1.name)
         })
       }
 
       if(item.smallQuestions && item.smallQuestions.length) {
         item.smallQuestions.forEach(item1=>{
+          
           this.handleQuestion(item1,item)
         })
         
       }
+
+      // console.log(item)
     },
     //删除
     deleteQuestion(questionId) {
@@ -948,6 +941,13 @@ export default {
     }
     
   }
+  .content {
+    p,span,div {
+      font-family: "JyeMath", "JyeMathLetters", "Times New Roman", "微软雅黑",
+              Arial, "宋体" !important;
+    }
+  }
+
 
 }
 </style>
@@ -1029,6 +1029,8 @@ export default {
 		        clear: both;
 		        line-height: 28px;
 		        font-size: 1rem;
+            display: flex;
+            flex-wrap: wrap;
 		        //padding: 20px;
 		        position: relative;
 		        word-break: break-word;
@@ -1053,6 +1055,7 @@ export default {
 		            vertical-align: middle;
 		            font-size: 14px;
 		            padding: 2px;
+                display: flex;
 
 		            label {
 		              line-height: 24px;
