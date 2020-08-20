@@ -548,9 +548,7 @@ export default {
           },[])
 
 
-					this.$http.delete(`/api/internal/resources/batchDelete`,{
-            data: ids
-          })
+					this.$http.delete(`/api/internal/resources/batchDelete`,{},ids)
 		      .then((data)=>{
 		        if(data.status == '200') {
 		        	this.getTableData()

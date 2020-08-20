@@ -911,9 +911,7 @@ export default {
           },[])
 
 
-          this.$http.delete(`/api/internal/users`,{
-            data: ids
-          })
+          this.$http.delete(`/api/internal/users`,{},ids)
           .then((data)=>{
             if(data.status == '200') {
 

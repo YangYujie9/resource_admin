@@ -29,6 +29,7 @@
             <el-form :inline="true" :model="search" class="demo-form-inline" size="mini">
               <el-form-item label="角色">
                 <el-select v-model="search.roleTpye"class="search-class" @change="resetPage">
+                  <!-- <el-option label="全部" value=""></el-option> -->
                   <el-option label="学生" value="student"></el-option>
                   <el-option label="老师" value="teacher"></el-option>
                 </el-select>
@@ -603,12 +604,7 @@ export default {
  
           
         })
-        // .catch(()=>{
-        //   return this.$message({
-        //     message:'接口报错',
-        //     type:'error'
-        //   })
-        // })
+
 
       }
     },
@@ -617,7 +613,7 @@ export default {
       this.editUserId = ''
       this.userForm.gradeId = ''
       this.userForm.subjectId = ''
-      this.userForm.userRole = this.search.roleTpye
+      //this.userForm.userRole = this.search.roleTpye
       this.dislogTitle = '添加用户'
       this.isEdit = false
       this.isAdd = true
@@ -835,11 +831,9 @@ export default {
           },[])
 
 
-
+          // return
           if(this.search.roleTpye=='student') {
-            this.$http.delete(`/api/internal/schools/${this.currentNode.id}/students`,{
-              data: ids
-            })
+            this.$http.delete(`/api/internal/schools/${this.currentNode.id}/students`,{},ids)
             .then((data)=>{
 
                   
@@ -854,9 +848,7 @@ export default {
               })
 
           }else if(this.search.roleTpye=='teacher') {
-            this.$http.delete(`/api/internal/schools/${this.currentNode.id}/teachers`,{
-              data: ids
-            })
+            this.$http.delete(`/api/internal/schools/${this.currentNode.id}/teachers`,{},ids)
             .then((data)=>{
 
                   

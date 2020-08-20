@@ -178,7 +178,7 @@
 			              <div>
 			                <p class="title">【知识点】</p>
 			                <p>
-			                	<span>{{list.chaptersPoint.join()}}</span>
+			                	<span>{{list.knowledgesPoint.join()}}</span>
 			                </p>
 			              </div>
 
@@ -713,10 +713,14 @@ export default {
       }
 
       //知识点
-      item.chaptersPoint = []
+      item.knowledgesPoint = []
       if(item.chapters && item.chapters.length) {
         item.chapters.forEach(item1=>{
-          item.chaptersPoint.push(item1.name)
+          item.knowledgesPoint.push(item1.name)
+        })
+      }else if(item.knowledges && item.knowledges.length) {
+        item.knowledges.forEach(item1=>{
+          item.knowledgesPoint.push(item1.name)
         })
       }
 
@@ -756,19 +760,17 @@ export default {
 
 
 
-
-
           let ids = []
           this.tableData.forEach(item=>{
             item.check? ids.push(item.questionId):null
           })
 
 
-					this.$http.delete(`/api/internal/question/batchDelete`,{
-            data: ids
-          })
+					this.$http.delete(`/api/internal/question/batchDelete`,{},ids)
 		      .then((data)=>{
 		        if(data.status == '200') {
+
+              this.checkAll = false
 		        	this.getTableData()
 		        	this.$message({
 		              message: "删除成功",

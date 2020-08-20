@@ -97,10 +97,10 @@
             </el-table>
 
           </div>
-          <div class="pagination">
+          <div class="pagination" style="text-align: right;">
             <div>
-              <el-checkbox v-model="checked" @change="toggleSelection">全选</el-checkbox>
-              <el-button type="text" @click="resetPass" style="margin-left: 20px;">删除</el-button>
+              <!-- <el-checkbox v-model="checked" @change="toggleSelection">全选</el-checkbox>
+              <el-button type="text" @click="resetPass" style="margin-left: 20px;">删除</el-button> -->
             </div>
             <el-pagination
               @size-change="handleSizeChange"
@@ -345,55 +345,53 @@ export default {
 
 
 
-        }else {
-     
-          let selectData = this.$refs.multipleTable.store.states.selection
-          let ids = selectData.reduce((prev,current)=>{
-            prev.push(current.id)
-            return prev
-          },[])
-
-
-
-          if(this.search.roleTpye=='student') {
-            this.$http.delete(`/api/internal/schools/${this.currentNode.id}/students`,{
-              data: ids
-            })
-            .then((data)=>{
-
-                  
-                  this.$message({
-                    message:'删除成功',
-                    type:'success'
-                  })
-                  this.getTableData()
-
-
-                
-              })
-
-          }else if(this.search.roleTpye=='teacher') {
-            this.$http.delete(`/api/internal/schools/${this.currentNode.id}/teachers`,{
-              data: ids
-            })
-            .then((data)=>{
-
-                  
-                  this.$message({
-                    message:'删除成功',
-                    type:'success'
-                  })
-                  this.getTableData()
-
-
-                
-              })
-
-
-          }
-
-
         }
+
+        // else {
+          
+        //   let selectData = this.$refs.multipleTable.store.states.selection
+        //   let ids = selectData.reduce((prev,current)=>{
+        //     prev.push(current.userId.id)
+        //     return prev
+        //   },[])
+
+
+
+        //   if(this.search.roleTpye=='student') {
+        //     this.$http.delete(`/api/internal/schools/${this.currentNode.id}/students`,{},ids)
+        //     .then((data)=>{
+
+                  
+        //           this.$message({
+        //             message:'删除成功',
+        //             type:'success'
+        //           })
+        //           this.getTableData()
+
+
+                
+        //       })
+
+        //   }else if(this.search.roleTpye=='teacher') {
+        //     this.$http.delete(`/api/internal/schools/${this.currentNode.id}/teachers`,{},ids)
+        //     .then((data)=>{
+
+                  
+        //           this.$message({
+        //             message:'删除成功',
+        //             type:'success'
+        //           })
+        //           this.getTableData()
+
+
+                
+        //       })
+
+
+        //   }
+
+
+        // }
       })
     },
 
