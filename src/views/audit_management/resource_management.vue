@@ -63,24 +63,24 @@
           <div class="search-wrap" ref="search_wrap">
             <el-form :inline="true" :model="search" class="demo-form-inline" size="mini">
               <el-form-item label="类型">
-                <el-select v-model="search.type"class="search-class" @change="getTableData" clearable placeholder="类型">
-                  <el-option v-for="list in typeList" :label="list" :value="list" :key="list"></el-option>
+                <el-select v-model="search.type"class="search-class" @change="resetPage" clearable placeholder="类型">
+                  <el-option v-for="list in typeList" :label="list.name" :value="list.id" :key="list.id"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="公开">
-                <el-select v-model="search.openState" placeholder="公开" class="search-class" @change="getTableData" clearable>
+                <el-select v-model="search.openState" placeholder="公开" class="search-class" @change="resetPage" clearable>
                   <el-option v-for="list in openList" :label="list" :value="list" :key="list"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="状态">
-                <el-select v-model="search.applyState" placeholder="状态" class="search-class" @change="getTableData" clearable>
+                <el-select v-model="search.applyState" placeholder="状态" class="search-class" @change="resetPage" clearable>
                   <el-option v-for="list in statusLiist" :label="list" :value="list" :key="list"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="上传时间">
 						    <el-date-picker
 						      v-model="search.time"
-						      @change="getTableData"
+						      @change="resetPage"
 						      style="width: 220px;"
 						      value-format="yyyy-MM-dd"
 						      type="daterange"
@@ -240,7 +240,7 @@ export default {
       checked:'',
     	tableData:[],
     	table_height:300,
-    	typeList:['课件','学案','教案','套题试卷','微课','教学反思'],
+    	typeList:[],
     	openList:['私有','学校共享','完全公开'],
     	statusLiist:['待审核','已上架','已下架','已推荐'],
     	currentPoint:'',
@@ -284,6 +284,8 @@ export default {
     this.getOrgTree()
     this.getlearningSection()
 
+    this.gettypeList()
+
 
 
   },
@@ -307,7 +309,7 @@ export default {
 
     changeTabs(tab) {
     	this.activeType = tab
-    	this.getTableData()
+    	this.resetPage()
     },
 
 
@@ -320,7 +322,7 @@ export default {
     orgNodeClick(data) {
     	this.currentNode = data
     	this.schoolsName = data.name
-    	this.getTableData()
+    	this.resetPage()
     },
 
     defaultPointNode(node) {
@@ -334,7 +336,7 @@ export default {
 
     pointNodeClick(data) {
     	this.currentPoint = data
-    	this.getTableData()
+    	this.resetPage()
     },
 
   	getlearningSection() {
@@ -355,7 +357,23 @@ export default {
 
   	},
 
+    gettypeList() {
 
+      this.$http.get(`/api/open/common/getResourceType`)
+      .then((data)=>{
+        if(data.status == '200') {
+
+
+          this.typeList = data.data
+          this.filter.learningSection =   this.sectionList[0].key
+          
+          
+
+          }
+          
+        })
+
+    },
   	getGrades() {
 
 
@@ -448,7 +466,7 @@ export default {
     handleCurrentChange(val) {
     	this.search.page = val
       // console.log(`当前页: ${val}`);
-      this.getTableData()
+      this.resetPage()
     },
 
     tableCellStyle({row, column, rowIndex, columnIndex}) {
@@ -464,7 +482,10 @@ export default {
     		}
     	}
     },
-
+    resetPage() {
+      this.search.page = 1
+      this.getTableData()
+    },
 
     getTableData() {
 
