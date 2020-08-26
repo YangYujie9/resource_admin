@@ -94,6 +94,7 @@
 					        <el-menu-item-group>
 					          
 					          <el-menu-item index="/administrator/systemConfig">系统配置</el-menu-item>
+					           <el-menu-item index="/administrator/resourceType">资源类型配置</el-menu-item>
 				
 					        </el-menu-item-group>
 	
@@ -140,7 +141,7 @@ export default {
   		this.title = "基础管理"
   	}else if(this.$route.fullPath.indexOf('passwordReview')>-1 ||this.$route.fullPath.indexOf('resourceManagement')>-1 ||this.$route.fullPath.indexOf('questionManagement')>-1 ){
   		this.title = "审核管理"
-  	}else if (this.$route.fullPath.indexOf('systemConfig')>-1){
+  	}else if (this.$route.fullPath.indexOf('systemConfig')>-1 || this.$route.fullPath.indexOf('resourceType')>-1){
   		this.title = "系统配置"
 
   	}
@@ -179,7 +180,7 @@ export default {
 				  		this.title = "基础管理"
 				  	}else if(key.indexOf('passwordReview')>-1 ||key.indexOf('resourceManagement')>-1 ||key.indexOf('questionManagement')>-1 ){
 				  		this.title = "审核管理"
-				  	}else if (key.indexOf('systemConfig')>-1){
+				  	}else if (key.indexOf('systemConfig')>-1 || key.indexOf('resourceType')>-1){
 				  		this.title = "系统配置"
 
 				  	}

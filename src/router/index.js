@@ -74,6 +74,11 @@ Vue.use(VueRouter)
         component: ()=>import('@/views/audit_management/system_config'),
       },
       {
+        path: 'resourceType',
+        name: 'resourceType',
+        component: ()=>import('@/views/audit_management/resource_type'),
+      },
+      {
         path: 'resourceManagement',
         name: 'resourceManagement',
         component: ()=>import('@/views/audit_management/resource_management'),

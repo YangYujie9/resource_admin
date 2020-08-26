@@ -69,7 +69,7 @@
               </el-form-item>
               <el-form-item label="题型">
                 <el-select v-model="search.type"class="search-class" @change="resetPage" clearable placeholder="题型">
-                  <el-option v-for="list in questionTypeList" :label="list" :value="list" :key="list"></el-option>
+                  <el-option v-for="list in questionTypeList" :label="list.value" :value="list.key" :key="list.key"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="状态">
@@ -516,7 +516,7 @@ export default {
   		let subjectName = ''
       this.questionTypeList = []
   		if(this.activeType == 'organizations') {
-  			subjectName = this.search.subject.subjectName
+  			subjectName = this.search.subject.code
   		}else {
   			subjectName = this.filter.subject.key
   		}
@@ -638,7 +638,7 @@ export default {
       this.checked = false
       let params = {
       	schoolId: this.currentNode.id,
-      	subjectId: this.search.subject?this.search.subject.subjectId.id:'',
+      	subject: this.search.subject?this.search.subject.code:'',
 				questionType: this.search.type,
 				difficultyType: this.search.difficultyType,
 				chapterId: this.currentPoint.id,
@@ -788,10 +788,11 @@ export default {
 	      
     },
 
+
     //上架
     groundQuestion(questionId) {
     	if(questionId) {
-					this.$http.put(`/api/internal/question/${questionId}/grounding`)
+					this.$http.put(`/api/internal/question/status/${questionId}?applyState=Grounding`)
 		      .then((data)=>{
 		        if(data.status == '200') {
 		        	this.getTableData()
@@ -813,7 +814,7 @@ export default {
             item.check? ids.push(item.questionId):null
           })
 
-					this.$http.put(`/api/internal/question/batchGrounding`,ids)
+					this.$http.put(`/api/internal/question/batch/status?applyState=Grounding`,ids)
 		      .then((data)=>{
 		        if(data.status == '200') {
 		        	this.getTableData()
@@ -834,7 +835,7 @@ export default {
     //下架
     underQuestion(questionId) {
     	if(questionId) {
-					this.$http.put(`/api/internal/question/${questionId}/undercarriage`)
+          this.$http.put(`/api/internal/question/status/${questionId}?applyState=Undercarriage`)
 		      .then((data)=>{
 		        if(data.status == '200') {
 		        	this.getTableData()
@@ -857,7 +858,7 @@ export default {
           })
 
 
-					this.$http.put(`/api/internal/question/batchUndercarriage`,ids)
+					this.$http.put(`/api/internal/question/batch/status?applyState=Undercarriage`,ids)
 		      .then((data)=>{
 		        if(data.status == '200') {
 		        	this.getTableData()
@@ -878,7 +879,7 @@ export default {
     //打回
     rejectQuestion(questionId) {
    		if(questionId) {
-					this.$http.put(`/api/internal/question/${questionId}/reject`)
+					this.$http.put(`/api/internal/question/status/${questionId}?applyState=Reject`)
 		      .then((data)=>{
 		        if(data.status == '200') {
 		        	this.getTableData()
@@ -901,7 +902,7 @@ export default {
           })
 
 
-					this.$http.put(`/api/internal/question/batchReject`,ids)
+					this.$http.put(`/api/internal/question/batch/status?applyState=Reject`,ids)
 		      .then((data)=>{
 		        if(data.status == '200') {
 		        	this.getTableData()

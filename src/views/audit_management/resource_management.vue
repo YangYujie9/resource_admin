@@ -570,7 +570,7 @@ export default {
     //上架
     groundResource(row) {
     	if(row) {
-					this.$http.put(`/api/internal/resources/${row.resourceId}/grounding`)
+					this.$http.put(`/api/internal/resources/status/${row.resourceId}?applyState=Grounding`)
 		      .then((data)=>{
 		        if(data.status == '200') {
 		        	this.getTableData()
@@ -594,7 +594,7 @@ export default {
           },[])
 
 
-					this.$http.put(`/api/internal/resources/batchGrounding`,ids)
+					this.$http.put(`/api/internal/resources/batch/status?applyState=Grounding`,ids)
 		      .then((data)=>{
 		        if(data.status == '200') {
 		        	this.getTableData()
@@ -614,7 +614,7 @@ export default {
     //下架
     underResource(row) {
     	if(row) {
-					this.$http.put(`/api/internal/resources/${row.resourceId}/undercarriage`)
+					this.$http.put(`/api/internal/resources/status/${row.resourceId}?applyState=Undercarriage`)
 		      .then((data)=>{
 		        if(data.status == '200') {
 		        	this.getTableData()
@@ -638,7 +638,7 @@ export default {
           },[])
 
 
-					this.$http.put(`/api/internal/resources/batchUndercarriage`,ids)
+					this.$http.put(`/api/internal/resources/batch/status?applyState=Undercarriage`,ids)
 		      .then((data)=>{
 		        if(data.status == '200') {
 		        	this.getTableData()
@@ -745,50 +745,37 @@ export default {
     },
     //打回
     rejectResource(row) {
-   	if(row) {
-					this.$http.put(`/api/internal/resources/${row.resourceId}/reject`)
-		      .then((data)=>{
-		        if(data.status == '200') {
-		        	this.getTableData()
-		        	this.$message({
-		              message: "打回成功",
-		              type:'success'
-		          })
-
-
-		          } 
-		          
-		        })
+   	  if(row) {
+					this.$http.put(`/api/internal/resources/status/${row.resourceId}?applyState=Reject`)
+  		      .then((data)=>{
+  		        if(data.status == '200') {
+  		        	this.getTableData()
+  		        	this.$message({
+  		              message: "打回成功",
+  		              type:'success'
+  		          })
+  		        }  
+  		      })
   	
-		    }else {
-
-		    	
+		    } else {
           let selectData = this.$refs.multipleTable.store.states.selection
           let ids = selectData.reduce((prev,current)=>{
             prev.push(current.resourceId)
             return prev
           },[])
 
-
-					this.$http.put(`/api/internal/resources/batchReject`,ids)
-		      .then((data)=>{
-		        if(data.status == '200') {
-		        	this.getTableData()
-		        	this.$message({
-		              message: "打回成功",
-		              type:'success'
-		          })
-
-
-		          } 
-		          
+					this.$http.put(`/api/internal/resources/batch/status?applyState=Reject`,ids)
+  		      .then((data)=>{
+  		        if(data.status == '200') {
+  		        	this.getTableData()
+  		        	this.$message({
+  		              message: "打回成功",
+  		              type:'success'
+  		          })
+  		        } 
 		        })
-
-
 		  }
     },
-
-
 
   }
 }
@@ -845,13 +832,6 @@ export default {
       width: 160px;
     }
 
-      
-
   }
-
-
-
-
-
-  }
+}
 </style>
