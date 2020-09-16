@@ -15,14 +15,14 @@
       :filter-node-method="filterNode"
       @node-click="handleNodeClick"
     >
-      <span class="custom-tree-node" slot-scope="{ node, data }">
+      <span class="custom-tree-node" slot-scope="{ node, data }" :class="{customclass:(data.memberType == 'Oese' && !orgSelectable)}">
         <span class="nodetree" >
           
           {{ node.label }}
         </span>
         <span class="active-wrap" v-if="enableEdit">
           
-          <i class="iconfont iconiconjia actclass"  @click.prevent.stop="appendNode(node,data)" v-if="node.level<4"></i>
+          <i class="iconfont iconiconjia actclass"  @click.prevent.stop="appendNode(node,data)" v-if="node.level<defaultLevel"></i>
           <i class="iconfont iconbianji actclass" @click.prevent.stop="editNode(node,data)"  v-if="data.parentId.id!='0'"></i>
           <i class="iconfont iconshanchu-copy" @click.prevent.stop="deleteNode(node,data)" v-if="data.parentId.id!='0'"></i>
 
@@ -62,7 +62,11 @@ export default {
     defaultRoot:{
       type:Boolean,
       default:true
-    }
+    },
+    defaultLevel: {
+      type: Number,
+      default: 5,
+    },
   },
   data() {
     return {
@@ -101,7 +105,8 @@ export default {
     treeData: {
       handler: function(newVal, oldVal) {
           this.initTreeData(JSON.parse(JSON.stringify(newVal)));
-          this.currenttNode = this.defaultSelectedNode
+          this.currenttNode = this.defaultRoot? this.defaultSelectedNode: this.firstSchool;
+          // this.currenttNode = this.defaultSelectedNode
           this.$emit('selectnode',this.currenttNode )
           
           this.$nextTick(()=>{
@@ -131,6 +136,7 @@ export default {
 
     /*初始化树数据*/
     initTreeData(data) {
+      this.originalTreeData = []
       let treeData = [];
       if (data.hasOwnProperty("members")) {
         let node = data.root;
@@ -157,7 +163,7 @@ export default {
     constructTreeData(node, data) {
       node.title = node.name;
       node.id = node.resourceId.id;
-      (node.memberType == "Organization" && !this.orgSelectable) ? node.disabled = true:null
+      (node.memberType == "Oese" && !this.orgSelectable) ? node.disabled = true:null
       // console.log(node)
       let nodeChildren = data.filter(function(item) {
         return item.parentId && item.parentId.id === node.resourceId.id;
@@ -179,7 +185,7 @@ export default {
         for (let n = 0; n < node.children.length; n++) {
           if (isNotFound) {
             result = this.deepFirstSearch(node.children[n]);
-            isNotFound = result.memberType !== "School";
+            isNotFound = result.memberType !== "Volume";
           }
         }
         return result;
@@ -213,16 +219,16 @@ export default {
     handleNodeClick(data) {
 
 
-      this.$emit('handleNodeClick',data)
-      // if(data.memberType == "Organization" && !this.orgSelectable) {
-      //     this.$nextTick(()=>{
-      //       this.$refs.tree.setCurrentKey(this.currenttNode .resourceId.id);
+      
+      if(data.memberType == "Oese" && !this.orgSelectable) {
+          this.$nextTick(()=>{
+            this.$refs.tree.setCurrentKey(this.currenttNode .resourceId.id);
             
-      //     })
-      // }else {
-      //   this.currenttNode = data
-      //   
-      // }
+          })
+      }else {
+        this.currenttNode = data
+        this.$emit('handleNodeClick',data)
+      }
       
     },
 
@@ -390,10 +396,10 @@ export default {
 
     .customclass {
       //color: red;
-      &:hover {
-        cursor: default;
-        color: #606266 !important;
-      }
+      // &:hover {
+      //   cursor: default;
+      //   color: #606266 !important;
+      // }
 
       .nodetree {
         color: #606266 !important;

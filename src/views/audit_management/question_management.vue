@@ -17,25 +17,40 @@
 						<div v-show="activeType == 'knowledge'">
 							<top-popover>
 	              <div slot="reference" class="search-class">
-	                <p v-if="filter.grade">{{filter.grade.value}}</p><p v-if="filter.subject">{{filter.subject.value}}</p>
+	                <p v-if="filter.subject">{{filter.subject.value}}</p> 
+                  <p v-if="filter.oese && knowType == 'Chapter'">{{filter.oese.name}}</p>
+                  <p v-if="filter.volume && knowType == 'Chapter'">{{filter.volume.name}}</p>
 	              </div>
 	              <div slot="popover">
-	                <div>
+                  <div>
 	                	<p>学段：</p>
-	                  <el-radio-group v-model="filter.learningSection" size="mini" @change="getGrades">
+	                  <el-radio-group v-model="filter.learningSection" size="mini" @change="getSubject">
 	                    <el-radio-button v-for="list in sectionList" :label="list.key" :key="list.key">{{list.value}}</el-radio-button>
 	                  </el-radio-group>
-	                  <p>年级：</p>
-	                  <el-radio-group v-model="filter.grade" size="mini" @change="getPonitTree">
-	                    <el-radio-button v-for="list in gradesList" :label="list" :key="list.key">{{list.value}}</el-radio-button>
-	                  </el-radio-group>
-
+                  </div>
+                  <!-- <p>年级：</p>
+                  <el-radio-group v-model="filter.grade" size="mini" @change="getPonitTree">
+                    <el-radio-button v-for="list in gradesList" :label="list" :key="list.key">{{list.value}}</el-radio-button>
+                  </el-radio-group> -->
+                  <div>
 	                  <p>科目：</p>
 	                  <el-radio-group v-model="filter.subject" size="mini" @change="changeSubject">
 	                    <el-radio-button :label="item" :key="item.key" v-for="item in subjectsList">{{item.value}}</el-radio-button>
 	                  </el-radio-group>
-	                </div>
-	              </div>
+                  </div>
+                  <div v-show="knowType == 'Chapter'">
+                    <p>教材版本：</p>
+                    <el-radio-group v-model="filter.oese" size="mini" @change="getvolumeList">
+                      <el-radio-button :label="item" :key="item.oeseId" v-for="item in versionList">{{item.name}}</el-radio-button>
+                    </el-radio-group>
+                  </div>
+                  <div v-show="knowType == 'Chapter'">
+                    <p>册别：</p>
+                    <el-radio-group v-model="filter.volume" size="mini" @change="getPonitTree">
+                      <el-radio-button :label="item" :key="item.oeseId" v-for="item in volumeList">{{item.name}}</el-radio-button>
+                    </el-radio-group>
+                  </div>
+                </div>
 	            </top-popover>
 	            <div class="search-wrap">
 	              <el-radio-group v-model="knowType" size="mini" @change="getPonitTree">
@@ -69,7 +84,7 @@
               </el-form-item>
               <el-form-item label="题型">
                 <el-select v-model="search.type"class="search-class" @change="resetPage" clearable placeholder="题型">
-                  <el-option v-for="list in questionTypeList" :label="list.value" :value="list.key" :key="list.key"></el-option>
+                  <el-option v-for="list in questionTypeList" :label="list.name" :value="list.code" :key="list.code"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="状态">
@@ -186,7 +201,7 @@
 			                <p class="title">【答案】</p>
 			                <p>
 			                	<span v-for="(item,index1) in list.answers">
-                         <span v-if="list.smallQuestions.length"  style="margin-left: 0px;">{{index1+1}}、</span>
+                         <span v-if="list.smallQuestions.length"  style="margin-left: 0px;">{{index1+1}}.</span>
                          <span style="margin-left: 0px;">{{item}}</span>
                         </span>
 			                </p>
@@ -225,7 +240,7 @@
 
 			    </div>
 
-          <div class="pagination">
+          <div class="pagination" ref="pagination">
             <div>
               <el-checkbox v-model="checkAll" @change="handleCheckAllChange" :indeterminate="isIndeterminate">全选</el-checkbox>
        				<el-button type="text" @click="deleteQuestion()" style="margin-left: 20px;">删除</el-button>
@@ -285,10 +300,13 @@ export default {
     	activeType:'organizations',
     	orgData: [],
     	filterText:'',
+      versionList:'',
     	filter: {
     		gradeId:'',
     		subjectId:'',
     		learningSection:'',
+        oese:'',
+        volume:'',
     	},
 	    headList: [{
           label:'组织架构',
@@ -324,12 +342,14 @@ export default {
     	table_height:300,
     	questionTypeList:[],
     	statusLiist:['待审核','已上架','已下架'],
-    	difficultyLiist: ['易','较易','一般','较难','难'],
+    	difficultyLiist: ['易','较易','中档','较难','难'],
     	currentPoint:'',
     	currentNode:'',
     	schoolsName:'',
     	isAnswer:false,
     	orgSubjectsList:[],
+      volumeList:[],
+      isMounted: false
 
 
 
@@ -349,6 +369,9 @@ export default {
     
   },
   watch: {
+    // paginationHeight(val) {
+    //   this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight - val
+    // }
 
   },
   computed: {
@@ -359,12 +382,13 @@ export default {
     ]),
 
 
-
   },
   mounted() {
+
+    this.isMounted = true  
     this.$nextTick(()=>{
-      this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight -40
-      // 
+      this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight - this.$refs.pagination.offsetHeight
+       
     })
 
     this.getOrgTree()
@@ -396,14 +420,17 @@ export default {
     	this.resetPage()
     	this.getQuestionType()
     	this.$nextTick(()=>{
-	      this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight -40
+	      this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight - this.$refs.pagination.offsetHeight
 	      // 
 	    })
     },
 
     changeSubject() {
-    	this.getPonitTree()
-    	this.getQuestionType()
+
+
+      this.getQuestionType()
+      
+      this.getVersionList()
     },
 
 
@@ -444,7 +471,7 @@ export default {
 
         	this.sectionList = data.data
         	this.filter.learningSection = 	this.sectionList[0].key
-        	this.getGrades()
+        	this.getSubject()
         	
 
           } 
@@ -453,24 +480,24 @@ export default {
   	},
 
 
-  	getGrades() {
+  	// getGrades() {
 
 
-      this.$http.get(`/api/open/common/grades?learningSection=${this.filter.learningSection}`)
-      .then((data)=>{
-        if(data.status == '200') {
+   //    this.$http.get(`/api/open/common/grades?learningSection=${this.filter.learningSection}`)
+   //    .then((data)=>{
+   //      if(data.status == '200') {
 
-        	this.gradesList = data.data
-        	this.filter.grade = this.gradesList[0]
-
-
-        	this.getSubject()
+   //      	this.gradesList = data.data
+   //      	this.filter.grade = this.gradesList[0]
 
 
-          } 
-        })
+   //      	this.getSubject()
 
-  	},
+
+   //        } 
+   //      })
+
+  	// },
 
   	getSubject() {
 
@@ -482,7 +509,8 @@ export default {
         	this.subjectsList = data.data
         	this.filter.subject = this.subjectsList[0]
         	this.getQuestionType()
-        	this.getPonitTree()
+        	
+          this.getVersionList()
 
 
 
@@ -491,6 +519,8 @@ export default {
         })
 
   	},
+
+
   	getSubjectByOrg() {
   		
 
@@ -509,30 +539,62 @@ export default {
         })
 
   	},
+    getVersionList() {
+      this.versionList = []
+      this.$http.get(`/api/open/common/oeses/${this.filter.learningSection}/${this.filter.subject.key}`)
+      .then((data)=>{
+        if(data.status == '200') {
+          this.versionList = data.data
+          this.filter.oese = this.versionList[0]
+          if(!this.filter.oese) {
+            this.pointData = []
+            this.volumeList = []
+            this.filter.volume = ''
+          }else {
+            this.getvolumeList()
+          }
+        }    
+      })
+    },
 
+    getvolumeList() {
+      this.volumeList = []
+      this.$http.get(`/api/open/common/oeseList/${this.filter.oese.oeseId}`)
+      .then((data)=>{
+        if(data.status == '200') {
+          this.volumeList = data.data
+          this.filter.volume = this.volumeList[0]
+          if(!this.filter.volume) {
+            this.pointData = []
+          }else {
+            this.getPonitTree()
+          }
+        }    
+      })
+    },
   	getQuestionType() {
 
       this.search.type = ''
-  		let subjectName = ''
+  		let subjectCode = ''
       this.questionTypeList = []
   		if(this.activeType == 'organizations') {
-  			subjectName = this.search.subject.code
+  			subjectCode = this.search.subject.code
   		}else {
-  			subjectName = this.filter.subject.key
+  			subjectCode = this.filter.subject.key
   		}
 
-  		if(!subjectName) {
+  		if(!subjectCode) {
         this.resetPage()
   			return false
   		}
 
-      this.$http.get(`/api/open/common/subjectQuestionType?subjectCode=${subjectName}`)
+      this.$http.get(`/api/open/common/getQuestionType/${this.filter.learningSection}/${subjectCode}`)
       .then((data)=>{
         if(data.status == '200') {
 
 
         	this.questionTypeList = data.data
-        	this.getTableData()
+        	this.resetPage()
 
 
 
@@ -546,18 +608,17 @@ export default {
 
   		this.pointData = []
   		if(this.knowType == "Chapter") {
-	      this.$http.get(`/api/internal/chapter/chapterTree?subjectCode=${this.filter.subject.key}&grade=${this.filter.grade.key}`)
+	      this.$http.get(`/api/internal/chapter/chapterTree/${this.filter.volume.oeseId}`)
 	      .then((data)=>{
 	        if(data.status == '200') {
 	        	this.pointData = data.data
 
-
-	          } 
+	        } 
 	          
-	        })
+	      })
  		
 	    }else {
-	      this.$http.get(`/api/internal/knowledge/knowledgeTree?subjectCode=${this.filter.subject.key}&grade=${this.filter.grade.key}`)
+	      this.$http.get(`/api/internal/knowledge/knowledgeTree?learningSection=${this.filter.learningSection}&subjectCode=${this.filter.subject.key}`)
 	      .then((data)=>{
 	        if(data.status == '200') {
 	        	this.pointData = data.data
@@ -677,7 +738,7 @@ export default {
 
         		item.check = false
         	})
-          // console.log(data.data.content)
+          console.log(data.data.content)
 
           this.tableData = data.data.content
           this.total = data.data.totalElements
@@ -695,17 +756,18 @@ export default {
       item.selectoption = []
       if(item.options && item.options.length) {
         item.options.forEach(item1=>{
+          item.selectoption.push({key:item1.key,id:item1.value.id,value:item1.value.name})
           // item.selectoption.push(item1)
-          for(let key in item1) {
-            item.selectoption.push({key:key,value:item1[key]})
-          }
+          // for(let key in item1) {
+          //   item.selectoption.push({key:key,id:item1[key].id,value:item1[key].name})
+          // }
         })
       }
       //答案
       //item.answers = []
       if(item.fillAnswers && item.fillAnswers.length) {
         item.fillAnswers.forEach(item1=>{
-          item0.answers.push(item1.value)
+          item0.answers.push(item1.value.name)
           // for(let key in item1) {
           //   item0.answers.push(item1[key])
           // }

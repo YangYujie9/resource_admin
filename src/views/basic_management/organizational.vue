@@ -271,6 +271,7 @@ export default {
       isEdit: false,
       isReset: false,
       selectId:'',
+      selectParentId:'',
       tableData: [],
       table_height: 300,
       search: {
@@ -432,7 +433,9 @@ export default {
         // 显示添加组织弹窗
     showOrgDialog(val,flag){
       // flag 判断编辑添加
+      console.log(val)
       this.selectId = val.resourceId.id
+      val.memberType == "School"?this.selectParentId = val.parentId.id:null
       
 
       if(flag){
@@ -559,6 +562,7 @@ export default {
          
 
           this.$http.put(`/api/internal/schools/${this.selectId}`,{
+            organizationId: this.selectParentId,
             schoolName: this.orgForm.name,
             description: this.orgForm.description,
           })  

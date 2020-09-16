@@ -277,6 +277,7 @@ export default {
 
   	addknowPoint() {
 
+
   		if(this.dialogTitle == '新增知识点') {
 	  		this.$http.post(`/api/internal/knowledge/${this.selectId}/knowledges`,{
 	      	name: this.knowPoint.name,

@@ -12,7 +12,6 @@
         :height="table_height"
         border>
         <el-table-column type="selection" width="55" align="center"> </el-table-column>
-        <el-table-column label="编号" prop="id"> </el-table-column>
         <el-table-column label="标示" prop="code"> </el-table-column>
         <el-table-column label="名称" prop="name"> </el-table-column>
         <el-table-column label="状态" prop="enabledName"> </el-table-column>
@@ -41,16 +40,13 @@
           layout="total, prev, pager, next, sizes , jumper"
           :total="total">
         </el-pagination>
-      </div>
     </div>
+  </div>
 
 
     <el-dialog :title="dialogTitle" :visible.sync="dialogTypeVisible" width="400px" :close-on-click-modal='false'>
       <el-form :model="typeForm" label-width="80px" size="small">
         
-         <el-form-item label="标示" prop="code">
-          <el-input  v-model="typeForm.code"  class="input-class"></el-input>
-        </el-form-item>
         <el-form-item label="名称" prop="name">
           <el-input  v-model="typeForm.name"  class="input-class"></el-input>
         </el-form-item>
@@ -171,12 +167,6 @@ export default {
       if(!this.typeForm.name) {
         return this.$message({
           message:'名称不可以为空',
-          type:'warning'
-        })
-      }
-      if(!this.typeForm.code) {
-        return this.$message({
-          message:'标示不可以为空',
           type:'warning'
         })
       }

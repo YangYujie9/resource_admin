@@ -2,24 +2,19 @@
   <div class="system">
     <rightNav>
       <div slot="left">
-        <p class="right-header">站点管理 </p>
+        <p class="right-header">系统配置 </p>
         <div class="meau-wrap">
           <ul>
             <li v-for="list in meauList" :class="{activemeau:list.check}" @click="changeType(list)">{{list.label}}</li>
           </ul>
         </div>
-
-
-
- 
-      
       </div>
+
       <div slot="right">
         <p class="right-header">{{title}} </p>
 
         <div v-show="title=='自动审核设置'">
         
-
           <el-radio-group v-model="automaticCheck" @change="setVerifyConfiguration">
             <el-radio-button label="1" >是</el-radio-button>
             <el-radio-button label="0" >否</el-radio-button>
@@ -27,12 +22,6 @@
           </el-radio-group>
         </div> 
         <div class="wrap" v-show="title=='题目难度设置'">
-<!--           <ul>
-          	<li v-for="list in difficultyList" :key="list.key">
-          		<p style="width: 100px;">{{list.value}}</p>
-          		<p>{{list.description}}</p>
-          	</li>
-          </ul> -->
 
 				  <el-table
 				    :data="difficultyList"
@@ -60,7 +49,23 @@
               </template>
             </el-table-column>
 				  </el-table>
+        </div>
 
+        <div class="wrap" v-show="title=='学科封面设置'">
+
+          <el-table :data="subjectCoverList" border style="width: 100%" >
+            <el-table-column type="index" width="100px" label="序号">
+            </el-table-column>
+            <el-table-column prop="subjectName" label="学科">
+            </el-table-column>
+            <el-table-column prop="coverFileId.id" label="封面">
+            </el-table-column>
+            <el-table-column label="操作" width="120">
+              <template slot-scope="scope">
+                  <i class="iconfont iconbianji icon-active" @click="editSubjectCover(scope.row)"></i>
+              </template>
+            </el-table-column>
+          </el-table>
         </div>
 
         <el-dialog
@@ -77,10 +82,7 @@
                 <el-input v-model.number="difficulty.description"  class="input-class" placeholder="请输入" autocomplete="off"></el-input>
               </el-form-item>
 
-
-
             </el-form>
-
           </div>
           <span slot="footer" class="dialog-footer">
             <el-button @click="dialogVisible = false" size="mini">取 消</el-button>
@@ -88,6 +90,34 @@
           </span>
         </el-dialog>
 
+        <el-dialog title="编辑封面" :visible.sync="dialogCoverVisible" width="500px">
+          <div class="class-wrap">
+            <el-form :model="subjectCover" size="small" label-width="100px">
+              <el-form-item label="学科" prop="subjectName">
+                <el-input v-model="subjectCover.subjectName" class="input-class" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="学科封面：">
+                <div class="logo-div">
+                  <div class="logo-div-left">
+                    <img :src="subjectCover.previewUrl" alt="" width="230px" height="150px">
+                    <div>
+                      <el-button size="mini" type="primary" style="position: relative;">上传
+                        <input style="left:0px" type="file" class="inpucus cursor" @change="tirggerFile($event)" />
+                      </el-button>
+                      <el-button size="mini" type="primary" @click="deleteFile()">删除</el-button>
+                    </div>
+                    
+                  </div>
+                  <div class="logo-div-right">请上传jpg,gif,png格式的图片。封面图片尺寸建议不超过230 x 150px。图片大小建议不超过1MB</div>  
+                </div>
+              </el-form-item>
+            </el-form>
+          </div>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogCoverVisible = false" size="mini">取 消</el-button>
+            <el-button type="primary" @click="updateSubjectCover" size="mini">确 定</el-button>
+          </span>
+        </el-dialog>
 
       </div>
     </rightNav>
@@ -99,6 +129,8 @@
   import { mapGetters } from 'vuex'
   import rightNav from '@/components/Nav/rightNav'
   import basicTree from '@/components/Tree/basicTree'
+  import { initFileUpload, completeFileUpload} from '@/utils/file.service.js'
+  import { uploadFilesBySteaps } from '@/utils/upload.js'
 
 export default {
 
@@ -118,13 +150,18 @@ export default {
         },{
           label:'题目难度设置',
           check: false
-        }
+        },{
+          label:'学科封面设置',
+          check: false
+        } 
       ],
-      title:'自动审核设置'
-
-
-
-
+      title:'自动审核设置',
+      subjectCoverList:[],
+      dialogCoverVisible: false,
+      subjectCover:{
+        coverFileId:"",
+        previewUrl:""
+      }
 
     }
   },
@@ -148,8 +185,7 @@ export default {
 
     this.getVerifyConfiguration()
     this.getDifficultyConfig()
-
-
+    this.getSubjectCoverList()
 
   },
   methods: {
@@ -161,18 +197,14 @@ export default {
       list.check = true
       this.title = list.label
     },
+
   	getVerifyConfiguration() {
 
 		  this.$http.get(`/api/internal/configuration/configs/VerifyConfiguration`)
-      .then((data)=>{
-        if(data.status == '200') {
-
-
-        	this.automaticCheck = data.data.configItems[0].value
-
-
-          } 
-          
+        .then((data)=>{
+          if(data.status == '200') {
+          	this.automaticCheck = data.data.configItems[0].value
+          }  
         })
 
   	},
@@ -180,12 +212,11 @@ export default {
   	setVerifyConfiguration() {
 
   		let data = []
-
   		data.push({key:"auto", value:this.automaticCheck})
 
 		  this.$http.put(`/api/internal/configuration/configs/VerifyConfiguration`,data)
-      .then((data)=>{
-        if(data.status == '200') {
+        .then((data)=>{
+          if(data.status == '200') {
 
         		this.getVerifyConfiguration()
 
@@ -202,22 +233,17 @@ export default {
 
   	getDifficultyConfig() {
 
-
   		this.difficultyList = []
 
-
 		  this.$http.get(`/api/internal/configuration/configs/DifficultyConfiguration`)
-      .then((data)=>{
-        if(data.status == '200') {
-
-        	this.difficultyList = data.data.configItems
-
-
+        .then((data)=>{
+          if(data.status == '200') {
+        	 this.difficultyList = data.data.configItems
           } 
-          
         })
 
   	},
+
   	editDifficulty(row) {
 
   		this.difficulty.key = row.key
@@ -263,13 +289,118 @@ export default {
           
         })
       
-
-
   	},
 
+    //获取学科封面列表
+    getSubjectCoverList() {
 
+      this.subjectCoverList = []
 
+      this.$http.get(`/api/internal/subjectCover`)
+        .then((data)=>{
+          if(data.status == '200') {
+           this.subjectCoverList = data.data
+          } 
+        })
+    },
 
+    editSubjectCover(row) {
+
+      this.subjectCover.coverId = row.coverId
+      this.subjectCover.subjectName = row.subjectName
+      this.subjectCover.previewUrl = ""
+      this.dialogCoverVisible = true
+
+      this.$http.get(`/api/internal/subjectCover/${row.coverId.id}`)
+        .then((data)=>{
+          if(data.status == '200') {
+            this.subjectCover.previewUrl = data.data.previewUrl
+          } 
+        })
+    },
+
+    deleteFile() {
+      this.subjectCover.previewUrl = "";
+    },
+
+    updateSubjectCover(){
+      this.$http.put(`/api/internal/subjectCover/${this.subjectCover.coverId.id}`,{},{
+        coverFileId:this.subjectCover.coverFileId
+      })
+      .then((data)=>{
+        if(data.status == '200') {
+            this.dialogCoverVisible = false
+            this.$message({
+              message:'修改成功',
+              type:'success'
+            })
+
+            this.getSubjectCoverList();
+        } 
+      })
+    },
+
+    /**
+     * 拦截上传，手动实现上传文件
+     */
+    tirggerFile (event) {
+        let that = this
+        var filePath = event.target.value
+        let file = event.target.files[0]
+
+        let fileFormat = filePath.substring(filePath.lastIndexOf(".")).toLowerCase()
+        if (!fileFormat.match(/(.png|.jpg|.jpeg)$/)) {
+          event.target.value=""
+            return this.$message({
+              message:"格式必须为：.png/.jpg/.jpeg",
+              type:"warning"
+            })
+
+        }
+        let size = file.size;
+        if (size > 1048576) {
+          event.target.value=""
+          return this.$message({
+            message:"上传文件不能超过1M",
+            type:"warning"
+          })
+        }
+        
+        initFileUpload({
+          md5: "",
+          multipartUpload: false, 
+          name: file.name,
+          size: file.size
+        }).then((res)=>{
+         
+          uploadFilesBySteaps({
+            file: file,
+            uploadUrl:res.data.uploadUrl, 
+            limitSize: 50 * 1024 * 1024,
+            callBack: ()=>{},
+            errBack: ()=>{},
+            httpConfig: {clsoeMessage: true}
+          }).then((uploadResponse)=>{
+            this.confirmUpload(uploadResponse[0].id);
+          }).catch((uploadError)=>{
+            this.$message({message:'网络状况不佳，请删除并重新上传',type:'error'});
+          })
+        }).catch((initErr)=>{})
+        return false;
+      },
+
+      /**
+       * 平台确认上传完成
+       */
+      confirmUpload(id) {
+        // 平台确认
+        completeFileUpload(id).then((completeResponse)=>{
+            this.subjectCover.coverFileId = id;
+            this.subjectCover.previewUrl = completeResponse.data;
+        }).catch((completeErr)=>{
+          this.$message({message:completeErr || '上传失败',type:'warning'});          
+        })
+      },
 
   }
 }
@@ -336,8 +467,6 @@ export default {
     }
   }
   .wrap {
-
-
     height: calc(100vh - 200px);
     // background-color: red;
   	ul {
@@ -347,6 +476,21 @@ export default {
   			display: flex;
   		}
   	}
+
+    .logo-div {
+      display: flex;
+      align-items: center;
+
+      &-left {
+        width: 160px;
+        flex-shrink: 0
+      }
+
+      &-right {
+        margin-left: 20px;
+        color: #b9c1d2;
+      }
+    }
 
 
   }

@@ -55,9 +55,11 @@
 					          <el-menu-item index="/administrator/userManagement">用户管理</el-menu-item>
 					          <!-- <el-menu-item index="1-7">权限管理</el-menu-item> -->
 					          <el-menu-item index="/administrator/siteManagement">站点管理</el-menu-item>
-					          <el-submenu index="4">
+					          <el-menu-item index="/administrator/versionManagement">教材管理</el-menu-item>
+					          <el-menu-item index="/administrator/knowledgePoint">知识点管理</el-menu-item>
+					          <el-menu-item index="/administrator/textbookManagement">用书管理</el-menu-item>
+					          <!-- <el-submenu index="4">
 							        <template slot="title">
-							          <!-- <i class="el-icon-document"></i> -->
 							          <span>章节知识</span>
 							        </template>
 							        <el-menu-item-group>
@@ -67,7 +69,7 @@
 						
 							        </el-menu-item-group>
 			
-							      </el-submenu>
+							      </el-submenu> -->
 					          <!-- <el-menu-item index="">章节知识</el-menu-item> -->
 					        </el-menu-item-group>
 	
@@ -94,7 +96,10 @@
 					        <el-menu-item-group>
 					          
 					          <el-menu-item index="/administrator/systemConfig">系统配置</el-menu-item>
-					           <el-menu-item index="/administrator/resourceType">资源类型配置</el-menu-item>
+					          <el-menu-item index="/administrator/questionType">题目类型配置</el-menu-item>
+					          <el-menu-item index="/administrator/resourceType">资源类型配置</el-menu-item>
+					          <el-menu-item index="/administrator/thirdPartyServer">第三方服务配置</el-menu-item>
+					          <el-menu-item index="/administrator/systemLog">系统日志</el-menu-item>
 				
 					        </el-menu-item-group>
 	
@@ -137,11 +142,12 @@ export default {
   },
   mounted() {
   	this.defaultActive = this.$route.fullPath
-  	if(this.$route.fullPath.indexOf('rolemanagement')>-1 ||this.$route.fullPath.indexOf('subjectManagement')>-1||this.$route.fullPath.indexOf('organizational')>-1||this.$route.fullPath.indexOf('classManagement')>-1||this.$route.fullPath.indexOf('userManagement')>-1||this.$route.fullPath.indexOf('siteManagement')>-1||this.$route.fullPath.indexOf('chapterKnow')>-1||this.$route.fullPath.indexOf('knowledgePoint')>-1) {
+  	if(this.$route.fullPath.indexOf('rolemanagement')>-1 ||this.$route.fullPath.indexOf('subjectManagement')>-1||this.$route.fullPath.indexOf('organizational')>-1||this.$route.fullPath.indexOf('classManagement')>-1||this.$route.fullPath.indexOf('userManagement')>-1||this.$route.fullPath.indexOf('siteManagement')>-1||this.$route.fullPath.indexOf('versionManagement')>-1||this.$route.fullPath.indexOf('textbookManagement')>-1||this.$route.fullPath.indexOf('knowledgePoint')>-1) {
   		this.title = "基础管理"
-  	}else if(this.$route.fullPath.indexOf('passwordReview')>-1 ||this.$route.fullPath.indexOf('resourceManagement')>-1 ||this.$route.fullPath.indexOf('questionManagement')>-1 ){
+  	}else if(this.$route.fullPath.indexOf('passwordReview')>-1 || this.$route.fullPath.indexOf('questionType')>-1||this.$route.fullPath.indexOf('resourceManagement')>-1 ||this.$route.fullPath.indexOf('questionManagement')>-1 ){
   		this.title = "审核管理"
-  	}else if (this.$route.fullPath.indexOf('systemConfig')>-1 || this.$route.fullPath.indexOf('resourceType')>-1){
+  	}else if (this.$route.fullPath.indexOf('systemConfig')>-1 || this.$route.fullPath.indexOf('resourceType')>-1
+  				|| this.$route.fullPath.indexOf('thirdPartyServer')>-1){
   		this.title = "系统配置"
 
   	}
@@ -176,11 +182,12 @@ export default {
 
 
             
-            if(key.indexOf('rolemanagement')>-1 ||key.indexOf('subjectManagement')>-1||key.indexOf('organizational')>-1||key.indexOf('classManagement')>-1||key.indexOf('userManagement')>-1||key.indexOf('siteManagement')>-1||key.indexOf('chapterKnow')>-1||key.indexOf('knowledgePoint')>-1) {
+            if(key.indexOf('rolemanagement')>-1 ||key.indexOf('subjectManagement')>-1||key.indexOf('organizational')>-1||key.indexOf('classManagement')>-1||key.indexOf('userManagement')>-1||key.indexOf('siteManagement')>-1||key.indexOf('versionManagement')>-1||key.indexOf('knowledgePoint')>-1||key.indexOf('textbookManagement')>-1) {
 				  		this.title = "基础管理"
 				  	}else if(key.indexOf('passwordReview')>-1 ||key.indexOf('resourceManagement')>-1 ||key.indexOf('questionManagement')>-1 ){
 				  		this.title = "审核管理"
-				  	}else if (key.indexOf('systemConfig')>-1 || key.indexOf('resourceType')>-1){
+				  	}else if (key.indexOf('systemConfig')>-1|| key.indexOf('questionType')>-1 || key.indexOf('resourceType')>-1
+				  				|| key.indexOf('thirdPartyServer')>-1 || key.indexOf('systemLog')>-1){
 				  		this.title = "系统配置"
 
 				  	}
@@ -279,6 +286,7 @@ export default {
 		align-items: center;
 		justify-content: space-between;
 		position: absolute;
+		flex-wrap: wrap;
 		left: 20px;
 		right: 20px;
 		bottom:20px;

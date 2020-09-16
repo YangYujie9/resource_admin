@@ -7,6 +7,8 @@ import 'element-ui/lib/theme-chalk/index.css'
 import erpAxios from './common/axios'
 import plugins from './utils/globalComponents'   //全局组件
 import './assets/css/reset.css'
+import moment from 'moment'
+
 
 
 Vue.use(plugins)
@@ -18,6 +20,8 @@ import Cookies from 'js-cookie'
 
 
 Vue.$http = Vue.prototype.$http = erpAxios
+
+moment.locale('zh-cn');
 
 
 //路由拦截

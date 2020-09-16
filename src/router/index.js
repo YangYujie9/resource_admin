@@ -49,6 +49,16 @@ Vue.use(VueRouter)
         component: ()=>import('@/views/basic_management/user_management'),
       },
       {
+        path: 'versionManagement',
+        name: 'versionManagement',
+        component: ()=>import('@/views/basic_management/version_management'),
+      },
+      {
+        path: 'textbookManagement',
+        name: 'textbookManagement',
+        component: ()=>import('@/views/basic_management/textbook_management'),
+      },
+      {
         path: 'siteManagement',
         name: 'siteManagement',
         component: ()=>import('@/views/basic_management/site_management'),
@@ -56,7 +66,7 @@ Vue.use(VueRouter)
       {
         path: 'knowledgePoint',
         name: 'knowledgePoint',
-        component: ()=>import('@/views/basic_management/knowledge_point'),
+        component: ()=>import('@/views/basic_management/knowledge_management'),
       },
       {
         path: 'chapterKnow',
@@ -74,9 +84,24 @@ Vue.use(VueRouter)
         component: ()=>import('@/views/audit_management/system_config'),
       },
       {
+        path: 'questionType',
+        name: 'questionType',
+        component: ()=>import('@/views/audit_management/question_type'),
+      },
+      {
         path: 'resourceType',
         name: 'resourceType',
         component: ()=>import('@/views/audit_management/resource_type'),
+      },
+      {
+        path: 'thirdPartyServer',
+        name: 'thirdPartyServer',
+        component: ()=>import('@/views/audit_management/thirdparty_server'),
+      },
+      {
+        path: 'systemLog',
+        name: 'systemLog',
+        component: ()=>import('@/views/audit_management/system_log'),
       },
       {
         path: 'resourceManagement',

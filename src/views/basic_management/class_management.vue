@@ -90,6 +90,11 @@
 				  	<div class="input-wrap"><p class="label-class"><span class="require-class">*</span>班级名称：</p>
 				  		<el-input v-model="classes.name" placeholder="请输入内容" class="input-class" size="small"></el-input>
 				  	</div>
+            <div class="input-wrap" v-if="!isEdit"><p class="label-class"><span class="require-class">*</span>班主任：</p>
+              <el-select v-model="classes.headTeacherId" class="input-class" size="small" clearable>
+                <el-option v-for="list in tearchersList" :label="list.teacherName" :key="list.userId" :value="list.userId" placeholder="请选择"></el-option>
+              </el-select>
+            </div>
 				  	<el-divider content-position="left">授课老师</el-divider>
 						<div class="content-wrap">
 							
@@ -132,12 +137,15 @@ export default {
     	dislogTitle:'新增班级',
     	classes:{
     		name:'',
+        headTeacherId:'',
     		tearchers:[]
     	},
     	schoolsName:'',
     	subjectList:[],
     	isEdit: false,
     	editClassId:'',
+      
+      tearchersList:[],
 
 
 
@@ -270,15 +278,18 @@ export default {
 
         if(data.status == '200') {
 
-          
+          let list = []
+
           if(data.data.length) {
           	for(let i=0;i<data.data.length;i++) {
           		for(let j=0;j<data.data[i].teachers.length;j++) {
+                list.push(data.data[i].teachers[j])
           			data.data[i].teachers[j].subjectId = data.data[i].subjectId.id
           		}
           	}	
           }
 					this.subjectList = data.data
+          this.tearchersList = list
           
 
         } 
@@ -287,6 +298,9 @@ export default {
 
     },
     add_class_dialog() {
+      this.classes.name = ''
+      this.classes.headTeacherId = ''
+      this.classes.tearchers = []
     	this.dislogTitle = '新增班级'
     	this.isEdit = false
     	this.dialogVisible = true
@@ -319,10 +333,10 @@ export default {
     	if(!this.classes.name) {
   		  return this.$message({
           message: '班级名称不能为空',
-          type:'error'
+          type:'warning'
         })
     	}
-
+      console.log(this.classes)
 
     	let giveLessonCommands = []
     	this.classes.tearchers.forEach(item=>{
@@ -334,6 +348,7 @@ export default {
     		//编辑
     		this.$http.put(`/api/internal/classes/${this.editClassId}`,{
 	    		className: this.classes.name,
+          
 	    		giveLessonCommands: giveLessonCommands
 	    	})
 	    	.then((data)=>{
@@ -358,9 +373,19 @@ export default {
 
     	}else {
     		//新增
+
+        if(!this.classes.headTeacherId) {
+          return this.$message({
+            message: '班主任不能为空',
+            type:'warning'
+          })
+        }
+
 	    	this.$http.post(`/api/internal/grades/${this.gradeId}/classes`,{
 	    		className: this.classes.name,
+          headTeacherId: this.classes.headTeacherId,
 	    		giveLessonCommands: giveLessonCommands
+
 	    	})
 	    	.then((data)=>{
 

@@ -613,13 +613,18 @@ export default {
       this.editUserId = ''
       this.userForm.gradeId = ''
       this.userForm.subjectId = ''
-      //this.userForm.userRole = this.search.roleTpye
+      this.userForm.userRole = this.search.roleTpye
+      this.userForm.account = ''
+      this.userForm.classId = ''
+      this.userForm.name = ''
+      this.userForm.phoneNumber = ''
+      this.userForm.email = ''
       this.dislogTitle = '添加用户'
       this.isEdit = false
       this.isAdd = true
       this.dialogVisible = true
       this.$nextTick(()=>{
-          this.$refs['usersForm'].resetFields();
+          this.$refs['usersForm'].clearValidate();
       }) 
     },
     
@@ -639,6 +644,7 @@ export default {
       this.userForm.phoneNumber = row.person.phoneNumber
       this.userForm.email = row.person.email
       this.get_class_list(this.userForm.gradeId)
+      this.dialogVisible = true
 
       
     },
