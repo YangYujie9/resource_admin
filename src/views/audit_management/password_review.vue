@@ -1,12 +1,13 @@
 <template>
   <div class="classmanagement">
     <rightNav>
-      <div slot="left">
-        <p class="right-header">组织架构 </p>
+      <div slot="left" style="height: 100%;">
+        <organizationTree @handleCheckNode="handleCheckNode"></organizationTree>
+        <!-- <p class="right-header">组织架构 </p>
         <el-input v-model="filterText" placeholder="请输入组织名称开始搜索..." suffix-icon="el-icon-search" size="mini"></el-input>
         <div class="tree-wrap">
           <basicTree :tree-data="data" :filterText="filterText"  @selectnode="defaultSelectNode" @handleNodeClick="handleNodeClick"></basicTree>
-        </div>
+        </div> -->
       </div>
       <div slot="right">
         <div class="right-header">
@@ -126,7 +127,8 @@
 <script>
   import { mapGetters } from 'vuex'
   import rightNav from '@/components/Nav/rightNav'
-  import basicTree from '@/components/Tree/basicTree'
+  // import basicTree from '@/components/Tree/basicTree'
+  import organizationTree from '@/components/Nav/organizationTree'
 
 export default {
 
@@ -160,7 +162,8 @@ export default {
   },
   components: {
     rightNav,
-    basicTree
+    // basicTree,
+    organizationTree
     
   },
   watch: {
@@ -183,8 +186,13 @@ export default {
     this.getOrgTree()
     
 
+    window.onresize = () => {
+      this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight - 40
+    }
 
-
+  },
+  destroyed(){
+    window.onresize = null;
   },
   methods: {
 
@@ -232,19 +240,14 @@ export default {
 
 
 
-    defaultSelectNode(node) {
+    handleCheckNode(node) {
       this.currentNode = node
       this.schoolsName = node.name
       this.get_grade_list()
-      this.getTableData()  
-    },
-
-    handleNodeClick(data) {
-      this.currentNode = data
-      this.schoolsName = data.name
-      this.get_grade_list()
       this.resetPage()  
     },
+
+
 
     get_grade_list() {
       this.$http.get(`/api/internal/schools/${this.currentNode.id}/grades`)

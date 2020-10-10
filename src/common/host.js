@@ -8,7 +8,7 @@ let hostUrl = "";
 let cdnUrl = "";
 
 if(resourceConfig.isDev) {
-  hostUrl = "http://192.168.2.88:8888";
+  hostUrl = "http://192.168.2.79:8989";
 } else if(resourceConfig.isTest) {
   hostUrl = "172.16.40.55:8888";
 } else if(resourceConfig.isProd) {

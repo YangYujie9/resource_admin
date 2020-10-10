@@ -14,11 +14,18 @@
 		height: 100%;
 		display: flex;
 		.right-one {
-			width: 300px;
+			// width: 300px;
 			flex-shrink: 0;
 			margin-right: 20px;
-			padding: 0 20px;
+			// 
+
+			.right-one-part {
+				width: 300px;
+				padding: 0 20px;
+			}
 		}
+
+
 
 		.right-two {
 			// width: calc(100vw - 300px);

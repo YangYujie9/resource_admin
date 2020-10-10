@@ -1,12 +1,13 @@
 <template>
   <div class="textbook">
     <rightNav>
-      <div slot="left">
-        <p class="right-header">组织架构 </p>
+      <div slot="left" style="height: 100%;">
+        <organizationTree @handleCheckNode="handleNodeClick"></organizationTree>
+        <!-- <p class="right-header">组织架构 </p>
         <el-input v-model="filterText" placeholder="请输入组织名称开始搜索..." suffix-icon="el-icon-search" size="small"></el-input>
         <div class="tree-wrap">
           <basicTree :tree-data="data" :filterText="filterText"  @selectnode="defaultSelectNode" @handleNodeClick="handleNodeClick"></basicTree>
-        </div>
+        </div> -->
       </div>
       <div slot="right">
         <div class="right-header">
@@ -23,7 +24,7 @@
             <el-table
               v-loading="loading"
               border
-              :height="table_height"
+              height="100%"
               :data="tableData"
               cell-class-name="cell-class""
               style="width: 100%">
@@ -229,6 +230,7 @@
   import { mapGetters } from 'vuex'
   import rightNav from '@/components/Nav/rightNav'
   import basicTree from '@/components/Tree/basicTree'
+  import organizationTree from '@/components/Nav/organizationTree'
   import {uploadFilesBySteaps} from '@/utils/upload.js'
   import { VueDebounce } from '@/utils/public.js'
 export default {
@@ -274,7 +276,9 @@ export default {
   },
   components: {
     rightNav,
-    basicTree
+    basicTree,
+    organizationTree
+
     
   },
   watch: {
@@ -289,10 +293,7 @@ export default {
 
   },
   mounted() {
-    this.$nextTick(()=>{
-      this.table_height = this.$refs.wrap.offsetHeight  - 20
-      
-    })
+
 
 
     this.getOrgTree()
@@ -553,7 +554,7 @@ export default {
 
     copyBooksConfirm() {
      
-      if(!this.copyEmpty) {
+      if(this.copyEmpty) {
         this.$confirm('复制的模板为空模版，继续操作将原模版清空，是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -594,7 +595,7 @@ export default {
       this.versionList = []
       this.bookList = []
       this.books = []
-      this.$http.get(`/api/open/common/oeses/${list.learningSection}/${list.code}`)
+      this.$http.get(`/api/internal/oese/oeses/${list.learningSection}/${list.code}`)
       .then((data)=>{
         if(data.status == '200') {
           this.versionList = data.data
@@ -616,7 +617,7 @@ export default {
     getvolumeList(grade,list,flag) {
       // console.log(list)
       
-      this.$http.get(`/api/open/common/oeseList/${this.version}`)
+      this.$http.get(`/api/internal/oese/oeseList/${this.version}`)
       .then((data)=>{
         if(data.status == '200') {
           this.bookList = data.data

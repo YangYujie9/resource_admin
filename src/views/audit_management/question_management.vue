@@ -2,68 +2,7 @@
   <div class="resource">
     <rightNav>
       <div slot="left" class="left">
-
- 
-				<topTabs :tabsList="headList" @changeTabs="changeTabs">
-					<div slot="tab-content">
-						<div v-show="activeType == 'organizations'">
-							<el-input v-model="filterText" placeholder="请输入组织名称开始搜索..." suffix-icon="el-icon-search" size="small"></el-input>
-							<div class="tree-class">
-	            	
-	              <basicTree :tree-data="orgData" :filterText="filterText" @selectnode="defaultSelectNode" @handleNodeClick="orgNodeClick"></basicTree>
-	            </div>
-						</div>
-
-						<div v-show="activeType == 'knowledge'">
-							<top-popover>
-	              <div slot="reference" class="search-class">
-	                <p v-if="filter.subject">{{filter.subject.value}}</p> 
-                  <p v-if="filter.oese && knowType == 'Chapter'">{{filter.oese.name}}</p>
-                  <p v-if="filter.volume && knowType == 'Chapter'">{{filter.volume.name}}</p>
-	              </div>
-	              <div slot="popover">
-                  <div>
-	                	<p>学段：</p>
-	                  <el-radio-group v-model="filter.learningSection" size="mini" @change="getSubject">
-	                    <el-radio-button v-for="list in sectionList" :label="list.key" :key="list.key">{{list.value}}</el-radio-button>
-	                  </el-radio-group>
-                  </div>
-                  <!-- <p>年级：</p>
-                  <el-radio-group v-model="filter.grade" size="mini" @change="getPonitTree">
-                    <el-radio-button v-for="list in gradesList" :label="list" :key="list.key">{{list.value}}</el-radio-button>
-                  </el-radio-group> -->
-                  <div>
-	                  <p>科目：</p>
-	                  <el-radio-group v-model="filter.subject" size="mini" @change="changeSubject">
-	                    <el-radio-button :label="item" :key="item.key" v-for="item in subjectsList">{{item.value}}</el-radio-button>
-	                  </el-radio-group>
-                  </div>
-                  <div v-show="knowType == 'Chapter'">
-                    <p>教材版本：</p>
-                    <el-radio-group v-model="filter.oese" size="mini" @change="getvolumeList">
-                      <el-radio-button :label="item" :key="item.oeseId" v-for="item in versionList">{{item.name}}</el-radio-button>
-                    </el-radio-group>
-                  </div>
-                  <div v-show="knowType == 'Chapter'">
-                    <p>册别：</p>
-                    <el-radio-group v-model="filter.volume" size="mini" @change="getPonitTree">
-                      <el-radio-button :label="item" :key="item.oeseId" v-for="item in volumeList">{{item.name}}</el-radio-button>
-                    </el-radio-group>
-                  </div>
-                </div>
-	            </top-popover>
-	            <div class="search-wrap">
-	              <el-radio-group v-model="knowType" size="mini" @change="getPonitTree">
-	                <el-radio-button label="Chapter">章节目录</el-radio-button>
-	                <el-radio-button label="Knowledge">知识点</el-radio-button>
-	              </el-radio-group>
-              </div>
-	            <div class="tree-class point-tree">
-	              <pointTree :tree-data="pointData" @handleNodeClick="pointNodeClick" @selectnode="defaultPointNode"></pointTree>
-	            </div>
-						</div>
-					</div>
-				</topTabs>
+        <collapsiblePonitTree @setActiveType="setActiveType" @orgNodeClick="orgNodeClick" @chapterNodeClick="chapterNodeClick" @knowNodeClick="knowNodeClick" @getSubjectCode="getSubjectCode" @clearData="clearData"></collapsiblePonitTree>
 
 
 
@@ -128,112 +67,119 @@
               <div style="height: 300px;line-height: 300px;text-align: center;">暂无数据</div>
             </div>
 			      <div v-else>
-			        <el-card class="box-card" shadow="hover" v-for="list in tableData">
+			        <el-card class="box-card" shadow="hover" v-for="list in tableData" >
 			        	<el-checkbox v-model="list.check" style="" class="check-class" @change="handleCheckedChange"></el-checkbox>
-			          <section class="content"   v-show="!isAnswer">
-			            <div class="qt1" v-html="list.name">
-			              <!-- <img src="@/assets/test1.png" /> -->
-	
-			            </div>
-			            <div class="qt2" v-if="list.options.length">
-			              <ul>
-			                <li style="width: 100%;" class="selectoption" v-for="item in list.selectoption">
+                <div>
+  			          <section class="content cursor" style="padding-bottom: 0px;" @click="list.showDetail = !list.showDetail">
+  			            <div class="qt1" v-html="list.name">
+  			              <!-- <img src="@/assets/test1.png" /> -->
+  	
+  			            </div>
+  			            <div class="qt2" v-if="list.options.length">
+  			              <ul>
+  			                <li style="width: 100%;" class="selectoption" v-for="item in list.selectoption">
 
-                        <span>{{item.key}}</span>
-                        <span>、</span>
-                        <span v-html="item.value"></span> 
-			                  <!-- <img src="@/assets/test1.png" /> -->
-			                </li>
-			                <!-- <li style="width: 24%;" class="selectoption">
-			                  B.
-			                 <img src="@/assets/test1.png" />
-			                </li>
-			                <li style="width: 24%;" class="selectoption">
-			                  C.
-			                  <img src="@/assets/test1.png" /> 
-			                </li>
-			                <li style="width: 24%;" class="selectoption">
-			                  D.
-			                  <img src="@/assets/test1.png" /> 
-			                </li> -->
-			              </ul>
-			            </div>
+                          <span>{{item.key}}</span>
+                          <span>、</span>
+                          <span v-html="item.value"></span> 
+  			                  <!-- <img src="@/assets/test1.png" /> -->
+  			                </li>
+  			                <!-- <li style="width: 24%;" class="selectoption">
+  			                  B.
+  			                 <img src="@/assets/test1.png" />
+  			                </li>
+  			                <li style="width: 24%;" class="selectoption">
+  			                  C.
+  			                  <img src="@/assets/test1.png" /> 
+  			                </li>
+  			                <li style="width: 24%;" class="selectoption">
+  			                  D.
+  			                  <img src="@/assets/test1.png" /> 
+  			                </li> -->
+  			              </ul>
+  			            </div>
 
-                  <!-- 小题 -->
-                  <div class="" v-if="list.smallQuestions.length" style="margin-top: 10px;">
-                    <div v-for="(list1,index1) in list.smallQuestions">
+                    <!-- 小题 -->
+                    <div class="" v-if="list.smallQuestions.length" style="margin-top: 10px;">
+                      <div v-for="(list1,index1) in list.smallQuestions">
 
-                      <div class="qt1">
-                        <!-- <img src="@/assets/test1.png" /> -->
-                        <span>{{index1+1}}</span><span>、</span>
-                        <span v-html="list1.name"></span>
-                      </div>
-                      <div class="qt2" v-if="list1.options.length">
-                        <ul>
-                          <li style="width: 100%;" class="selectoption" v-for="item in list1.selectoption">
+                        <div class="qt1" v-if="list1.name">
+                          <div class="small-one">
+                            <span>{{index1+1}}</span><span>、</span>
+                            <span v-html="list1.name" ></span>
+                          </div>
+                        </div>
+                        <div class="qt2" v-if="list1.options.length">
+                          <ul>
+                            <li style="width: 100%;" class="selectoption" v-for="item in list1.selectoption">
 
-                            <span>{{item.key}}</span>
-                            <span>、</span>
-                            <span v-html="item.value"></span> 
-                            <!-- <img src="@/assets/test1.png" /> -->
-                          </li>
-     
-     
-                        </ul>
+                              <span>{{item.key}}</span>
+                              <span>、</span>
+                              <span v-html="item.value"></span> 
+                              <!-- <img src="@/assets/test1.png" /> -->
+                            </li>
+       
+       
+                          </ul>
+                        </div>
                       </div>
                     </div>
-                  </div>
-			          </section>
+  			          </section>
 
 
-			          <section class="content" v-show="isAnswer">
-			            <div class="qt2 top"></div>
+  			          <section class="content" v-show="list.showDetail" style="padding-top: 0px;">
+  			            <div class="qt2 top"></div>
 
-			            <div class="middle">
-			              <div>
-			                <p class="title">【知识点】</p>
-			                <p>
-			                	<span>{{list.knowledgesPoint.join()}}</span>
-			                </p>
-			              </div>
+  			            <div class="middle">
+  			              <div>
+  			                <p class="title">【知识点】</p>
+  			                <p>
+  			                	<span>{{list.knowledgesPoint.join()}}</span>
+  			                </p>
+  			              </div>
 
-			              <div v-if="list.fillAnswers.length ||list.smallQuestions.length">
-			                <p class="title">【答案】</p>
-			                <p>
-			                	<span v-for="(item,index1) in list.answers">
-                         <span v-if="list.smallQuestions.length"  style="margin-left: 0px;">{{index1+1}}.</span>
-                         <span style="margin-left: 0px;">{{item}}</span>
-                        </span>
-			                </p>
-			              </div>
-			              <div>
-			                <p class="title">【分析】</p>
-			                <p v-html="list.analysis"></p>
-			              </div>
-			              <div>
-			                <p class="title">【详解】</p>
-			                <p v-html="list.detailedAnalysis"></p>
-			              </div>
+  			              <div v-if="list.fillAnswers.length ||list.smallQuestions.length">
+  			                <p class="title">【答案】</p>
+  			                <p>
+  			                	<span v-for="(item,index1) in list.answers">
+                           <span v-if="list.smallQuestions.length"  style="margin-left: 0px;">{{index1+1}}.</span>
+                           <span style="margin-left: 0px;">{{item}}</span>
+                          </span>
+  			                </p>
+  			              </div>
+  			              <div>
+  			                <p class="title">【分析】</p>
+  			                <p v-html="list.analysis"></p>
+  			              </div>
+  			              <div>
+  			                <p class="title">【详解】</p>
+  			                <p v-html="list.detailedAnalysis"></p>
+  			              </div>
 
-			            </div>
-			          </section>
-			          <section class="foot-wrap">
-			            <div class="pt1">
-			              <div>状态：{{list.applyStateName}}</div>
-			              <div>
-			              	<el-button type="text" v-if="list.applyState == 'Audit' || list.applyState == 'Undercarriage'" @click="groundQuestion(list.questionId)">上架</el-button>
-			              	<el-button type="text" v-if="list.applyState == 'Grounding'" @click="underQuestion(list.questionId)">下架</el-button>
-			              	<el-button type="text" v-if="list.applyState == 'Audit'" @click="rejectQuestion(list.questionId)">审批打回</el-button>
-			              	<el-button type="text" @click="deleteQuestion(list.questionId)">删除</el-button>
-			              </div>
-			              <div>
-			              	<span>上传：{{list.createTime}}</span>
-			              	<span>难度：{{list.difficultyTypeName}}</span>
-			              	<span>题型：{{list.questionTypeName}}</span>
-			              </div>
-			            </div>
+  			            </div>
+  			          </section>
+  			          <section class="foot-wrap">
+  			            <div class="pt1">
+  			              <div>
+                        <span>状态：{{list.applyStateName}}</span>
 
-			          </section>
+                        <span>上传：{{list.createTime}}</span>
+                        <span>难度：{{list.difficultyTypeName}}</span>
+                        <span>题型：{{list.questionTypeName}}</span>
+                      </div>
+  			              <div>
+                        <el-button type="text" @click="list.showDetail = !list.showDetail">{{list.showDetail?'收起': '详情'}}</el-button>
+  			              	<el-button type="text" v-if="list.applyState == 'Audit' || list.applyState == 'Undercarriage'" @click="groundQuestion(list.questionId)">上架</el-button>
+  			              	<el-button type="text" v-if="list.applyState == 'Grounding'" @click="underQuestion(list.questionId)">下架</el-button>
+  			              	<!-- <el-button type="text" v-if="list.applyState == 'Audit'" @click="rejectQuestion(list.questionId)">审批打回</el-button> -->
+  			              	<el-button type="text" @click="deleteQuestion(list.questionId)">删除</el-button>
+                        <el-button type="text" @click="errorCorrect(list.questionId)">纠错</el-button>
+  			              </div>
+
+  			            </div>
+
+  			          </section>
+                </div>
 			        </el-card>
 			      </div>
 
@@ -241,18 +187,18 @@
 			    </div>
 
           <div class="pagination" ref="pagination">
-            <div>
+            <div style="flex-shrink: 0">
               <el-checkbox v-model="checkAll" @change="handleCheckAllChange" :indeterminate="isIndeterminate">全选</el-checkbox>
        				<el-button type="text" @click="deleteQuestion()" style="margin-left: 20px;">删除</el-button>
             	<el-button type="text" @click="groundQuestion()">上架</el-button>
             	<el-button type="text" @click="underQuestion()">下架</el-button>
-            	<el-button type="text" @click="rejectQuestion()">打回</el-button>
+            	<!-- <el-button type="text" @click="rejectQuestion()">打回</el-button> -->
             </div>
             <el-pagination
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
               :current-page="search.page"
-              :page-sizes="[10, 20, 30, 50]"
+              :page-sizes="[30, 50, 80, 150]"
               :page-size="search.size"
               layout="total, prev, pager, next, sizes , jumper"
               :total="total">
@@ -287,42 +233,18 @@
 <script>
   import { mapGetters } from 'vuex'
   import rightNav from '@/components/Nav/rightNav'
-  import topTabs from '@/components/Nav/topTabs'
-  import basicTree from '@/components/Tree/basicTree'
-  import pointTree from '@/components/Tree/pointTree'
-  import topPopover from "@/components/Popover/topPopover";
+  import collapsiblePonitTree from '@/components/Nav/collapsiblePonitTree'
+  import { debounce } from '@/utils/public.js'
 export default {
 
   data() {
 
     return {
     	isIndeterminate:false,
-    	activeType:'organizations',
-    	orgData: [],
-    	filterText:'',
-      versionList:'',
-    	filter: {
-    		gradeId:'',
-    		subjectId:'',
-    		learningSection:'',
-        oese:'',
-        volume:'',
-    	},
-	    headList: [{
-          label:'组织架构',
-          value:'organizations',
-          check:true
-        },{
-          label:'章节知识',
-          value:'knowledge',
-          check:false
-        }
-      ],
-      sectionList:[],
+    	activeType:'',
       gradesList:[],
       subjectsList:[],
-      pointData:[],
-      knowType:"Chapter",
+      knowType:"",
       current: {
       	gradeName:'',
       	subjectName:''
@@ -334,7 +256,7 @@ export default {
       	difficultyType:'',
       	time:'',
       	page:1,
-      	size:10
+      	size:30
       },
       total:0,
       checkAll:'',
@@ -343,13 +265,16 @@ export default {
     	questionTypeList:[],
     	statusLiist:['待审核','已上架','已下架'],
     	difficultyLiist: ['易','较易','中档','较难','难'],
-    	currentPoint:'',
-    	currentNode:'',
+      currentChapter:'',
+      currentKnowledge:'',    	
+      currentNode:'',
     	schoolsName:'',
     	isAnswer:false,
     	orgSubjectsList:[],
       volumeList:[],
-      isMounted: false
+      isMounted: false,
+      subjectCode:'',
+      learningSection:'',
 
 
 
@@ -362,16 +287,15 @@ export default {
   },
   components: {
     rightNav,
-    topTabs,
-    basicTree,
-    pointTree,
-    topPopover
+    collapsiblePonitTree,
     
   },
   watch: {
-    // paginationHeight(val) {
-    //   this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight - val
-    // }
+    isAnswer(val) {
+      this.tableData.forEach(item=>{
+        item.showDetail = val?true: false
+      })
+    }
 
   },
   computed: {
@@ -391,139 +315,90 @@ export default {
        
     })
 
-    this.getOrgTree()
-    this.getlearningSection()
+    // this.getOrgTree()
+    // this.getlearningSection()
+
+    // this.$nextTick(() => {
+    //   // 禁用右键
+    //   document.oncontextmenu = new Function("event.returnValue=false");
+    //   // 禁用选择
+    //   document.onselectstart = new Function("event.returnValue=false");
+    // });
 
 
+    window.onresize = () => {
+      this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight - this.$refs.pagination.offsetHeight     
+  
+    }
 
   },
+
+  destroyed(){
+    window.onresize = null;
+  },
   methods: {
+    setActiveType(type1,type2) {
+      if(this.activeType != type1) {
+        this.activeType = type1
+        // this.resetPage()
+        this.getQuestionType()
+        this.$nextTick(()=>{
+          this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight - this.$refs.pagination.offsetHeight
+          // 
+        })
 
-    // 获取组织架构树
-    getOrgTree(){
-      this.$http.get(`/api/internal/organizations/tree`)
-      .then((data)=>{
-        if(data.status == '200') {
-
-          this.orgData = data.data
-
-
-        } 
-        
-      })
-
-
-    },
-
-    changeTabs(tab) {
-    	this.activeType = tab
-    	this.resetPage()
-    	this.getQuestionType()
-    	this.$nextTick(()=>{
-	      this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight - this.$refs.pagination.offsetHeight
-	      // 
-	    })
-    },
-
-    changeSubject() {
-
-
-      this.getQuestionType()
+        // this.resetPage()
+      }
       
-      this.getVersionList()
+
+      if(this.knowType != type2) {
+        this.knowType = type2
+        this.resetPage()
+      }
+      
+
+ 
+    },
+    getSubjectCode(learningSection,code) {
+
+      if(this.learningSection!=learningSection || this.subjectCode != code) {
+        this.learningSection = learningSection
+        this.subjectCode = code
+        this.getQuestionType()   
+      }
+
     },
 
 
-    defaultSelectNode(node) {
-    	this.currentNode = node
-    	this.schoolsName = node.name
-    	this.getSubjectByOrg()
-    	this.getTableData()
-    },
+    clearData() {
 
+      this.tableData = []
+    },
     orgNodeClick(data) {
+      this.search.subject = ''
     	this.currentNode = data
     	this.schoolsName = data.name
     	this.getSubjectByOrg()
     	this.resetPage()
     },
 
-    defaultPointNode(node) {
-    	this.currentPoint = node
 
-    	if(node.memberType == this.knowType) {
-    		this.getTableData()
-    	}
-    	
+    chapterNodeClick(data) {
+      this.currentChapter = data
+      this.currentChapter && this.activeType == 'knowledge' && this.knowType == 'chapter'?this.resetPage():null
     },
 
-    pointNodeClick(data) {
-    	this.currentPoint = data
-    	this.resetPage()
+
+    knowNodeClick(data) {
+      this.currentKnowledge = data
+      this.currentKnowledge && this.activeType == 'knowledge' && this.knowType == 'knowledge'?this.resetPage():null
     },
 
-  	getlearningSection() {
-
-      this.$http.get(`/api/internal/dictionaries/learningSection`)
-      .then((data)=>{
-        if(data.status == '200') {
-
-
-        	this.sectionList = data.data
-        	this.filter.learningSection = 	this.sectionList[0].key
-        	this.getSubject()
-        	
-
-          } 
-        })
-
-  	},
-
-
-  	// getGrades() {
-
-
-   //    this.$http.get(`/api/open/common/grades?learningSection=${this.filter.learningSection}`)
-   //    .then((data)=>{
-   //      if(data.status == '200') {
-
-   //      	this.gradesList = data.data
-   //      	this.filter.grade = this.gradesList[0]
-
-
-   //      	this.getSubject()
-
-
-   //        } 
-   //      })
-
-  	// },
-
-  	getSubject() {
-
-      this.$http.get(`/api/open/common/subjects?learningSection=${this.filter.learningSection}`)
-      .then((data)=>{
-        if(data.status == '200') {
-
-
-        	this.subjectsList = data.data
-        	this.filter.subject = this.subjectsList[0]
-        	this.getQuestionType()
-        	
-          this.getVersionList()
-
-
-
-          } 
-          
-        })
-
-  	},
 
 
   	getSubjectByOrg() {
   		
-
+      this.search.type = ''
       this.$http.get(`/api/internal/schools/${this.currentNode.id}/subjects`)
       .then((data)=>{
         if(data.status == '200') {
@@ -539,62 +414,36 @@ export default {
         })
 
   	},
-    getVersionList() {
-      this.versionList = []
-      this.$http.get(`/api/open/common/oeses/${this.filter.learningSection}/${this.filter.subject.key}`)
-      .then((data)=>{
-        if(data.status == '200') {
-          this.versionList = data.data
-          this.filter.oese = this.versionList[0]
-          if(!this.filter.oese) {
-            this.pointData = []
-            this.volumeList = []
-            this.filter.volume = ''
-          }else {
-            this.getvolumeList()
-          }
-        }    
-      })
-    },
 
-    getvolumeList() {
-      this.volumeList = []
-      this.$http.get(`/api/open/common/oeseList/${this.filter.oese.oeseId}`)
-      .then((data)=>{
-        if(data.status == '200') {
-          this.volumeList = data.data
-          this.filter.volume = this.volumeList[0]
-          if(!this.filter.volume) {
-            this.pointData = []
-          }else {
-            this.getPonitTree()
-          }
-        }    
-      })
-    },
   	getQuestionType() {
 
       this.search.type = ''
+
   		let subjectCode = ''
+
+      let learningSection = ''
       this.questionTypeList = []
   		if(this.activeType == 'organizations') {
   			subjectCode = this.search.subject.code
+        learningSection = this.search.subject.learningSection
   		}else {
-  			subjectCode = this.filter.subject.key
+  			subjectCode = this.subjectCode
+        learningSection = this.learningSection
   		}
 
   		if(!subjectCode) {
-        this.resetPage()
+        this.activeType == 'organizations'?this.resetPage():null
   			return false
   		}
 
-      this.$http.get(`/api/open/common/getQuestionType/${this.filter.learningSection}/${subjectCode}`)
+      this.$http.get(`/api/open/common/getQuestionType/${learningSection}/${subjectCode}`)
       .then((data)=>{
         if(data.status == '200') {
 
 
         	this.questionTypeList = data.data
-        	this.resetPage()
+        	// this.activeType == 'organizations'?this.resetPage():null
+          this.resetPage()
 
 
 
@@ -604,34 +453,6 @@ export default {
 
   	},
 
-  	getPonitTree() {
-
-  		this.pointData = []
-  		if(this.knowType == "Chapter") {
-	      this.$http.get(`/api/internal/chapter/chapterTree/${this.filter.volume.oeseId}`)
-	      .then((data)=>{
-	        if(data.status == '200') {
-	        	this.pointData = data.data
-
-	        } 
-	          
-	      })
- 		
-	    }else {
-	      this.$http.get(`/api/internal/knowledge/knowledgeTree?learningSection=${this.filter.learningSection}&subjectCode=${this.filter.subject.key}`)
-	      .then((data)=>{
-	        if(data.status == '200') {
-	        	this.pointData = data.data
-
-
-	          } 
-	        })
-
-	    }
-
-
-
-  	},
 
   	//全选
     handleCheckAllChange(val) {
@@ -689,21 +510,20 @@ export default {
       this.search.page = 1
       this.getTableData()
     },
-    getTableData() {
-
-    	if(!this.currentNode && !this.currentPoint && !this.filter.subject) {
-    		setTimeout(this.getTableData(),1000)
+    getTableData: debounce(function() {
+    	if(!this.currentNode && (!this.currentChapter || !this.currentKnowledge)) {
+    		return false
     	}	
 
       this.tableData = []
       this.checked = false
       let params = {
       	schoolId: this.currentNode.id,
-      	subject: this.search.subject?this.search.subject.code:'',
+      	subject:  this.activeType == 'organizations'? this.search.subject.code:this.subjectCode,
 				questionType: this.search.type,
 				difficultyType: this.search.difficultyType,
-				chapterId: this.currentPoint.id,
-				knowledgeId: this.currentPoint.id,
+				chapterId: this.currentChapter.id,
+				knowledgeId: this.currentKnowledge.id,
 				applyState: this.search.applyState,
 				startTime:this.search.time? this.search.time[0]:'',
 				endTime: this.search.time?this.search.time[1]:'',
@@ -719,17 +539,21 @@ export default {
     		params.schoolId = ''
     		params.subjectId = ''
 
-    		if(this.knowType == "Chapter") {
-    			params.knowledgeId = ''
-    		}else {
-    			params.chapterId = ''
-    		}
+    		// if(this.knowType == "chapter") {
+    		// 	params.knowledgeId = ''
+    		// }else {
+    		// 	params.chapterId = ''
+    		// }
     	}
+
+
     
       this.$http.get(`/api/internal/question/questions`,params)
       .then((data)=>{
         if(data.status == '200') {
         	data.data.content.forEach(item=>{
+
+            item.showDetail = false
             item.answers = []
             this.handleQuestion(item,item)
 
@@ -738,19 +562,22 @@ export default {
 
         		item.check = false
         	})
-          console.log(data.data.content)
+          // console.log(data.data.content)
 
           this.tableData = data.data.content
           this.total = data.data.totalElements
           this.checkAll = false
 
+          this.$nextTick(()=>{
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 
+          })
 
         } 
           
         })
 
-    },
+    }),
 
     handleQuestion(item,item0) {
       item.selectoption = []
@@ -983,6 +810,12 @@ export default {
 	    },
 
 
+      errorCorrect(questionId) {
+
+        this.$router.push({path:'/administrator/questionCorrection', query: {questionId: questionId}})
+      },
+
+
 
   }
 }
@@ -1094,15 +927,21 @@ export default {
 		        clear: both;
 		        line-height: 28px;
 		        font-size: 1rem;
-            display: flex;
-            flex-wrap: wrap;
+            // display: flex;
+            // flex-wrap: wrap;
 		        //padding: 20px;
 		        position: relative;
 		        word-break: break-word;
 		        padding-bottom: 10px;
 		        cursor: pointer;
 
+            .small-one {
+              display: flex;
+              // flex-wrap: wrap;
+            }
+
 		        img {
+
 		          float: right;
 		          position: relative;
 		        }

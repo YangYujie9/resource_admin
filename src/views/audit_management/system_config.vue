@@ -1,7 +1,7 @@
 <template>
   <div class="system">
     <rightNav>
-      <div slot="left">
+      <div slot="left" class="right-one-part">
         <p class="right-header">系统配置 </p>
         <div class="meau-wrap">
           <ul>
@@ -26,6 +26,7 @@
 				  <el-table
 				    :data="difficultyList"
 				    border
+            height="100%"
 				    style="width: 100%">
 				    <el-table-column
 				      type="index"
@@ -53,7 +54,7 @@
 
         <div class="wrap" v-show="title=='学科封面设置'">
 
-          <el-table :data="subjectCoverList" border style="width: 100%" >
+          <el-table :data="subjectCoverList" border style="width: 100%" height="100%">
             <el-table-column type="index" width="100px" label="序号">
             </el-table-column>
             <el-table-column prop="subjectName" label="学科">

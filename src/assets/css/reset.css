@@ -46,7 +46,8 @@ html,body{
 
 
 .el-card img {
-  vertical-align: middle;
+/*  vertical-align: middle;
+  float: right;*/
 }
 
 .el-tag + .el-tag {

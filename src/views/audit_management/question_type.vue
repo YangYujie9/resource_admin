@@ -1,7 +1,7 @@
 <template>
   <div class="question-type">
     <rightNav>
-      <div slot="left">
+      <div slot="left" class="right-one-part">
         <p class="right-header">学段学科 </p>
         <div class="meau-wrap" >
 
@@ -27,7 +27,7 @@
 
 				  <el-table
 				    :data="tableData"
-				    :height="table_height"
+				    height="100%"
 				    border
 				    style="width: 100%">
 				    <el-table-column
@@ -56,10 +56,15 @@
               label="操作"
               width="160">
               <template slot-scope="scope">
-	              <i class="iconfont iconbianji icon-active" style="margin-right: 20px;" @click="editTypeDialog(scope.row)"></i>
-	              <i class="iconfont iconsuo icon-active"  v-if="!scope.row.enabled" @click="updateEnabled(scope.row.code)"></i>
-	              <i class="iconfont iconkaisuo icon-active" v-if="scope.row.enabled" @click="updateEnabled(scope.row.code)"></i>
+                <div style="cursor: pointer;width: 100%;display: flex;justify-content: space-around;">
+  	              <i class="iconfont iconbianji icon-active" style="" @click="editTypeDialog(scope.row)"></i>
+  	              <i class="iconfont iconsuo icon-active"  v-if="!scope.row.enabled" @click="updateEnabled(scope.row.code)"></i>
+  	              <i class="iconfont iconkaisuo icon-active" v-if="scope.row.enabled" @click="updateEnabled(scope.row.code)"></i>
+                  
+                  <i class="iconfont iconshang-copy icon-active" :class="{hide:scope.$index==0}" @click="upsort(scope.row,scope.$index)"></i>
 
+                  <i class="iconfont iconxia icon-active" :class="{hide:scope.$index==tableData.length-1}" @click="downsort(scope.row,scope.$index)"></i>
+                </div>
               </template>
             </el-table-column>
 				  </el-table>
@@ -138,9 +143,7 @@ export default {
 
   },
   mounted() {
-    this.$nextTick(()=>{
-      this.table_height = this.$refs.wrap.offsetHeight  -  20
-    })
+
     this.getlearningSection()
     this.gettemplate()
 
@@ -281,6 +284,32 @@ export default {
 
 
 
+    upsort(row,index) {
+
+      this.$http.put(`/api/internal/questionType/${row.learningSection}/${row.subjectCode}/turnUp/${index+1}`)
+
+      .then((data)=>{
+
+            this.getTableData()
+
+
+          
+        })
+
+    },
+
+
+    downsort(row,index) {
+
+      this.$http.put(`/api/internal/questionType/${row.learningSection}/${row.subjectCode}/turnDown/${index+1}`)
+
+      .then((data)=>{
+
+        this.getTableData()
+      })
+
+
+    },
 
 
 
@@ -349,6 +378,9 @@ export default {
     height: calc(100vh - 200px);
     // background-color: red;
 
+    .hide {
+      color: transparent;
+    }
 
 
   }

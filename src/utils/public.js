@@ -1,5 +1,5 @@
 // 防抖
-export function _debounce(fn, delay) {
+export function debounce(fn, delay) {
 
     var delay = delay || 200;
     var timer;
@@ -38,18 +38,18 @@ export function _throttle(fn, interval) {
 }
 
 
-  function debounce(fn, time) {
-      let _arguments = arguments
-      let timeout = null
-      return function () {
-          if (timeout) {
-              clearTimeout(timeout)
-          }
-          timeout = setTimeout(() => {
-              fn.call(this, _arguments)
-          }, time);
-      }
-  }
+  // function debounce(fn, time) {
+  //     let _arguments = arguments
+  //     let timeout = null
+  //     return function () {
+  //         if (timeout) {
+  //             clearTimeout(timeout)
+  //         }
+  //         timeout = setTimeout(() => {
+  //             fn.call(this, _arguments)
+  //         }, time);
+  //     }
+  // }
 
 
 

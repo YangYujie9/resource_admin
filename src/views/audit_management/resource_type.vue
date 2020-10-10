@@ -96,10 +96,18 @@ export default {
   },
   mounted() {
       this.$nextTick(()=>{
-        this.table_height = this.$refs.table_warp.offsetHeight 
+        this.table_height = this.$refs.table_warp.offsetHeight - 20
       })
 
       this.gettableData()
+
+    window.onresize = () => {
+      this.table_height = this.$refs.table_warp.offsetHeight - 20
+    }
+  },
+
+  destroyed(){
+    window.onresize = null;
   },
   methods:{
     toggleSelection(flag) {

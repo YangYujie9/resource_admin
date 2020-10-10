@@ -3,68 +3,8 @@
     <rightNav>
       <div slot="left" class="left">
 
- 
-        <topTabs :tabsList="headList" @changeTabs="changeTabs">
-          <div slot="tab-content">
-            <div v-show="activeType == 'organizations'">
-              <el-input v-model="filterText" placeholder="请输入组织名称开始搜索..." suffix-icon="el-icon-search" size="small"></el-input>
-              <div class="tree-class">
-                
-                <basicTree :tree-data="orgData" :filterText="filterText" @selectnode="defaultSelectNode" @handleNodeClick="orgNodeClick"></basicTree>
-              </div>
-            </div>
+      <collapsiblePonitTree @setActiveType="setActiveType" @orgNodeClick="orgNodeClick" @chapterNodeClick="chapterNodeClick" @knowNodeClick="knowNodeClick" @clearData="clearData"></collapsiblePonitTree>
 
-            <div v-show="activeType == 'knowledge'">
-              <top-popover>
-                <div slot="reference" class="search-class">
-                  <p v-if="filter.subject">{{filter.subject.value}}</p>
-                  <p v-if="filter.oese && knowType == 'Chapter'">{{filter.oese.name}}</p>
-                  <p v-if="filter.volume && knowType == 'Chapter'">{{filter.volume.name}}</p>
-                </div>
-                <div slot="popover">
-                  <div>
-                    <p>学段：</p>
-                    <el-radio-group v-model="filter.learningSection" size="mini" @change="getSubject">
-                      <el-radio-button v-for="list in sectionList" :label="list.key" :key="list.key">{{list.value}}</el-radio-button>
-                    </el-radio-group>
-                  </div>
-                  <!-- <p>年级：</p>
-                  <el-radio-group v-model="filter.grade" size="mini" @change="getPonitTree">
-                    <el-radio-button v-for="list in gradesList" :label="list" :key="list.key">{{list.value}}</el-radio-button>
-                  </el-radio-group> -->
-                  <div>
-                    <p>科目：</p>
-                    <el-radio-group v-model="filter.subject" size="mini" @change="getVersionList">
-                      <el-radio-button :label="item" :key="item.key" v-for="item in subjectsList">{{item.value}}</el-radio-button>
-                    </el-radio-group>
-                  </div>
-                  <div v-show="knowType == 'Chapter'">
-                    <p>教材版本：</p>
-                    <el-radio-group v-model="filter.oese" size="mini" @change="getvolumeList">
-                      <el-radio-button :label="item" :key="item.oeseId" v-for="item in versionList">{{item.name}}</el-radio-button>
-                    </el-radio-group>
-                  </div>
-                  <div v-show="knowType == 'Chapter'">
-                    <p>册别：</p>
-                    <el-radio-group v-model="filter.volume" size="mini" @change="getPonitTree">
-                      <el-radio-button :label="item" :key="item.oeseId" v-for="item in volumeList">{{item.name}}</el-radio-button>
-                    </el-radio-group>
-                  </div>
-
-                </div>
-              </top-popover>
-              <div class="search-wrap">
-                <el-radio-group v-model="knowType" size="mini" @change="getPonitTree">
-                  <el-radio-button label="Chapter">章节目录</el-radio-button>
-                  <el-radio-button label="Knowledge">知识点</el-radio-button>
-                </el-radio-group>
-              </div>
-              <div class="tree-class point-tree">
-                <pointTree :tree-data="pointData" @handleNodeClick="pointNodeClick" @selectnode="defaultPointNode"></pointTree>
-              </div>
-            </div>
-          </div>
-        </topTabs>
 
 
 
@@ -116,8 +56,13 @@
               :cell-style="tableCellStyle"
               border>
                 <el-table-column type="selection"> </el-table-column>
-                <el-table-column label="文件名" prop="name" sortable> </el-table-column>
-    <!--             <el-table-column prop="resourceName" sortable label="栏目"> </el-table-column>  -->
+                <el-table-column label="文件名" prop="name" sortable :show-overflow-tooltip="true"> 
+                  <template slot-scope="scope">
+                    <div style="cursor: pointer;" @click="resourcePreview(scope.row.resourceId)">
+                      {{scope.row.name}}
+                    </div>
+                  </template>
+                </el-table-column>
                 <el-table-column prop="resourceName" label="类型" > </el-table-column>
                 <el-table-column prop="userName" label="上传人"> </el-table-column>
                 <el-table-column prop="createTime" label="上传时间"> </el-table-column>
@@ -126,11 +71,12 @@
 
               <el-table-column
                 prop=""
+                width="200"
                 label="操作">
                 <template slot-scope="scope">
                   <div v-if="scope.row.openState!='Privately'" style="cursor: pointer;width: 100%;display: flex;justify-content: space-around;">
 
-                    <!-- <el-button type="text">详情</el-button> -->
+                    <el-button type="text" @click="resourcePreview(scope.row.resourceId)">详情</el-button>
                     <el-button type="text" @click="deleteResource(scope.row)">删除</el-button>
 
                     <el-button type="text" @click="resourceStateChange(scope.row,'Grounding','')" v-if="scope.row.applyState=='Undercarriage'||scope.row.applyState=='Audit'" >上架</el-button>
@@ -149,7 +95,7 @@
 
           </div>
           <div class="pagination">
-            <div>
+            <div  style="flex-shrink: 0">
               <el-checkbox v-model="checked" @change="toggleSelection">全选</el-checkbox>
        <!--        /*/*<el-button type="text" @click="deleteResource()" >删除</el-button>*/*/ -->
               <el-button type="text" @click="deleteResource()" style="margin-left: 20px;">删除</el-button>
@@ -171,24 +117,7 @@
           </div>
         </div>
 
-<!--         <el-dialog
-          title="添加学科"
-          :visible.sync="dialogVisible"
-          :close-on-click-modal='false'
-          width="500px">
-          <div>
-            <div class="input-wrap"><p class="label-class"><span class="require-class">*</span>所属学段：</p>
-              <el-input v-model="subject.learningSection" placeholder="请输入内容" class="input-class" size="small"></el-input>
-            </div>
-            <div class="input-wrap"><p class="label-class"><span class="require-class">*</span>学科名称：</p>
-              <el-input v-model="subject.subjectName" placeholder="请输入内容" class="input-class" size="small"></el-input>
-            </div>
-          </div>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false" size="mini">取 消</el-button>
-            <el-button type="primary" @click="dialogVisible = false" size="mini">确 定</el-button>
-          </span>
-        </el-dialog> -->
+
       </div>
     </rightNav>
 
@@ -198,41 +127,27 @@
 <script>
   import { mapGetters } from 'vuex'
   import rightNav from '@/components/Nav/rightNav'
-  import topTabs from '@/components/Nav/topTabs'
-  import basicTree from '@/components/Tree/basicTree'
-  import pointTree from '@/components/Tree/pointTree'
-  import topPopover from "@/components/Popover/topPopover";
+  // import topTabs from '@/components/Nav/topTabs'
+  // import basicTree from '@/components/Tree/basicTree'
+  // import pointTree from '@/components/Tree/pointTree'
+  import collapsiblePonitTree from '@/components/Nav/collapsiblePonitTree'
+  import { debounce } from '@/utils/public.js'
+  // import topPopover from "@/components/Popover/topPopover";
 export default {
 
   data() {
 
     return {
-      activeType:'organizations',
-      orgData: [],
-      filterText:'',
-      filter: {
-        gradeId:'',
-        subjectId:'',
-        learningSection:'',
-        oese:'',
-        volume:'',
-      },
-      headList: [{
-          label:'组织架构',
-          value:'organizations',
-          check:true
-        },{
-          label:'章节知识',
-          value:'knowledge',
-          check:false
-        }
-      ],
+      activeType:'',
+      knowType:'',
+
+
       sectionList:[],
       gradesList:[],
       subjectsList:[],
       versionList:[],
       pointData:[],
-      knowType:"Chapter",
+      
       current: {
         gradeName:'',
         subjectName:''
@@ -253,7 +168,8 @@ export default {
       openList:[{'id':'Privately','name':'私有'},{'id':'SemiOvert','name':'学校共享'},{'id':'Open','name':'完全公开'}],
       statusLiist:[{'id':'Audit','name':'待审核'},{'id':'Grounding','name':'已上架'},
                   {'id':'Undercarriage','name':'已下架'},{'id':'Recommend','name':'已推荐'}],
-      currentPoint:'',
+      currentChapter:'',
+      currentKnowledge:'',
       currentNode:'',
       schoolsName:'',
       volumeList:[],
@@ -261,10 +177,11 @@ export default {
   },
   components: {
     rightNav,
-    topTabs,
-    basicTree,
-    pointTree,
-    topPopover
+    // topTabs,
+    // basicTree,
+    // pointTree,
+    // topPopover,
+    collapsiblePonitTree
     
   },
   watch: {
@@ -284,36 +201,40 @@ export default {
       // 
     })
 
-    this.getOrgTree()
-    this.getlearningSection()
+    // this.getOrgTree()
+    // this.getlearningSection()
     this.getResourceType()
 
+      
+    window.onresize = () => {
+      this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight -40
+    }
 
 
   },
+
+  destroyed(){
+    window.onresize = null;
+  },
   methods: {
 
-    // 获取组织架构树
-    getOrgTree(){
-      this.$http.get(`/api/internal/organizations/tree`)
-      .then((data)=>{
-        if(data.status == '200') {
-          this.orgData = data.data
-        }
-      })
+    setActiveType(type1,type2) {
 
+      if(this.activeType != type1) {
+        this.activeType = type1
+        this.resetPage()
+      }
+      if(this.knowType != type2) {
+        this.knowType = type2
+        this.resetPage()
+      }
+      
+
+      // 
     },
+    clearData() {
 
-    changeTabs(tab) {
-      this.activeType = tab
-      this.resetPage()
-    },
-
-
-    defaultSelectNode(node) {
-      this.currentNode = node
-      this.schoolsName = node.name
-      this.getTableData()
+      this.tableData = []
     },
 
     orgNodeClick(data) {
@@ -322,99 +243,22 @@ export default {
       this.resetPage()
     },
 
-    defaultPointNode(node) {
-      this.currentPoint = node
 
-      if(node.memberType == this.knowType) {
-        this.getTableData()
-      }
-      
-    },
 
-    pointNodeClick(data) {
-      this.currentPoint = data
-      this.resetPage()
-    },
-
-    getlearningSection() {
-
-      this.$http.get(`/api/internal/dictionaries/learningSection`)
-      .then((data)=>{
-        if(data.status == '200') {
-
-          this.sectionList = data.data
-          this.filter.learningSection =   this.sectionList[0].key
-          this.getSubject()
-          
-        }
-          
-      })
-
+    chapterNodeClick(data) {
+      // console.log(data,888)
+      this.currentChapter = data
+      this.currentChapter && this.activeType == 'knowledge' && this.knowType == 'chapter'?this.resetPage():null
     },
 
 
-    // getGrades() {
-
-    //   this.$http.get(`/api/open/common/grades?learningSection=${this.filter.learningSection}`)
-    //   .then((data)=>{
-    //     if(data.status == '200') {
-
-    //       this.gradesList = data.data
-    //       this.filter.grade = this.gradesList[0]
-    //       this.getSubject()
-    //     }
-    //   })
-
-    // },
-
-    getSubject() {
-
-      this.$http.get(`/api/open/common/subjects?learningSection=${this.filter.learningSection}`)
-      .then((data)=>{
-        if(data.status == '200') {
-          this.subjectsList = data.data
-          this.filter.subject = this.subjectsList[0]
-          
-          this.getVersionList()
-        }    
-      })
-
+    knowNodeClick(data) {
+      this.currentKnowledge = data
+      this.currentKnowledge && this.activeType == 'knowledge' && this.knowType == 'knowledge'?this.resetPage():null
     },
 
-    getVersionList() {
-      this.versionList = []
-      this.$http.get(`/api/open/common/oeses/${this.filter.learningSection}/${this.filter.subject.key}`)
-      .then((data)=>{
-        if(data.status == '200') {
-          this.versionList = data.data
-          this.filter.oese = this.versionList[0]
 
-          if(!this.filter.oese) {
-            this.pointData = []
-            this.volumeList = []
-            this.filter.volume = ''
-          }else {
-            this.getvolumeList()
-          }
-        }    
-      })
-    },
-    getvolumeList() {
-      this.volumeList = []
-      this.$http.get(`/api/open/common/oeseList/${this.filter.oese.oeseId}`)
-      .then((data)=>{
-        if(data.status == '200') {
-          this.volumeList = data.data
-          this.filter.volume = this.volumeList[0]
-          if(!this.filter.volume) {
-            this.pointData = []
-          }else {
-            this.getPonitTree()
-          }
-          
-        }    
-      })
-    },
+
     getResourceType() {
 
       this.$http.get(`/api/open/common/getResourceType`)
@@ -426,31 +270,7 @@ export default {
 
     },
 
-    getPonitTree() {
 
-      this.pointData = []
-      if(this.knowType == "Chapter") {
-
-        this.$http.get(`/api/internal/chapter/chapterTree/${this.filter.volume.oeseId}`)
-        .then((data)=>{
-          if(data.status == '200') {
-            this.pointData = data.data
-            // this.resetPage()
-          }    
-        })
-      
-      }else {
-        this.$http.get(`/api/internal/knowledge/knowledgeTree?learningSection=${this.filter.learningSection}&subjectCode=${this.filter.subject.key}`)
-        .then((data)=>{
-          if(data.status == '200') {
-            this.pointData = data.data
-            // this.resetPage()
-          }    
-        })
-
-      }
-
-    },
 
     toggleSelection() {
 
@@ -496,11 +316,11 @@ export default {
       this.getTableData()
     },
 
-    getTableData() {
+    getTableData: debounce(function() {
 
-      // if(!this.currentNode && !this.currentPoint && !this.filter.subject) {
-      //   setTimeout(this.getTableData(),1000)
-      // } 
+      if(!this.currentNode && (!this.currentChapter || !this.currentKnowledge)) {
+        return false
+      } 
 
 
       this.tableData = []
@@ -509,8 +329,8 @@ export default {
         schoolId: this.currentNode.id,
 
         resourceType: this.search.type,
-        chapterId: this.currentPoint.id,
-        knowledgeId: this.currentPoint.id,
+        chapterId: this.currentChapter.id,
+        knowledgeId: this.currentKnowledge.id,
         openState: this.search.openState,
         applyState: this.search.applyState,
         startTime:this.search.time? this.search.time[0]:'',
@@ -519,6 +339,8 @@ export default {
         size: this.search.size,
       }
 
+      // console.log(params)
+
       if(this.activeType == 'organizations') {
         params.chapterId = ''
         params.knowledgeId = ''
@@ -526,12 +348,13 @@ export default {
       }else if(this.activeType == 'knowledge') {
         params.schoolId = ''
 
-        if(this.knowType == "Chapter") {
+        if(this.knowType == "chapter") {
           params.knowledgeId = ''
         }else {
           params.chapterId = ''
         }
       }
+
     
       this.$http.get(`/api/internal/resources/resourceList`,params)
       .then((data)=>{
@@ -544,7 +367,7 @@ export default {
         }   
       })
 
-    },
+    }),
     //删除
     deleteResource(row) {
       this.$confirm('确认删除资源吗?', '提示', {
@@ -623,10 +446,19 @@ export default {
       }
     },
 
+    resourcePreview(resourceId) {
+      this.$router.push({path: '/administrator/resourcePreview', query: {id:resourceId}})
+    },
+
   }
 }
 </script>
 <style lang="less">
+.admini .content-wrap .content  {
+  .left {
+    display: block;
+  }
+}
 .resource {
   .search-wrap {
     .el-radio-group {
@@ -655,14 +487,7 @@ export default {
       height: calc(100vh - 300px);
     }
 
-    .search-class {
-      display: flex;
-      height: 36px;
-      line-height: 36px;
-      color: #409EFF;
-      justify-content: space-around;
-      cursor: pointer;
-    }
+
 
     .search-wrap {
       margin-top: 10px;

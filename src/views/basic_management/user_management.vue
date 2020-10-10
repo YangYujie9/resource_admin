@@ -1,24 +1,26 @@
 <template>
   <div class="classmanagement">
     <rightNav>
-      <div slot="left">
-        <p class="right-header">组织架构 </p>
+      <div slot="left" style="height: 100%;">
+        <organizationTree @handleCheckNode="handleCheckNode"></organizationTree>
+        <!-- <p class="right-header">组织架构 </p>
         <el-input v-model="filterText" placeholder="请输入组织名称开始搜索..." suffix-icon="el-icon-search" size="small"></el-input>
         <div class="tree-wrap">
           <basicTree :tree-data="data" :filterText="filterText"  @selectnode="defaultSelectNode" @handleNodeClick="handleNodeClick"></basicTree>
-        </div>
+        </div> -->
       </div>
       <div slot="right">
         <div class="right-header">
           <span>用户管理 </span>
-          <span style="margin-left: 20px;">{{schoolsName}}</span>
+          <span style="margin:0 20px;">{{schoolsName}}</span>
+          <el-button size="mini" @click="add_user_dialog" type="primary"><i class="iconfont iconiconjia" style="font-size: 0.9rem;"></i> 新增用户</el-button>
           <div style="position: absolute;top: 0px;right: 0px;">
             <el-button size="mini" type="primary" style="position: relative;"><i class="iconfont iconshangchuan"></i> 导入
               <input style="left:0px" type="file" class="inpucus cursor" @change="importUsers($event)" />
             </el-button>
             <el-button size="mini" @click="exportUsers" type="primary"><i class="iconfont iconxiazai"></i> 导出</el-button>
             <el-button size="mini" @click="downloadTemplate" type="primary"><i class="iconfont iconwendang"></i> 模版下载</el-button>
-            <el-button size="mini" @click="add_user_dialog" type="primary"><i class="iconfont iconiconjia"></i> 新增用户</el-button>
+            
            
           </div>
           
@@ -286,7 +288,8 @@
 <script>
   import { mapGetters } from 'vuex'
   import rightNav from '@/components/Nav/rightNav'
-  import basicTree from '@/components/Tree/basicTree'
+  // import basicTree from '@/components/Tree/basicTree'
+  import organizationTree from '@/components/Nav/organizationTree'
   import {uploadFilesBySteaps} from '@/utils/upload.js'
   import { VueDebounce } from '@/utils/public.js'
 export default {
@@ -382,7 +385,8 @@ export default {
   },
   components: {
     rightNav,
-    basicTree
+    // basicTree,
+    organizationTree
     
   },
   watch: {
@@ -402,26 +406,20 @@ export default {
     })
 
 
-    this.getOrgTree()
     
-
+    window.onresize = () => {
+      this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight - 40
+    }
 
 
   },
+
+  destroyed(){
+    window.onresize = null;
+  },
   methods: {
 
-    // 获取组织架构树
-    getOrgTree(){
-      this.$http.get(`/api/internal/organizations/tree`)
-      .then((data)=>{
 
-          this.data = data.data
-
-        
-      })
-
-
-    },
     toggleSelection() {
 
       // this.$refs.multipleTable.toggleAllSelection()
@@ -451,29 +449,21 @@ export default {
 
 
 
-    defaultSelectNode(node) {
+    handleCheckNode(node) {
       this.currentNode = node
       this.schoolsName = node.name
       this.get_grade_list()
       this.get_subject_list()
       this.getTableData()  
-    },
 
-    handleNodeClick(data) {
-      this.currentNode = data
-      this.schoolsName = data.name
-      this.get_grade_list()
-      this.get_subject_list()
-      this.resetPage() 
-      // this.search.roleTpye = 'student'
       this.search.gradeId = ''
       this.search.classId = ''
       // this.search.name = ''
       // this.search.subjectId = ''
       this.search.page = 1
       this.search.size = 10
-
     },
+
 
     get_grade_list() {
       this.$http.get(`/api/internal/schools/${this.currentNode.id}/grades`)

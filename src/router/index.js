@@ -109,9 +109,24 @@ Vue.use(VueRouter)
         component: ()=>import('@/views/audit_management/resource_management'),
       },
       {
+        path: 'resourcePreview',
+        name: 'resourcePreview',
+        component: ()=>import('@/views/audit_management/resource_preview'),
+      },
+      {
         path: 'questionManagement',
         name: 'questionManagement',
         component: ()=>import('@/views/audit_management/question_management'),
+      },
+      {
+        path: 'questionCorrection',
+        name: 'questionCorrection',
+        component: ()=>import('@/views/audit_management/question_correction'),
+      },
+      {
+        path: 'correctionReview',
+        name: 'correctionReview',
+        component: ()=>import('@/views/audit_management/correction_review'),
       }
 
     ]

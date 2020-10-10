@@ -1,18 +1,19 @@
 <template>
   <div class="classmanagement">
     <rightNav>
-      <div slot="left">
-        <p class="right-header">组织架构 </p>
+      <div slot="left" style="height: 100%">
+        <organizationTree  @handleCheckNode="handleCheckNode"></organizationTree>
+<!--         <p class="right-header">组织架构 </p>
         <el-input v-model="filterText" placeholder="请输入组织名称开始搜索..." suffix-icon="el-icon-search" size="mini"></el-input>
         <div class="tree-wrap">
           <basicTree :tree-data="data" :filterText="filterText"  @selectnode="defaultSelectNode" @handleNodeClick="handleNodeClick"></basicTree>
-        </div>
+        </div> -->
       </div>
       <div slot="right">
         <div class="right-header">
           <span>班级管理 </span>
           <span style="margin-left: 20px;">{{schoolsName}}</span>
-          <el-button size="mini" style="margin-left: 20px;" @click="add_class_dialog"><i class="el-icon-plus"></i> 添加</el-button>
+          <el-button size="mini" style="margin-left: 20px;"  type="primary" @click="add_class_dialog"><i class="el-icon-plus"></i> 新增班级</el-button>
 
         </div>
         <div class="wrap" ref="wrap">
@@ -26,7 +27,7 @@
           <div class="table-wrap">
             <el-table
               :data="tableData"
-              :height="table_height"
+              height="100%"
               ref="multipleTable"
               border>
               <el-table-column
@@ -119,8 +120,8 @@
 <script>
   import { mapGetters } from 'vuex'
   import rightNav from '@/components/Nav/rightNav'
-  import basicTree from '@/components/Tree/basicTree'
-
+  // import basicTree from '@/components/Tree/basicTree'
+  import organizationTree from '@/components/Nav/organizationTree'
 export default {
 
   data() {
@@ -154,7 +155,8 @@ export default {
   },
   components: {
     rightNav,
-    basicTree
+    // basicTree,
+    organizationTree
     
   },
   watch: {
@@ -169,9 +171,6 @@ export default {
 
   },
   mounted() {
-    this.$nextTick(()=>{
-      this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight - 40
-    })
 
 
     this.getOrgTree()
@@ -209,21 +208,14 @@ export default {
     },
 
 
-
-
-    defaultSelectNode(node) {
-    	this.currentNode = node
-    	this.schoolsName = node.name
+    handleCheckNode(node) {
+      this.currentNode = node
+      this.schoolsName = node.name
       this.get_grade_list()
       this.get_subjects()
     },
 
-    handleNodeClick(data) {
-    	this.currentNode = data
-    	this.schoolsName = data.name
-      this.get_grade_list()
-      this.get_subjects()
-    },
+
 
     get_grade_list() {
     	this.$http.get(`/api/internal/schools/${this.currentNode.id}/grades`)
@@ -474,7 +466,7 @@ export default {
 
 
     .table-wrap {
-      
+      height: calc(100vh - 260px);
     }
   }
 

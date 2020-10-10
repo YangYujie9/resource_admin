@@ -1,7 +1,7 @@
 <template>
   <div class="system">
     <rightNav>
-      <div slot="left">
+      <div slot="left" class="right-one-part">
         <p class="right-header">日志查看 </p>
         <div class="meau-wrap">
           <ul>
@@ -13,118 +13,121 @@
       <div slot="right">
         <p class="right-header">{{title}} </p>
 
-        <div v-show="title=='第三方服务同步日志'">
-        
-          <div class="search-wrap" ref="search_wrap">
-            <el-form :inline="true" :model="thirdSearch" class="demo-form-inline" size="mini">
-              <el-form-item label="第三方服务">
-                <el-select v-model="thirdSearch.thirdPartyServerId"class="search-class" @change="resetPage" clearable placeholder="第三方服务">
-                  <el-option v-for="list in thirdServerList" :label="list.serverName" :value="list.thirdPartyServerId.id" :key="list.thirdPartyServerId.id"></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="数据模块">
-                <el-select v-model="thirdSearch.dataModule"class="search-class" @change="resetPage" clearable placeholder="数据模块">
-                  <el-option v-for="list in thirdModuleList" :label="list" :value="list" :key="list"></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="业务操作">
-                <el-select v-model="thirdSearch.businessType" placeholder="业务操作" class="search-class" @change="resetPage" clearable>
-                  <el-option v-for="list in businessTypeList" :label="list" :value="list" :key="list"></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="状态">
-                <el-select v-model="thirdSearch.status" placeholder="状态" class="search-class" @change="resetPage" clearable>
-                  <el-option v-for="list in thirdStatusList" :label="list.name" :value="list.id" :key="list.id"></el-option>
-                </el-select>
-              </el-form-item>
+        <div class="wrap" ref="wrap">
 
-            </el-form>
+          <div v-show="title=='第三方服务同步日志'">
+          
+            <div class="search-wrap" ref="search_wrap1">
+              <el-form :inline="true" :model="thirdSearch" class="demo-form-inline" size="mini">
+                <el-form-item label="第三方服务">
+                  <el-select v-model="thirdSearch.thirdPartyServerId"class="search-class" @change="resetPage" clearable placeholder="第三方服务">
+                    <el-option v-for="list in thirdServerList" :label="list.serverName" :value="list.thirdPartyServerId.id" :key="list.thirdPartyServerId.id"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="数据模块">
+                  <el-select v-model="thirdSearch.dataModule"class="search-class" @change="resetPage" clearable placeholder="数据模块">
+                    <el-option v-for="list in thirdModuleList" :label="list" :value="list" :key="list"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="业务操作">
+                  <el-select v-model="thirdSearch.businessType" placeholder="业务操作" class="search-class" @change="resetPage" clearable>
+                    <el-option v-for="list in businessTypeList" :label="list" :value="list" :key="list"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="状态">
+                  <el-select v-model="thirdSearch.status" placeholder="状态" class="search-class" @change="resetPage" clearable>
+                    <el-option v-for="list in thirdStatusList" :label="list.name" :value="list.id" :key="list.id"></el-option>
+                  </el-select>
+                </el-form-item>
+
+              </el-form>
+            </div>
+
+            <div class="table-warp" ref="table_warp">
+              <el-table
+                :data="thirdTableData"
+                style="width: 100%"
+                :height="table_height1"
+                border>
+                <el-table-column label="标题" prop="title"> </el-table-column>
+                <el-table-column label="数据模块" prop="dataModule"> </el-table-column>
+                <el-table-column label="业务操作" prop="businessType"> </el-table-column>
+                <el-table-column label="状态" prop="statusName"> </el-table-column>
+                <el-table-column label="提示信息" prop="message" > </el-table-column>
+                <el-table-column
+                  prop=""
+                  label="操作"
+                  show-overflow-tooltip>
+                  <template slot-scope="scope">
+                    <span style="cursor: pointer">
+                      <i class="iconfont iconbianji iconclass" style="margin-right: 20px;" @click="editTypeDialog(scope.row)"></i>
+                    </span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+            <div class="pagination">   
+              <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="thirdSearch.page"
+                :page-sizes="[10, 20, 30, 50]"
+                :page-size="thirdSearch.size"
+                layout="total, prev, pager, next, sizes , jumper"
+                :total="thirdTotal">
+              </el-pagination>
+            </div>
+
+          </div> 
+
+          <div v-show="title=='文件转换记录'">
+
+             <div class="search-wrap" ref="search_wrap2">
+              <el-form :inline="true" :model="fileSearch" class="demo-form-inline" size="mini">
+                <el-form-item label="名称">
+                  <el-input  v-model="fileSearch.name"  class="search-class" @change="resetPage" clearable placeholder="名称"></el-input>
+                </el-form-item>
+                <el-form-item label="文件类型">
+                  <el-select v-model="fileSearch.fileType"class="search-class" @change="resetPage" clearable placeholder="文件类型">
+                    <el-option v-for="list in fileTypeList" :label="list.value" :value="list.key" :key="list.key"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="状态">
+                  <el-select v-model="fileSearch.status"class="search-class" @change="resetPage" clearable placeholder="状态">
+                    <el-option v-for="list in fileStatusList" :label="list.value" :value="list.key" :key="list.key"></el-option>
+                  </el-select>
+                </el-form-item>
+
+              </el-form>
+            </div>
+
+            <div class="table-warp">
+              <el-table
+                :data="fileTableData"
+                style="width: 100%"
+                :height="table_height2"
+                border>
+                <el-table-column label="类型" prop="covertType"> </el-table-column>
+                <el-table-column label="名称" prop="name"> </el-table-column>
+                <el-table-column label="文件类型" prop="fileType"> </el-table-column>
+                <el-table-column label="更新时间" prop="updateTime" > </el-table-column>
+                <el-table-column label="状态" prop="statusName"> </el-table-column>
+                <el-table-column label="提示信息" prop="resultMsg" > </el-table-column>
+              </el-table>
+            </div>
+            <div class="pagination">   
+              <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="fileSearch.page"
+                :page-sizes="[10, 20, 30, 50]"
+                :page-size="fileSearch.size"
+                layout="total, prev, pager, next, sizes , jumper"
+                :total="fileTotal">
+              </el-pagination>
+            </div>
+
           </div>
-
-          <div class="table-warp" ref="table_warp">
-            <el-table
-              :data="thirdTableData"
-              style="width: 100%"
-              :height="table_height"
-              border>
-              <el-table-column label="标题" prop="title"> </el-table-column>
-              <el-table-column label="数据模块" prop="dataModule"> </el-table-column>
-              <el-table-column label="业务操作" prop="businessType"> </el-table-column>
-              <el-table-column label="状态" prop="statusName"> </el-table-column>
-              <el-table-column label="提示信息" prop="message" > </el-table-column>
-              <el-table-column
-                prop=""
-                label="操作"
-                show-overflow-tooltip>
-                <template slot-scope="scope">
-                  <span style="cursor: pointer">
-                    <i class="iconfont iconbianji iconclass" style="margin-right: 20px;" @click="editTypeDialog(scope.row)"></i>
-                  </span>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div>
-          <div class="pagination">   
-            <el-pagination
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-              :current-page="thirdSearch.page"
-              :page-sizes="[10, 20, 30, 50]"
-              :page-size="thirdSearch.size"
-              layout="total, prev, pager, next, sizes , jumper"
-              :total="thirdTotal">
-            </el-pagination>
-          </div>
-
-        </div> 
-
-        <div class="wrap" v-show="title=='文件转换记录'">
-
-           <div class="search-wrap">
-            <el-form :inline="true" :model="fileSearch" class="demo-form-inline" size="mini">
-              <el-form-item label="名称">
-                <el-input  v-model="fileSearch.name"  class="search-class" @change="resetPage" clearable placeholder="名称"></el-input>
-              </el-form-item>
-              <el-form-item label="文件类型">
-                <el-select v-model="fileSearch.fileType"class="search-class" @change="resetPage" clearable placeholder="文件类型">
-                  <el-option v-for="list in fileTypeList" :label="list.value" :value="list.key" :key="list.key"></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="状态">
-                <el-select v-model="fileSearch.status"class="search-class" @change="resetPage" clearable placeholder="状态">
-                  <el-option v-for="list in fileStatusList" :label="list.value" :value="list.key" :key="list.key"></el-option>
-                </el-select>
-              </el-form-item>
-
-            </el-form>
-          </div>
-
-          <div class="table-warp">
-            <el-table
-              :data="fileTableData"
-              style="width: 100%"
-              :height="table_height"
-              border>
-              <el-table-column label="类型" prop="covertType"> </el-table-column>
-              <el-table-column label="名称" prop="name"> </el-table-column>
-              <el-table-column label="文件类型" prop="fileType"> </el-table-column>
-              <el-table-column label="更新时间" prop="updateTime" > </el-table-column>
-              <el-table-column label="状态" prop="statusName"> </el-table-column>
-              <el-table-column label="提示信息" prop="resultMsg" > </el-table-column>
-            </el-table>
-          </div>
-          <div class="pagination">   
-            <el-pagination
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-              :current-page="fileSearch.page"
-              :page-sizes="[10, 20, 30, 50]"
-              :page-size="fileSearch.size"
-              layout="total, prev, pager, next, sizes , jumper"
-              :total="fileTotal">
-            </el-pagination>
-          </div>
-
         </div>
 
         <el-dialog title="服务日志详情" :visible.sync="thirdDialogVisible" width="450px" :close-on-click-modal='false'>
@@ -168,7 +171,8 @@ export default {
 
   data() {
     return {
-      table_height:300,
+      table_height1:300,
+      table_height2:300,
       curMeau : 'third',
       meauList: [{
           label:'第三方服务同步日志',
@@ -238,13 +242,31 @@ export default {
 
   },
   mounted() {
+
+    this.$nextTick(()=>{
+      this.table_height1 = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap1.offsetHeight -40
+      this.table_height2 = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap2.offsetHeight -40
+
+
+    })
       this.getFileTypeData();
       this.getThirdServerData()
       this.getThirdTableData()
       this.getFileTableData()
+
+    window.onresize = () => {
+      this.table_height1 = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap1.offsetHeight -40
+      this.table_height2 = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap2.offsetHeight -40
+
+    }
+  },
+
+  destroyed(){
+    window.onresize = null;
   },
   methods: {
     changeType(list) {
+
       this.meauList.forEach(item=>{
         item.check = false
       })
@@ -252,6 +274,13 @@ export default {
       list.check = true
       this.title = list.label
       this.curMeau = list.type;
+
+      this.$nextTick(()=>{
+        this.table_height1 = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap1.offsetHeight -40
+        this.table_height2 = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap2.offsetHeight -40
+
+
+      })
     },
 
     // 分页

@@ -4,25 +4,12 @@
 			<div class="header-left">
 				<div style="display: flex;align-items: center;">
 					<div class="circle"><i class="iconfont icontouxiang2 customclass"></i></div>
-<!-- 					<el-popover width="200" trigger="hover">
-	          <div style="text-align: center;">
-	            <p style="">
-	              <el-button type="warning" size="mini" @click="exit()" style="">
-	                退出登录
-	              </el-button>
-	            </p>
 
-
-	          </div>
-
-          <span style="margin-left: 20px;" slot="reference">{{getuserInfo.username}}</span>
-
-        </el-popover> -->
 
 					<span style="margin-left: 20px;">{{getuserInfo.username}}</span>
 				</div>
 				
-				<i class="iconfont iconsanheng1" style="cursor: pointer;" @click="$store.commit('setisCollapse')"></i>
+				
 			</div>
 
 			<p style="margin-left: 80px;">教育管理平台  > {{title}}</p>
@@ -84,7 +71,7 @@
 					          <el-menu-item index="/administrator/passwordReview">密码审核</el-menu-item>
 					          <el-menu-item index="/administrator/resourceManagement">资源管理</el-menu-item>
 					          <el-menu-item index="/administrator/questionManagement">题库管理</el-menu-item>
-				
+										<el-menu-item index="/administrator/correctionReview">题库纠错</el-menu-item>
 					        </el-menu-item-group>
 	
 					      </el-submenu>
@@ -107,6 +94,8 @@
 
 					    </el-menu>
 					</div>
+
+					<div class="collapse-class" :class="{collapseleft:isCollapse}"><i class="iconfont iconhengshuqiehuanshu" style="font-size: 26px;" @click="$store.commit('setisCollapse')"></i></div>
 				</div>
 
 				<div class="right">
@@ -144,7 +133,8 @@ export default {
   	this.defaultActive = this.$route.fullPath
   	if(this.$route.fullPath.indexOf('rolemanagement')>-1 ||this.$route.fullPath.indexOf('subjectManagement')>-1||this.$route.fullPath.indexOf('organizational')>-1||this.$route.fullPath.indexOf('classManagement')>-1||this.$route.fullPath.indexOf('userManagement')>-1||this.$route.fullPath.indexOf('siteManagement')>-1||this.$route.fullPath.indexOf('versionManagement')>-1||this.$route.fullPath.indexOf('textbookManagement')>-1||this.$route.fullPath.indexOf('knowledgePoint')>-1) {
   		this.title = "基础管理"
-  	}else if(this.$route.fullPath.indexOf('passwordReview')>-1 || this.$route.fullPath.indexOf('questionType')>-1||this.$route.fullPath.indexOf('resourceManagement')>-1 ||this.$route.fullPath.indexOf('questionManagement')>-1 ){
+  	}else if(this.$route.fullPath.indexOf('passwordReview')>-1 || this.$route.fullPath.indexOf('questionType')>-1||this.$route.fullPath.indexOf('resourceManagement')>-1
+  	||this.$route.fullPath.indexOf('resourcePreview')>-1 ||this.$route.fullPath.indexOf('questionManagement')>-1 ||this.$route.fullPath.indexOf('questionCorrection')>-1 ||this.$route.fullPath.indexOf('correctionReview')>-1) {
   		this.title = "审核管理"
   	}else if (this.$route.fullPath.indexOf('systemConfig')>-1 || this.$route.fullPath.indexOf('resourceType')>-1
   				|| this.$route.fullPath.indexOf('thirdPartyServer')>-1){
@@ -184,7 +174,8 @@ export default {
             
             if(key.indexOf('rolemanagement')>-1 ||key.indexOf('subjectManagement')>-1||key.indexOf('organizational')>-1||key.indexOf('classManagement')>-1||key.indexOf('userManagement')>-1||key.indexOf('siteManagement')>-1||key.indexOf('versionManagement')>-1||key.indexOf('knowledgePoint')>-1||key.indexOf('textbookManagement')>-1) {
 				  		this.title = "基础管理"
-				  	}else if(key.indexOf('passwordReview')>-1 ||key.indexOf('resourceManagement')>-1 ||key.indexOf('questionManagement')>-1 ){
+				  	}else if(key.indexOf('passwordReview')>-1 ||key.indexOf('resourceManagement')>-1
+				  	||key.indexOf('resourcePreview')>-1 ||key.indexOf('questionManagement')>-1||key.indexOf('questionCorrection')>-1||key.indexOf('correctionReview')>-1 ){
 				  		this.title = "审核管理"
 				  	}else if (key.indexOf('systemConfig')>-1|| key.indexOf('questionType')>-1 || key.indexOf('resourceType')>-1
 				  				|| key.indexOf('thirdPartyServer')>-1 || key.indexOf('systemLog')>-1){
@@ -234,6 +225,7 @@ export default {
     }
 	}
 	.iconclass:hover {
+		cursor: pointer;
 	  color:#5a8bff;
 
 	}
@@ -286,7 +278,7 @@ export default {
 		align-items: center;
 		justify-content: space-between;
 		position: absolute;
-		flex-wrap: wrap;
+		// flex-wrap: wrap;
 		left: 20px;
 		right: 20px;
 		bottom:20px;
@@ -350,11 +342,51 @@ export default {
 	    height: 40px;
 	}
 
+
+	.el-card .qt1 img {
+    vertical-align: middle;
+    float: right;
+    max-height: 200px;
+    width: auto;
+  }
+
 	// el-radio-button el-radio-button--small is-active"{}
 }
 
 </style>
+<style lang="less">
+  .form-class {
+    .el-radio-button__inner {
+      border-left: 1px solid #b3d8ff;
+      border-radius: 3px;
+      color: #409eff;
+      background: #ecf5ff;
+      border-color: #b3d8ff;
 
+      &:hover {
+        color: #fff;
+        background-color: #409eff;
+        border-color: #409eff;
+      }
+    }
+
+    .el-radio-button__orig-radio:checked + .el-radio-button__inner {
+      -webkit-box-shadow: 0px 0 0 0 #409eff;
+      box-shadow: 0px 0 0 0 #409eff;
+    }
+    .el-radio-button:first-child .el-radio-button__inner,
+    .el-radio-button:last-child .el-radio-button__inner {
+      // border-left: 1px solid #b3d8ff;
+      border-radius: 3px;
+    }
+
+
+    .el-radio-button__orig-radio:disabled:checked+.el-radio-button__inner {
+      background-color: #409eff;
+      color: #ffffff;
+    }
+  }
+</style>
 <style lang="less" scoped>
 .admini {
 
@@ -402,16 +434,38 @@ export default {
 			display: flex;
 
 			.left {
+				position: relative;
 				//padding-bottom: 10px;
 
 				.menu-wrap {
 					//width: 200px;
-					max-height: 100%;
+					max-height: 90%;
     			overflow-y: auto;
     			overflow-x: hidden;
     			padding-bottom: 10px;
 
     		}
+
+    		.collapse-class {
+
+    			position: absolute;
+    			bottom: 2%;
+    			width: 40px;
+    			height: 40px;
+    			line-height: 40px;
+    			font-size: 30px;
+    			left: 80px;
+    			text-align: center;
+    			cursor: pointer;
+    			background-color: #ffffff;
+    			border-radius: 6px;
+    			box-shadow: 0 2px 8px 0 rgba(32,39,51,.07);
+    			transition: left 0.5s;
+    		}
+    		.collapseleft {
+    			left: 10px;
+    		}
+
 				
 			}
 

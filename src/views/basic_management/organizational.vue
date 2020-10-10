@@ -1,29 +1,30 @@
 <template>
   <div class="organozation">
     <rightNav>
-      <div slot="left">
-        <p class="right-header">组织架构 </p>
+      <div slot="left" style="height: 100%;">
+        <organizationTree @handleCheckNode="handleCheckNode" :enableEdit="true" :orgSelectable="true" :defaultRoot="true"></organizationTree>
+        <!-- <p class="right-header">组织架构 </p>
         <el-input v-model="filterText" placeholder="请输入组织名称开始搜索..." suffix-icon="el-icon-search" size="small"></el-input>
         <div class="tree-wrap">
           <basicTree :tree-data="data" :filterText="filterText" @editnode="editNode" @appendnode="appendNode" @deletenode="deleteNode" :enableEdit="true" :orgSelectable="true" :defaultRoot="true" @selectnode="defaultSelectNode" @handleNodeClick="handleNodeClick"></basicTree>
-        </div>
+        </div> -->
       </div>
       <div slot="right">
         <div class="right-header">
           <span >账号管理（管理员） </span>
-          <el-button size="mini" style="margin-left: 20px;" @click="addUserDialog"><i class="el-icon-plus"></i> 新增用户</el-button>
+          <el-button size="mini" style="margin-left: 20px;" type="primary" @click="addUserDialog"><i class="el-icon-plus"></i> 新增用户</el-button>
         </div>
 
         <div class="wrap" ref="wrap">
           <div class="search-wrap" ref="search_wrap">
             <el-form :inline="true" :model="search" class="demo-form-inline" size="mini">
               <el-form-item label="类型">
-                <el-select v-model="search.type"class="search-class" @change="resetPage">
+                <el-select v-model="search.type" placeholder="类型" class="search-class" @change="resetPage" clearable>
                   <el-option v-for="list in typeList" :label="list.label" :value="list.key" :key="list.key"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="状态">
-                <el-select v-model="search.status" placeholder="状态" class="search-class" @change="resetPage">
+                <el-select v-model="search.status" placeholder="状态" class="search-class" @change="resetPage" clearable>
                   <el-option label="冻结" value="0"></el-option>
                   <el-option label="正常" value="1"></el-option>
                 </el-select>
@@ -129,7 +130,7 @@
       </div>
     </rightNav>
 
-   <el-dialog :title="orgDialogTitle" :visible.sync="orgDialogVisible" width="500px" :close-on-click-modal='false'>
+<!--    <el-dialog :title="orgDialogTitle" :visible.sync="orgDialogVisible" width="500px" :close-on-click-modal='false'>
       <el-form :model="orgForm"  size="small" label-width="100px" :show-message='false'>
         <el-form-item label="节点类型">
           <el-select v-model="orgForm.type" placeholder="请选择" class="input-class">
@@ -162,7 +163,7 @@
         <el-button type="primary" @click="addOrg" size="mini">确 定</el-button>
 
       </div>
-    </el-dialog>
+    </el-dialog> -->
 
     <el-dialog :title="UserDialogTitle" :visible.sync="userDialogVisible" width="500px">
       <el-form :model="userForm" size="small" label-width="100px" :rules="rules" ref="userForm">
@@ -226,6 +227,7 @@
   import { mapGetters } from 'vuex'
   import rightNav from '@/components/Nav/rightNav'
   import basicTree from '@/components/Tree/basicTree'
+  import organizationTree from '@/components/Nav/organizationTree'
 export default {
 
 
@@ -258,16 +260,16 @@ export default {
         value:'resourceId'
       },
       currentNode:'',
-      orgDialogTitle: '添加节点',
+      // orgDialogTitle: '添加节点',
       UserDialogTitle: '新增用户',
-      orgDialogVisible: false,
+      // orgDialogVisible: false,
       userDialogVisible: false,
-      orgForm: {
-        type:'Organization',
-        name: '',
-        learningSection: '',
-        description: ''
-      },
+      // orgForm: {
+      //   type:'Organization',
+      //   name: '',
+      //   learningSection: '',
+      //   description: ''
+      // },
       isEdit: false,
       isReset: false,
       selectId:'',
@@ -275,7 +277,7 @@ export default {
       tableData: [],
       table_height: 300,
       search: {
-        type:'0',
+        type:'',
         status:'',
         account:'',
         name:'',
@@ -284,19 +286,19 @@ export default {
       },
       total:0,
       checked: false,
-      typeList: [{
-        label:'管理员',
-        value:'Administrator',
-        key:"0"
-      },{
-        label:'审核员',
-        value:'Auditor',
-        key:"1"
-      },{
-        label:'录题员',
-        value:'Recorder',
-        key:"2"
-      }],
+      // typeList: [{
+      //   label:'管理员',
+      //   value:'Administrator',
+      //   key:"0"
+      // },{
+      //   label:'审核员',
+      //   value:'Auditor',
+      //   key:"1"
+      // },{
+      //   label:'录题员',
+      //   value:'Recorder',
+      //   key:"2"
+      // }],
       userForm:{
         userRole:'0',
         account:'',
@@ -308,6 +310,15 @@ export default {
       },
       isUserEdit:false,
       editUserId:'',
+      totalTypeList: [
+        {label:'区域运维管理员',value:'Administrator',key:"0",role:'Organization'},
+        {label:'审核员',value:'Auditor',key:"1",role:'Organization'},
+        {label:'区域领导',value:'AreaLeaders',key:"4",role:'Organization'},
+        {label:'学校运维管理员',value:'Administrator',key:"0",role:'School'},
+        {label:'审核员',value:'Auditor',key:"1",role:'School'},
+        {label:'录题员',value:'Recorder',key:"2",role:'School'},
+        {label:'校领导',value:'SchoolLeader',key:"3",role:'School'}
+      ],
       rules: {
         account: [
           { required: true, message: '请输入账号', trigger: 'blur' },
@@ -327,7 +338,8 @@ export default {
   },
   components: {
     rightNav,
-    basicTree
+    // basicTree,
+    organizationTree
   },
   watch: {
 
@@ -339,41 +351,72 @@ export default {
 
     ]),
 
+    typeList() {
+        return this.totalTypeList.filter(list=>{
+          console.log(list,this.currentNode.memberType)
+          return list.role == this.currentNode.memberType
+        })
+      // if(this.currentNode.memberType == 'Organization') {
+      //   return this.totalTypeList.filter(list=>{
+      //     list.role == this.currentNode.memberType
+      //   })
+      // }else {
+      //   return [
+
+      //   ]
+      // } 
+    }
+
   },
   mounted() {
     this.$nextTick(()=>{
       this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight -40
     })
 
-
+    window.onresize = () => {
+      this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight -40  
+    }
     this.getOrgTree()
 
   },
+
+  destroyed(){
+    window.onresize = null;
+  },
   methods: {
-    editNode(node,data) {
-      this.showOrgDialog(data,true)
-    },
+    // editNode(node,data) {
+    //   this.showOrgDialog(data,true)
+    // },
 
-    appendNode(node,data) {
-      this.showOrgDialog(data, false)
-    },
+    // appendNode(node,data) {
+    //   this.showOrgDialog(data, false)
+    // },
 
-    deleteNode(node,data) {
-      this.deleteOrg(node)
-    },
+    // deleteNode(node,data) {
+    //   this.deleteOrg(node)
+    // },
 
-    defaultSelectNode(node){
-      this.currentNode = node
-      this.getTableData()
-    },
-    handleNodeClick(data) {
-
+    // defaultSelectNode(node){
+    //   this.currentNode = node
+    //   this.getTableData()
+    // },
+    handleCheckNode(data) {
+      this.search.type = ''
       this.currentNode = data
       this.resetPage()
     },
     getuserType(type) {
-      let name = this.typeList.filter(list=> list.value == type)
-      return name[0].label
+
+
+      let name = this.totalTypeList.filter(list=> {
+        return list.value == type
+      })
+      if(name && name.length) {
+        return name[0].label
+      } else {
+        return ''
+      }
+      
     },
 
     resetPage() {
@@ -430,254 +473,253 @@ export default {
 
 
     },
-        // 显示添加组织弹窗
-    showOrgDialog(val,flag){
-      // flag 判断编辑添加
-      console.log(val)
-      this.selectId = val.resourceId.id
-      val.memberType == "School"?this.selectParentId = val.parentId.id:null
+    //     // 显示添加组织弹窗
+    // showOrgDialog(val,flag){
+    //   // flag 判断编辑添加
+    //   this.selectId = val.resourceId.id
+    //   val.memberType == "School"?this.selectParentId = val.parentId.id:null
       
 
-      if(flag){
-        //编辑
-        this.orgDialogTitle = '编辑节点'
+    //   if(flag){
+    //     //编辑
+    //     this.orgDialogTitle = '编辑节点'
 
-        if(val.memberType == 'School') {
-          this.$http.get(`/api/internal/schools/${this.selectId}`)
-          .then((data)=>{
+    //     if(val.memberType == 'School') {
+    //       this.$http.get(`/api/internal/schools/${this.selectId}`)
+    //       .then((data)=>{
 
-            if(data.status == '200') {
+    //         if(data.status == '200') {
 
-              this.orgForm.name = data.data.schoolName
-              this.orgForm.type = val.memberType
-              this.orgForm.learningSection = data.data.learningSection
-              this.orgForm.description = data.data.description
-              this.isEdit = true
-              this.orgDialogVisible = true
+    //           this.orgForm.name = data.data.schoolName
+    //           this.orgForm.type = val.memberType
+    //           this.orgForm.learningSection = data.data.learningSection
+    //           this.orgForm.description = data.data.description
+    //           this.isEdit = true
+    //           this.orgDialogVisible = true
 
-            } 
-          })
-        }else {
-          this.orgForm.name = val.name
-          this.orgForm.type = val.memberType
-          this.orgForm.description = val.description
-          this.isEdit = true
-          this.orgDialogVisible = true
-        }
+    //         } 
+    //       })
+    //     }else {
+    //       this.orgForm.name = val.name
+    //       this.orgForm.type = val.memberType
+    //       this.orgForm.description = val.description
+    //       this.isEdit = true
+    //       this.orgDialogVisible = true
+    //     }
 
 
-      }else {
-        this.orgDialogTitle = '添加节点'
-        this.orgForm.type = 'Organization'
-        this.orgForm.name = ''
-        this.orgForm.learningSection = ''
-        this.orgForm.description = ''
-        this.isEdit = false
-        this.orgDialogVisible = true
-      }
+    //   }else {
+    //     this.orgDialogTitle = '添加节点'
+    //     this.orgForm.type = 'Organization'
+    //     this.orgForm.name = ''
+    //     this.orgForm.learningSection = ''
+    //     this.orgForm.description = ''
+    //     this.isEdit = false
+    //     this.orgDialogVisible = true
+    //   }
       
       
-    },
+    // },
 
-    // 添加组织/添加学校
-    addOrg () {
-      if(!this.orgForm.name) {
-        return this.$message({
-          message: '名称不能为空',
-          type: 'warning'
-        })
-      }
+    // // 添加组织/添加学校
+    // addOrg () {
+    //   if(!this.orgForm.name) {
+    //     return this.$message({
+    //       message: '名称不能为空',
+    //       type: 'warning'
+    //     })
+    //   }
 
 
-      if(this.orgForm.type == 'Organization') {
-        //编辑组织
-        if(this.isEdit) {
+    //   if(this.orgForm.type == 'Organization') {
+    //     //编辑组织
+    //     if(this.isEdit) {
 
           
 
-          this.$http.put(`/api/internal/organizations/${this.selectId}`,{
-            name: this.orgForm.name,
-            description: this.orgForm.description
-          })  
-          .then((data)=>{
-            if(data.status == '200') {
+    //       this.$http.put(`/api/internal/organizations/${this.selectId}`,{
+    //         name: this.orgForm.name,
+    //         description: this.orgForm.description
+    //       })  
+    //       .then((data)=>{
+    //         if(data.status == '200') {
 
-              this.orgDialogVisible = false
-              this.selectId = ''
+    //           this.orgDialogVisible = false
+    //           this.selectId = ''
 
-              this.$message({
-                message:'修改成功',
-                type:'success'
-              })
+    //           this.$message({
+    //             message:'修改成功',
+    //             type:'success'
+    //           })
 
-              this.getOrgTree()
+    //           this.getOrgTree()
 
 
-            } 
+    //         } 
             
-          })
+    //       })
 
 
-        }else {
-          //添加组织
-          this.$http.post(`/api/internal/organizations/${this.selectId}/organizations`,{
-            name: this.orgForm.name,
-            description: this.orgForm.description
-          })  
-          .then((data)=>{
-            if(data.status == '200') {
+    //     }else {
+    //       //添加组织
+    //       this.$http.post(`/api/internal/organizations/${this.selectId}/organizations`,{
+    //         name: this.orgForm.name,
+    //         description: this.orgForm.description
+    //       })  
+    //       .then((data)=>{
+    //         if(data.status == '200') {
 
-              this.orgDialogVisible = false
-              this.selectId = ''
+    //           this.orgDialogVisible = false
+    //           this.selectId = ''
 
-              this.$message({
-                message:'添加成功',
-                type:'success'
-              })
+    //           this.$message({
+    //             message:'添加成功',
+    //             type:'success'
+    //           })
 
-              this.getOrgTree()
+    //           this.getOrgTree()
 
 
-            } 
+    //         } 
             
-          })
+    //       })
 
 
 
-        }
+    //     }
 
 
-      }
-      // 学校
-      else {
-        //编辑学校
+    //   }
+    //   // 学校
+    //   else {
+    //     //编辑学校
 
-        if(!this.orgForm.learningSection) {
-          return this.$message({
-            message: '学段不能为空',
-            type: 'warning'
-          })
-        }
-        if(this.isEdit) {
+    //     if(!this.orgForm.learningSection) {
+    //       return this.$message({
+    //         message: '学段不能为空',
+    //         type: 'warning'
+    //       })
+    //     }
+    //     if(this.isEdit) {
          
 
-          this.$http.put(`/api/internal/schools/${this.selectId}`,{
-            organizationId: this.selectParentId,
-            schoolName: this.orgForm.name,
-            description: this.orgForm.description,
-          })  
-          .then((data)=>{
-            if(data.status == '200') {
-              this.selectId = ''
-              this.orgDialogVisible = false
+    //       this.$http.put(`/api/internal/schools/${this.selectId}`,{
+    //         organizationId: this.selectParentId,
+    //         schoolName: this.orgForm.name,
+    //         description: this.orgForm.description,
+    //       })  
+    //       .then((data)=>{
+    //         if(data.status == '200') {
+    //           this.selectId = ''
+    //           this.orgDialogVisible = false
 
-              this.$message({
-                message:'修改成功',
-                type:'success'
-              })
+    //           this.$message({
+    //             message:'修改成功',
+    //             type:'success'
+    //           })
 
-              this.getOrgTree()
+    //           this.getOrgTree()
 
 
-            } 
+    //         } 
             
-          })
+    //       })
 
 
 
-        }else {
-          //添加学校
+    //     }else {
+    //       //添加学校
 
-          this.$http.post(`/api/internal/schools`,{
-            organizationId: this.selectId,
-            schoolName: this.orgForm.name,
-            description: this.orgForm.description,
-            learningSection: this.orgForm.learningSection,
-          })  
-          .then((data)=>{
-            if(data.status == '200') {
+    //       this.$http.post(`/api/internal/schools`,{
+    //         organizationId: this.selectId,
+    //         schoolName: this.orgForm.name,
+    //         description: this.orgForm.description,
+    //         learningSection: this.orgForm.learningSection,
+    //       })  
+    //       .then((data)=>{
+    //         if(data.status == '200') {
 
-              this.orgDialogVisible = false
+    //           this.orgDialogVisible = false
 
-              this.$message({
-                message:'添加成功',
-                type:'success'
-              })
+    //           this.$message({
+    //             message:'添加成功',
+    //             type:'success'
+    //           })
 
-              this.getOrgTree()
+    //           this.getOrgTree()
 
 
-            } 
+    //         } 
             
-          })
+    //       })
 
 
 
-        }
+    //     }
 
 
-      }
+    //   }
 
       
       
-    },
+    // },
 
     
-    // 删除组织/删除学校
-    deleteOrg(node){
-      // if(this.orgForm.type == 'Organization') {
-      this.$confirm('确认删除该节点?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
+    // // 删除组织/删除学校
+    // deleteOrg(node){
+    //   // if(this.orgForm.type == 'Organization') {
+    //   this.$confirm('确认删除该节点?', '提示', {
+    //     confirmButtonText: '确定',
+    //     cancelButtonText: '取消',
+    //     type: 'warning'
+    //   }).then(() => {
 
 
-        let id = node.data.resourceId.id
+    //     let id = node.data.resourceId.id
 
-        if(node.data.memberType == 'Organization') {
-          this.$http.delete(`/api/internal/organizations/${id}`)
-          .then((data)=>{
-            if(data.status == '200') {
-
-
-              this.$message({
-                message:'删除成功',
-                type:'success'
-              })
-
-              this.getOrgTree()
+    //     if(node.data.memberType == 'Organization') {
+    //       this.$http.delete(`/api/internal/organizations/${id}`)
+    //       .then((data)=>{
+    //         if(data.status == '200') {
 
 
-            } 
+    //           this.$message({
+    //             message:'删除成功',
+    //             type:'success'
+    //           })
+
+    //           this.getOrgTree()
+
+
+    //         } 
             
-          })
+    //       })
 
-        }else {
-          this.$http.delete(`/api/internal/schools/${id}`)
-          .then((data)=>{
-            if(data.status == '200') {
-
-
-              this.$message({
-                message:'删除成功',
-                type:'success'
-              })
-
-              this.getOrgTree()
+    //     }else {
+    //       this.$http.delete(`/api/internal/schools/${id}`)
+    //       .then((data)=>{
+    //         if(data.status == '200') {
 
 
-            } 
+    //           this.$message({
+    //             message:'删除成功',
+    //             type:'success'
+    //           })
+
+    //           this.getOrgTree()
+
+
+    //         } 
             
-          })
-        }
+    //       })
+    //     }
         
 
-      })
+    //   })
 
   
   
-    },
+    // },
 
     toggleSelection() {
 

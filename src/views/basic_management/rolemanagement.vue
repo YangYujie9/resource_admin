@@ -3,13 +3,13 @@
     <div class="rolemana-wrap contener">
       <div class="right-header">
         <span>角色管理 </span>
-        <el-button size="mini" style="margin-left: 20px;" @click="addUserShow"><i class="el-icon-plus"></i> 添加</el-button>
+        <el-button size="mini" style="margin-left: 20px;" @click="addUserShow" type="primary"><i class="el-icon-plus"></i> 添加</el-button>
       </div>
       <div class="table-warp" ref="table_warp">
       <el-table
         :data="tableData"
         style="width: 100%"
-        :height="table_height"
+        height="100%"
         border>
 		    <el-table-column
 		      type="selection"
@@ -68,12 +68,15 @@
     <el-dialog :title="dialogTitle" :visible.sync="dialogUserVisible" width="400px" :close-on-click-modal='false'>
       <el-form :model="userForm" label-width="80px" size="small">
         <el-form-item label="角色类型" prop="userRole">
-          <el-select v-model="userForm.userRole" placeholder="请选择" class="input-class">
-            <el-option v-for="list in roleList" :label="list.label" :value="list.value"></el-option>
+          <el-select v-model="userForm.userRole" placeholder="请选择" class="input-class" @change="getroleNameList">
+            <el-option v-for="list in roleList" :label="list.label" :key="list.value" :value="list.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="角色名称" prop="userRole">
-          <el-input  v-model="userForm.userRolename"  class="input-class"></el-input>
+          <el-select v-model="userForm.userRolename" placeholder="请选择" class="input-class">
+            <el-option v-for="list in roleNameList" :label="list.name" :key="list.id" :value="list.name"></el-option>
+          </el-select>
+          <!-- <el-input  v-model="userForm.userRolename"  class="input-class"></el-input> -->
         </el-form-item>
 
 
@@ -113,18 +116,19 @@ export default {
       data: [],
       tableData: [],
       roleList: [{
-        label:'区域管理员',
-        value:'SysAdmin'
+        label:'后台运维',
+        value:'BackstageOperation'
       },{
-        label:'学校管理员',
-        value:'SchoolAdmin'
+        label:'校领导',
+        value:'SchoolLeaders'
       },{
-        label:'录题员',
-        value:'Recorder'
+        label:'区域领导',
+        value:'AreaLeaders'
       },{
-        label:'审题员',
-        value:'Auditor'
+        label:'用户',
+        value:'OrdinaryUsers'
       }],
+      roleNameList: [],
 
 
     }
@@ -141,9 +145,6 @@ export default {
 
   },
   mounted() {
-  	  this.$nextTick(()=>{
-        this.table_height = this.$refs.table_warp.offsetHeight 
-      })
 
       this.gettableData()
 
@@ -226,15 +227,12 @@ export default {
       }
       if(this.editUserId) {
     
-            this.$http({
-              url: `/api/internal/role-permission/roles/${this.editUserId}`,
-              method: 'PUT',
-              data: {
+            this.$http.put(`/api/internal/role-permission/roles/${this.editUserId}`,{
                 name: this.userForm.userRolename,
                 roleType:this.userForm.userRole,
                 description:this.userForm.description,
               }
-            }).then(res => {
+            ).then(res => {
               this.dialogUserVisible = false
               this.editUserId = ""
               this.gettableData()
@@ -242,16 +240,12 @@ export default {
   
       }else {
      
-          this.$http({
-            url: `/api/internal/role-permission/roles`,
-            method: 'POST',
-            data: {
+          this.$http.post(`/api/internal/role-permission/roles`,{
               name: this.userForm.userRolename,
               roleType:this.userForm.userRole,
               roleCode:this.userForm.userRole,
               description:this.userForm.description,
-            }
-          }).then(res => {
+            }).then(res => {
             // 添加角色成功回调
             this.dialogUserVisible = false
             this.gettableData()
@@ -260,6 +254,23 @@ export default {
       }
     },
 
+
+    getroleNameList() {
+      this.roleNameList = []
+      this.userForm.userRolename = ''
+
+      if(this.userForm.userRole) {
+        this.$http.get(`/api/open/common/userRole/${this.userForm.userRole}`)
+        .then(data=>{
+          if(data.status == '200') {
+            this.roleNameList = data.data
+
+            // this.userForm.userRolename = this.roleNameList.length? this.roleNameList[0].id:''
+          }
+        })
+      }
+      
+    },
     // 删除角色
     deleteUser(row){
       this.$confirm('确定删除该角色?', '提示', {
@@ -273,10 +284,8 @@ export default {
         }else {
           // 批量删除
         }
-        this.$http({
-          url: `/api/internal/role-permission/roles/${row.roleId.id}`,
-          method: 'DELETE',
-        }).then(res => {
+        this.$http.delete(`/api/internal/role-permission/roles/${row.roleId.id}`)
+        .then(res => {
           // 成功删除角色回调
           this.gettableData()
         })

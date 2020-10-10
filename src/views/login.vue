@@ -29,7 +29,7 @@ import Cookies from "js-cookie";
 export default {
   data() {
 		return {
-		  msg: "资源题库管理平台",
+		  msg: "智慧教育管理平台",
 		  loginForm: {
 			username: "",
 			password: ""

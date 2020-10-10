@@ -1,7 +1,7 @@
 <template>
   <div class="knowledge-management">
     <rightNav>
-      <div slot="left">
+      <div slot="left" class=" right-one-part">
         <p class="right-header">学段学科 </p>
         <div class="meau-wrap" >
 
@@ -293,7 +293,8 @@ export default {
 
   }
 		.tree-div {
-			width: 500px;
+			width: 70%;
+      margin: 0 auto;
 	    height: calc(100vh - 200px);
 	    overflow-y: auto;
 	  }

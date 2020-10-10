@@ -30,13 +30,12 @@
 		<div class="right-two contener">
 			<p class="right-header">教材版本 </p>
       <div class="tree-div">
-        <pointTree :tree-data="versionList" :defaultRoot="false" @editnode="editVersion" @appendnode="appendVersion" @deletenode="deleteVersion" :enableEdit="true" :defaultLevel="3"  @handleNodeClick="handleVersionClick" @selectnode="defaultSelectVersion"></pointTree>
+        <pointTree :tree-data="versionList" :learningSection="learningSection" :subjectCode="subjectCode"  :defaultRoot="false" @editnode="editVersion" @appendnode="appendVersion" @deletenode="deleteVersion" :enableEdit="true" :defaultLevel="3"  @handleNodeClick="handleVersionClick" @selectnode="defaultSelectVersion"></pointTree>
       </div>
 		</div>
 
 
-
-		<div class="right-three contener">
+		<div class="right-three right-two contener">
 			<p class="right-header">章节列表 </p>
       <div class="tree-div">
         <pointTree :tree-data="treeData" @editnode="editNode" @appendnode="appendNode" @deletenode="deleteNode" :enableEdit="true" :orgSelectable="true" :defaultRoot="true"></pointTree>
@@ -132,6 +131,7 @@ export default {
     	sectionShow: true,
     	gradeShow: true,
     	subjectShow: true,
+      isReady: false,
 
 
 
@@ -172,7 +172,7 @@ export default {
 
   },
   methods: {
-
+    defaultSelectNode() {},
   	getlearningSection() {
 
       this.$http.get(`/api/internal/dictionaries/learningSection`)
@@ -197,6 +197,8 @@ export default {
 
   				this.subjectList = data.data
   				this.subjectCode = this.subjectList[0].key
+
+          this.isReady = true
   				this.getVersionTree()
 
   			}
@@ -350,7 +352,7 @@ export default {
   	},
 
   	getChapterTree() {
-  		this.treeData = []
+  		// this.treeData = []
 
       this.$http.get(`/api/internal/chapter/chapterTree/${this.currentNode.resourceId.id}`)
       .then((data)=>{
@@ -551,14 +553,14 @@ export default {
 	.right-three {
 		// width: calc(100vw - 300px);
 		width: 60%;
-		padding: 0 20px;
-		overflow-x: hidden;
-		position: relative;
+		// padding: 0 20px;
+		// overflow-x: hidden;
+		// position: relative;
 
-		.tree-div {
-	    height: calc(100vh - 200px);
-	    overflow-y: auto;
-	  }
+		// .tree-div {
+	 //    height: calc(100vh - 200px);
+	 //    overflow-y: auto;
+	 //  }
 	}
   .input-class {
     width: 280px;

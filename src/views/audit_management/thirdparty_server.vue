@@ -9,7 +9,7 @@
         <el-table
           :data="tableData"
           style="width: 100%"
-          :height="table_height"
+          height="100%"
           border>
           <el-table-column label="名称" prop="serverName"> </el-table-column>
           <el-table-column label="第三方服务类型" prop="type"> </el-table-column>
@@ -152,9 +152,7 @@ export default {
 
   },
   mounted() {
-      this.$nextTick(()=>{
-        this.table_height = this.$refs.table_warp.offsetHeight 
-      })
+
 
       this.gettableData()
   },

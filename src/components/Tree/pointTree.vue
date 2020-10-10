@@ -23,8 +23,8 @@
         <span class="active-wrap" v-if="enableEdit">
           
           <i class="iconfont iconiconjia actclass"  @click.prevent.stop="appendNode(node,data)" v-if="node.level<defaultLevel"></i>
-          <i class="iconfont iconbianji actclass" @click.prevent.stop="editNode(node,data)"  v-if="data.parentId.id!='0'"></i>
-          <i class="iconfont iconshanchu-copy" @click.prevent.stop="deleteNode(node,data)" v-if="data.parentId.id!='0'"></i>
+          <i class="iconfont iconbianji actclass" @click.prevent.stop="editNode(node,data)"  v-if="node.level>1"></i>
+          <i class="iconfont iconshanchu-copy" @click.prevent.stop="deleteNode(node,data)" v-if="node.level>1"></i>
 
         </span>
       </span>
@@ -67,6 +67,10 @@ export default {
       type: Number,
       default: 5,
     },
+    isReset: {
+      type:Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -104,16 +108,17 @@ export default {
     },
     treeData: {
       handler: function(newVal, oldVal) {
+
+       
           this.initTreeData(JSON.parse(JSON.stringify(newVal)));
-          this.currenttNode = this.defaultRoot? this.defaultSelectedNode: this.firstSchool;
-          // this.currenttNode = this.defaultSelectedNode
-          this.$emit('selectnode',this.currenttNode )
-          
+
           this.$nextTick(()=>{
             this.currenttNode?this.$refs.tree.setCurrentKey(this.currenttNode.resourceId.id):null
             // 
             
           })
+        
+
           
       }
 
@@ -125,11 +130,29 @@ export default {
 
 
       let arr = [];
-      data.checkedNodes.forEach(node => {
-        node.children && node.children.length ? null : arr.push(node);
-      });
-      // console.log(arr)
-      this.$emit('check',arr) ;
+
+
+      if(this.isReset) {
+
+        data.checkedNodes.forEach(node => {
+          if(node.memberType == 'Volume') {
+            data.checkedKeys.splice(data.checkedKeys.indexOf(node.resourceId.id),1)
+          }else {
+            (data.checkedKeys.indexOf(node.parentId.id) >-1)?null:arr.push(node)
+          }
+          
+            
+        });
+        this.$emit('getCheckedNodes',arr) ;
+      }else {
+        data.checkedNodes.forEach(node => {
+          node.children && node.children.length ? null : arr.push(node);
+        });
+        // console.log(arr)
+        this.$emit('check',arr) ;
+      }
+      
+
 
     },
 
@@ -137,7 +160,7 @@ export default {
     /*初始化树数据*/
     initTreeData(data) {
       this.originalTreeData = []
-      let treeData = [];
+      let arrData = [];
       if (data.hasOwnProperty("members")) {
         let node = data.root;
         if (node) {
@@ -147,12 +170,14 @@ export default {
           this.defaultSelectedNode = node;
           this.constructTreeData(node, data.members);
 
-          treeData.push(node);
+          arrData.push(node);
           if (!this.defaultRoot) {
             this.firstSchool = this.deepFirstSearch(node);
           }
-          this.originalTreeData = treeData;
+          this.originalTreeData = arrData;
 
+          this.currenttNode = this.defaultRoot? this.defaultSelectedNode: this.firstSchool;
+          this.$emit('selectnode',this.currenttNode )
         }
         // console.log(this.originalTreeData)
 
@@ -222,7 +247,7 @@ export default {
       
       if(data.memberType == "Oese" && !this.orgSelectable) {
           this.$nextTick(()=>{
-            this.$refs.tree.setCurrentKey(this.currenttNode .resourceId.id);
+            this.$refs.tree.setCurrentKey(this.currenttNode.resourceId.id);
             
           })
       }else {
@@ -231,6 +256,28 @@ export default {
       }
       
     },
+    getCheckedKeys() {
+
+      return this.$refs.tree.getCheckedKeys()
+      
+      this.$emit('getCheckedKeys',arr)
+
+    },
+    setCheckedNodes(nodes) {
+        this.$refs.tree.setCheckedNodes(nodes);
+    },
+
+    setNodesByIds(arr) {
+      let ids = []
+
+      for(let i=0;i<arr.length;i++) {
+        ids.push(arr[i].id)
+      }
+      this.$refs.tree.setCheckedKeys(ids);
+
+      this.$emit('getCheckedNodes',arr) ;
+    },
+
 
   }
 };

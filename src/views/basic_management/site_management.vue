@@ -1,7 +1,7 @@
 <template>
   <div class="site">
     <rightNav>
-      <div slot="left">
+      <div slot="left" class="right-one-part">
         <p class="right-header">站点管理 </p>
         <div class="meau-wrap">
 					<ul>
@@ -87,40 +87,43 @@
 			          <span>顶部导航 </span>
 			          <el-button size="mini" style="margin-left: 20px;" @click="addDialogshow('TopNavigationBar')"><i class="el-icon-plus"></i> 新增顶部导航</el-button>
 			        </div>
-				      <el-table
-	              :data="topData"
-	              border>
-	              <el-table-column
-                	label="序号"
-              		width="100px"
-	                type="index">
-	              </el-table-column>
-	              <el-table-column
-	                  label="导航标题"
-	                  prop="navigationName">
-	                </el-table-column>
-	              <el-table-column
-	                prop="状态"
-	                label="账号">
-	                <template slot-scope="scope">
-	                	{{scope.row.enabled?"启用":"禁用"}}
-	                </template>
-	              </el-table-column> 
-	              <el-table-column
-	                prop=""
-	                label="操作">
-	                <template slot-scope="scope">
-	                  <div style="cursor: pointer;width: 100%;display: flex;justify-content: space-around;">
-	                    <i class="iconfont iconbianji icon-active" @click="editDialog(scope.row)"></i>
-                      <i class="iconfont iconsuo icon-active" style="" v-if="!scope.row.enabled" @click="UnLockNav(scope.row)"></i>
-                    	<i class="iconfont iconkaisuo icon-active" v-if="scope.row.enabled" @click="lockNav(scope.row)"></i>
-                    	<i class="iconfont iconshang-copy icon-active" :class="{hide:scope.$index==0}" @click="upsort(scope.row,scope.$index)"></i>
 
-                    	<i class="iconfont iconxia icon-active" :class="{hide:scope.$index==topData.length-1}" @click="downsort(scope.row,scope.$index)"></i>
-	                  </div>
-	                </template>
-	              </el-table-column>
-	            </el-table>
+			        <div class="table-wrap">
+					      <el-table
+		              :data="topData"
+		              border>
+		              <el-table-column
+	                	label="序号"
+	              		width="100px"
+		                type="index">
+		              </el-table-column>
+		              <el-table-column
+		                  label="导航标题"
+		                  prop="navigationName">
+		                </el-table-column>
+		              <el-table-column
+		                prop="状态"
+		                label="账号">
+		                <template slot-scope="scope">
+		                	{{scope.row.enabled?"启用":"禁用"}}
+		                </template>
+		              </el-table-column> 
+		              <el-table-column
+		                prop=""
+		                label="操作">
+		                <template slot-scope="scope">
+		                  <div style="cursor: pointer;width: 100%;display: flex;justify-content: space-around;">
+		                    <i class="iconfont iconbianji icon-active" @click="editDialog(scope.row)"></i>
+	                      <i class="iconfont iconsuo icon-active" style="" v-if="!scope.row.enabled" @click="UnLockNav(scope.row)"></i>
+	                    	<i class="iconfont iconkaisuo icon-active" v-if="scope.row.enabled" @click="lockNav(scope.row)"></i>
+	                    	<i class="iconfont iconshang-copy icon-active" :class="{hide:scope.$index==0}" @click="upsort(scope.row,scope.$index)"></i>
+
+	                    	<i class="iconfont iconxia icon-active" :class="{hide:scope.$index==topData.length-1}" @click="downsort(scope.row,scope.$index)"></i>
+		                  </div>
+		                </template>
+		              </el-table-column>
+		            </el-table>
+	            </div>
 			      </div>	
 
 			      <div class="">
