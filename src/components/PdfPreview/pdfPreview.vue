@@ -1,6 +1,6 @@
 <template>
   <div class="pdf-view">
-    <div style="text-align:center;line-height: 42px;">
+    <!-- <div style="text-align:center;line-height: 42px;">
       <i @touchstart="idx=0" @touchend="idx=-1" @click="scaleD" class="el-icon-zoom-in pdf-icon"></i>
       <span @click="changePdfPage(0)" class="cursor"><i class="iconfont el-icon-arrow-left"></i></span>
       <span style="font-size:15px;font-weight:600;margin-left:10px;">{{currentPage}}</span> 
@@ -20,7 +20,22 @@
       @num-pages="pageCount=$event" 
       @page-loaded="currentPage=$event"
     >
-    </pdf>
+    </pdf> -->
+
+    <pdf
+      class="pdf-wrap"
+      v-for="i in currentPageNum"
+      :key="i"
+      :src="pdfUrl"
+      :page="i"
+    ></pdf>
+
+    <div v-if="pdfPagenum && pdfPagenum>currentPageNum" style="text-align: center;line-height: 40px;">
+      剩余{{pdfPagenum-currentPageNum}}页未读， 
+      <span style="color: #409EFF;cursor: pointer;" @click="addPageNum">继续阅读 
+        <i class="el-icon-arrow-down"></i>
+      </span>
+    </div>
   </div>
 </template>
 
@@ -35,6 +50,7 @@ export default {
       // totalPages: 
       scale: 90, //放大系数
       idx: -1,
+      currentPageNum: 0,
 
     }
   },
@@ -53,6 +69,13 @@ export default {
 
     
   },
+
+  mounted() {
+
+    this.currentPageNum = this.pdfPagenum < 10? this.pdfPagenum: 10
+  },
+
+
   methods: {
     changePdfPage(val) {
       if(val === 0 && this.currentPage > 1) {
@@ -130,6 +153,16 @@ export default {
         this.scale += -5;
         this.$refs.pdf.$el.style.width = parseInt(this.scale) + "%";
       },
+
+
+      addPageNum() {
+
+        if(this.pdfPagenum<this.currentPageNum + 10) {
+          this.currentPageNum = this.pdfPagenum
+        }else {
+          this.currentPageNum += this.currentPageNum
+        }
+      }
   }
 }
 </script>
@@ -137,11 +170,15 @@ export default {
 <style lang="less">
 .pdf-view {
   padding: 0 20px 20px 20px;
+  width: 100%;
 
   .pdf-wrap {
     width:90%;
+    margin: 0px auto 20px;
     border:1px solid rgb(212 211 211);
-    margin:0 auto;
+    
+    // width: 100%;
+    // margin-bottom: 20px;
   }
 
   .pdf-icon {

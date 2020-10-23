@@ -11,7 +11,7 @@
       </div>
       <div slot="right">
         <div class="right-header">
-          <span>新密码审核 </span>
+          <span>账号申诉审核 </span>
           <span style="margin-left: 20px;">{{schoolsName}}</span>
 
         </div>
@@ -25,7 +25,7 @@
                 </el-select>
               </el-form-item>
 
-              <el-form-item label="年级" v-show="search.roleTpye=='Student'">
+              <!-- <el-form-item label="年级" v-show="search.roleTpye=='Student'">
                 <el-select v-model="search.gradeId"class="search-class" @change="get_class_list" clearable>
                   <el-option v-for="list in gradeList" :label="list.gradeName" :value="list.gradeId.id" :key="list.gradeId.id"></el-option>
                 </el-select>
@@ -34,7 +34,7 @@
                 <el-select v-model="search.classId"class="search-class" @change="resetPage" clearable>
                   <el-option v-for="list in classList" :label="list.className" :value="list.classId.id" :key="list.classId.id"></el-option>
                 </el-select>
-              </el-form-item>
+              </el-form-item> -->
 
               </el-form-item>
               <el-form-item label="账号">
@@ -77,21 +77,27 @@
 	                  {{scope.row.userType == 'Student'?'学生':'老师'}}
 	                </template>
               </el-table-column>
-<!--               <el-table-column
+              <el-table-column
                 label="年级"
-                prop="grade.name"
+                prop="gradeName"
                 sortable>
               </el-table-column>
               <el-table-column
                 label="班级"
-                prop="clazz.name"
+                prop="className"
                 sortable>
-              </el-table-column> -->
+              </el-table-column>
+              <el-table-column
+                label="手机号"
+                prop="phoneNumber"
+                sortable>
+              </el-table-column>
               <el-table-column
                 prop=""
-                label="审批">
+                label="操作">
                 <template slot-scope="scope">
-                  <el-button type="text" @click="resetPass(scope.row)" >确认重置</el-button>
+                  <el-button type="text" @click="resetPass(scope.row,'1')" >通过</el-button>
+                  <el-button type="text" @click="resetPass(scope.row,'2')" >拒绝</el-button>
 
                 </template>
               </el-table-column>
@@ -278,7 +284,7 @@ export default {
 
 
           this.classList = data.data.content
-      		this.getTableData()
+      		this.resetPage()
           
 
         
@@ -321,20 +327,20 @@ export default {
 
 
 
-    resetPass(row) {
-      this.$confirm('确认重置该成员密码?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
+    resetPass(row, status) {
+      // this.$confirm('确认重置该成员密码?', '提示', {
+      //   confirmButtonText: '确定',
+      //   cancelButtonText: '取消',
+      //   type: 'warning'
+      // }).then(() => {
 
         if(row) {
 
-          this.$http.put(`/api/internal/schools/${row.userId.id}/verify`)
+          this.$http.put(`/api/internal/schools/${row.userId.id}/verify/${status}`)
           .then((data)=>{
 
                 this.$message({
-                  message:'密码重置成功',
+                  message:'操作成功',
                   type:'success'
                 })
                 this.getTableData()
@@ -395,7 +401,7 @@ export default {
 
 
         // }
-      })
+      // })
     },
 
 

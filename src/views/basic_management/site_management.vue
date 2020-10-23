@@ -103,7 +103,7 @@
 		                </el-table-column>
 		              <el-table-column
 		                prop="状态"
-		                label="账号">
+		                label="状态">
 		                <template slot-scope="scope">
 		                	{{scope.row.enabled?"启用":"禁用"}}
 		                </template>
@@ -145,7 +145,7 @@
 	                </el-table-column>
 	              <el-table-column
 	                prop="状态"
-	                label="账号">
+	                label="状态">
 	                <template slot-scope="scope">
 	                	{{scope.row.enabled?"启用":"禁用"}}
 	                </template>

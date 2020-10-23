@@ -40,13 +40,24 @@
                 sortable>
               </el-table-column>
               <el-table-column
+                prop=""
+                sortable
+                width="110"
+                label="班主任">
+                <template slot-scope="scope">
+                  {{scope.row.headTeacher?scope.row.headTeacher.name:''}}
+                </template>
+              </el-table-column> 
+              <el-table-column
                 prop="teacherNames"
                 sortable
+                :show-overflow-tooltip="true"
                 label="任课老师">
               </el-table-column> 
               <el-table-column
                 prop="studentNames"
                 sortable
+                :show-overflow-tooltip="true"
                 label="班级学生">
               </el-table-column> 
 
@@ -91,7 +102,7 @@
 				  	<div class="input-wrap"><p class="label-class"><span class="require-class">*</span>班级名称：</p>
 				  		<el-input v-model="classes.name" placeholder="请输入内容" class="input-class" size="small"></el-input>
 				  	</div>
-            <div class="input-wrap" v-if="!isEdit"><p class="label-class"><span class="require-class">*</span>班主任：</p>
+            <div class="input-wrap"><p class="label-class"><span class="require-class">*</span>班主任：</p>
               <el-select v-model="classes.headTeacherId" class="input-class" size="small" clearable>
                 <el-option v-for="list in tearchersList" :label="list.teacherName" :key="list.userId" :value="list.userId" placeholder="请选择"></el-option>
               </el-select>
@@ -304,6 +315,8 @@ export default {
     	this.isEdit = true
     	this.editClassId = row.classId.id
     	this.classes.name = row.className
+
+      this.classes.headTeacherId = Number(row.headTeacher.id)
     	let tearchers = []
     	for(let i=0;i<this.subjectList.length;i++) {
     		tearchers[i] = ''
@@ -328,7 +341,7 @@ export default {
           type:'warning'
         })
     	}
-      console.log(this.classes)
+      // console.log(this.classes)
 
     	let giveLessonCommands = []
     	this.classes.tearchers.forEach(item=>{
@@ -340,7 +353,7 @@ export default {
     		//编辑
     		this.$http.put(`/api/internal/classes/${this.editClassId}`,{
 	    		className: this.classes.name,
-          
+          headTeacherId: this.classes.headTeacherId,
 	    		giveLessonCommands: giveLessonCommands
 	    	})
 	    	.then((data)=>{

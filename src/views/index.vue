@@ -68,7 +68,7 @@
 					        </template>
 					        <el-menu-item-group>
 					          
-					          <el-menu-item index="/administrator/passwordReview">密码审核</el-menu-item>
+					          <el-menu-item index="/administrator/passwordReview">申诉审核</el-menu-item>
 					          <el-menu-item index="/administrator/resourceManagement">资源管理</el-menu-item>
 					          <el-menu-item index="/administrator/questionManagement">题库管理</el-menu-item>
 										<el-menu-item index="/administrator/correctionReview">题库纠错</el-menu-item>

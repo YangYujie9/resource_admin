@@ -45,6 +45,7 @@
               :data="tableData"
               :height="table_height"
               ref="multipleTable"
+              @selection-change="handleSelectionChange"
               border>
               <el-table-column
                 type="selection">
@@ -79,7 +80,7 @@
                 prop="userRole"
                 label="用户类型">
                 <template slot-scope="scope">
-                  {{getuserType(scope.row.userRole)}}
+                  {{getuserType(scope.row)}}
                 </template>
                 
               </el-table-column>
@@ -113,7 +114,7 @@
           </div>
           <div class="pagination">
             <div>
-              <el-checkbox v-model="checked" @change="toggleSelection">全选</el-checkbox>
+              <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
               <el-button type="text" @click="deleteUser()" style="margin-left: 20px;">删除</el-button>
             </div>
             <el-pagination
@@ -169,9 +170,16 @@
       <el-form :model="userForm" size="small" label-width="100px" :rules="rules" ref="userForm">
 
         <el-form-item label="用户类型" prop="userRole" :required="true">
-          <el-select v-model="userForm.userRole" class="input-class" :disabled="isUserEdit||isReset">
+          <el-select v-model="userForm.userRole" class="input-class" v-if="isUserEdit||isReset" disabled>
+            <el-option v-for="list in totalTypeList" :label="list.label" :value="list.key" :key="list.key"></el-option>
+          </el-select>
+
+
+          <el-select v-model="userForm.userRole" class="input-class" v-else>
             <el-option v-for="list in typeList" :label="list.label" :value="list.key" :key="list.key"></el-option>
           </el-select>
+
+
         </el-form-item>
         <el-form-item label="账号" prop="account" :required="true">
           <input type="password" name="password" style="position: fixed;bottom: -9999px;">
@@ -254,6 +262,7 @@ export default {
     return {
       filterText:'',
       data: [],
+      isIndeterminate: false,
       defaultProps: {
         children: 'members',
         label: 'name',
@@ -285,7 +294,7 @@ export default {
         size:10,
       },
       total:0,
-      checked: false,
+      checkAll: false,
       // typeList: [{
       //   label:'管理员',
       //   value:'Administrator',
@@ -313,7 +322,7 @@ export default {
       totalTypeList: [
         {label:'区域运维管理员',value:'Administrator',key:"0",role:'Organization'},
         {label:'审核员',value:'Auditor',key:"1",role:'Organization'},
-        {label:'区域领导',value:'AreaLeaders',key:"4",role:'Organization'},
+        {label:'区域领导',value:'AreaLeader',key:"4",role:'Organization'},
         {label:'学校运维管理员',value:'Administrator',key:"0",role:'School'},
         {label:'审核员',value:'Auditor',key:"1",role:'School'},
         {label:'录题员',value:'Recorder',key:"2",role:'School'},
@@ -353,7 +362,7 @@ export default {
 
     typeList() {
         return this.totalTypeList.filter(list=>{
-          console.log(list,this.currentNode.memberType)
+          // console.log(list,this.currentNode)
           return list.role == this.currentNode.memberType
         })
       // if(this.currentNode.memberType == 'Organization') {
@@ -405,12 +414,15 @@ export default {
       this.currentNode = data
       this.resetPage()
     },
-    getuserType(type) {
+    getuserType(row) {
 
+      let roleType = row.organization && row.organization.id? 'Organization': 'School'
 
+      // console.log(roleType)
       let name = this.totalTypeList.filter(list=> {
-        return list.value == type
+        return list.value == row.userRole && list.role == roleType
       })
+      // console.log(name)
       if(name && name.length) {
         return name[0].label
       } else {
@@ -435,6 +447,8 @@ export default {
             this.tableData = data.data.content
             this.total = data.data.totalElements
 
+            this.checkAll = false
+
 
           } 
             
@@ -447,6 +461,7 @@ export default {
 
             this.tableData = data.data.content
             this.total = data.data.totalElements
+            this.checkAll = false
 
 
           } 
@@ -721,10 +736,10 @@ export default {
   
     // },
 
-    toggleSelection() {
+    handleCheckAllChange() {
 
       // this.$refs.multipleTable.toggleAllSelection()
-        if (this.checked) {
+        if (this.checkAll) {
           this.tableData.forEach(row => {
             this.$refs.multipleTable.toggleRowSelection(row,true);
           });
@@ -734,6 +749,14 @@ export default {
 
 
     },
+
+
+    handleSelectionChange(rows) {
+        let checkedCount = rows.length;
+        this.checkAll = checkedCount === this.tableData.length;
+        this.isIndeterminate = checkedCount > 0 && checkedCount < this.tableData.length;
+    },
+
 
     // 分页
     handleSizeChange(val) {
@@ -751,17 +774,17 @@ export default {
       this.UserDialogTitle = "新增用户"
       this.isUserEdit = false
       this.isReset = false
-      // this.userForm.userRole = '0'
-      // this.userForm.account = ''
-      // this.userForm.name = ''
-      // this.userForm.pass = ''
-      // this.userForm.checkPass = ''
-      // this.userForm.phoneNumber = ''
-      // this.userForm.email = ''
+      this.userForm.userRole = this.typeList[0].key
+      this.userForm.account = ''
+      this.userForm.name = ''
+      this.userForm.pass = ''
+      this.userForm.checkPass = ''
+      this.userForm.phoneNumber = ''
+      this.userForm.email = ''
 
       this.userDialogVisible = true
       this.$nextTick(()=>{
-          this.$refs['userForm'].resetFields();
+          this.$refs['userForm'].clearValidate();
       })  
     },
 
@@ -769,7 +792,7 @@ export default {
       this.UserDialogTitle = "编辑用户"
       this.isUserEdit = true
       this.isReset = false
-      let role = this.typeList.filter(item=>item.value == row.userRole)
+      let role = this.totalTypeList.filter(item=>item.value == row.userRole)
       this.userForm.userRole = role[0].key
 
       this.editUserId = row.userId.id
@@ -780,13 +803,17 @@ export default {
       this.userForm.phoneNumber = row.personal.phoneNumber
       this.userForm.email = row.personal.email
       this.userDialogVisible = true
-
+      this.$nextTick(()=>{
+          this.$refs['userForm'].clearValidate();
+      }) 
     },
 
     resetpassDialog(row) {
       this.UserDialogTitle = "重置密码"
+      this.isUserEdit = false
       this.isReset = true
-      let role = this.typeList.filter(item=>item.value == row.userRole)
+      let role = this.totalTypeList.filter(item=>item.value == row.userRole)
+
       this.userForm.userRole = role[0].key
 
       this.editUserId = row.userId.id
@@ -797,7 +824,9 @@ export default {
       this.userForm.phoneNumber = row.personal.phoneNumber
       this.userForm.email = row.personal.email
       this.userDialogVisible = true
-
+      this.$nextTick(()=>{
+          this.$refs['userForm'].clearValidate();
+      }) 
     },
 
     addUser() {

@@ -265,6 +265,7 @@ export default {
       copyTableData:[],
       copyloading:false,
       copyEmpty: false,
+      currentPopover:''
 
 
 
@@ -371,6 +372,13 @@ export default {
       }else {
         this.currentNode = data
         this.schoolsName = data.name
+
+
+        if(this.$refs[this.currentPopover] && this.$refs[this.currentPopover][0]) {
+
+          this.$refs[this.currentPopover][0].doClose()
+
+        }
       }
       this.get_grade_list()
       this.get_subject_list()
@@ -410,6 +418,7 @@ export default {
     },
     getTableData() {
       
+
       
       let schoolId = ''
       if(this.isCoping) {
@@ -546,6 +555,9 @@ export default {
             this.tableData = list
             this.loading = false
           }
+
+
+          // console.log(this.tableData)
           
           // console.log(this.isCoping,this.copyTableData,this.tableData,list)
         }
@@ -607,7 +619,10 @@ export default {
             this.editBooksId = ''
             this.version = ''
             this.$refs[`popover-${grade}-${list.code}`][0].doShow()
+
+            this.currentPopover = `popover-${grade}-${list.code}`
           }
+          // console.log(`popover-${grade}-${list.code}`)
           
           
           
@@ -623,6 +638,8 @@ export default {
           this.bookList = data.data
           this.books = flag?[]: list.volume.split(',')
           this.$refs[`popover-${grade}-${list.code}`][0].doShow()
+
+          this.currentPopover = `popover-${grade}-${list.code}`
         }
       })
     },

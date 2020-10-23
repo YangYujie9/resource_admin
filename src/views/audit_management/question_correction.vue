@@ -217,7 +217,8 @@
               <ckeditor ref="ckF" v-show="currentOption.label == 'F'" :readOnly="isError&&optionReadonly"></ckeditor>
               <ckeditor ref="ckG" v-show="currentOption.label == 'G'" :readOnly="isError&&optionReadonly"></ckeditor>
               <ckeditor ref="ckH" v-show="currentOption.label == 'H'" :readOnly="isError&&optionReadonly"></ckeditor>
-              
+              <ckeditor ref="ck✓" v-show="currentOption.label == '✓'" :readOnly="isError&&optionReadonly"></ckeditor>
+              <ckeditor ref="ck×" v-show="currentOption.label == '×'" :readOnly="isError&&optionReadonly"></ckeditor>
             </div>
             <!-- <div v-if="templateKey=='BoolentemplateKey'">
               <ckeditor ref="ckY" v-show="currentOption.label == 'Y'"></ckeditor>
@@ -770,13 +771,13 @@ export default {
           this.qnumDisable = false
           
           this.optionList = [
-            { label: "A", content: "" },
-            { label: "B", content: "" }
+            { label: "✓", content: "" },
+            { label: "×", content: "" }
           ];
           this.currentOption = this.optionList[0]
           this.form.optionNum = 2;
           this.form.relOptionNum = 1;
-          this.answers = [{value:"A"}];
+          this.answers = [{value:"✓"}];
         } else if (this.templateKey == "FillingQuestionTemplate") {
           
           this.form.questionNum = 1
@@ -1061,7 +1062,13 @@ export default {
               return item.code == this.questionDetail.questionType
             })[0].code 
 
-          
+            if(this.templateKey == 'BoolenQuestion') {
+              this.optionList = [
+                { label: "×", content: "" },
+                { label: "✓", content: "" }
+              ];
+              this.form.optionNum = 2;
+            }
 
         } 
       })

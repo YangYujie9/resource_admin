@@ -64,7 +64,7 @@
               </el-form-item>
               <el-form-item label="难度">
                 <el-select v-model="search.difficultyType" placeholder="难度" class="search-class" @change="resetPage" clearable>
-                  <el-option v-for="list in difficultyLiist" :label="list" :value="list" :key="list"></el-option>
+                  <el-option v-for="list in difficultyList" :label="list.value" :value="list.key" :key="list.key"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="上传时间">
@@ -145,8 +145,7 @@
   			          </section>
 
 
-  			          <section class="content" v-show="list.showDetail" style="padding-top: 0px;">
-  			            <div class="qt2 top"></div>
+  			          <section class="content" v-show="list.showDetail" style="padding-top: 0px;border-top: 1px dashed #dbdee4;">
 
   			            <div class="middle">
   			              <div>
@@ -162,12 +161,12 @@
   			                </p>
   			              </div>
 
-  			              <div v-if="list.fillAnswers.length ||list.smallQuestions.length">
+  			              <div v-if="list.answers.length">
   			                <p class="title">【答案】</p>
   			                <p>
   			                	<span v-for="(item,index1) in list.answers">
-                           <span v-if="list.smallQuestions.length"  style="margin-left: 0px;">{{index1+1}}.</span>
-                           <span style="margin-left: 0px;">{{item}}</span>
+                            <span v-if="list.smallQuestions.length"  style="margin-left: 0px;">{{index1+1}}.</span>
+                            <span style="margin-left: 0px;">{{item}}</span>
                           </span>
   			                </p>
   			              </div>
@@ -280,7 +279,7 @@ export default {
     	tableData:[],
     	table_height:300,
     	questionTypeList:[],
-    	difficultyLiist: ['易','较易','中档','较难','难'],
+    	difficultyList: [],
     	currentChapter:'',
       currentKnowledge:'',
     	currentNode:'',
@@ -344,6 +343,8 @@ export default {
     // this.getlearningSection()
     this.geterrorType()
 
+    this.getDifficultyList()
+
     window.onresize = () => {
       this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight - this.$refs.pagination.offsetHeight
     }
@@ -381,6 +382,16 @@ export default {
 
       this.tableData = []
     },
+
+    getDifficultyList() {
+
+      this.$http.get(`/api/open/common/difficultyType`)
+      .then(data=>{
+
+        this.difficultyList = data.data
+      })
+    },
+
 
     getSubjectCode(learningSection,code) {
 
@@ -592,11 +603,11 @@ export default {
     		params.schoolId = ''
     		params.subjectId = ''
 
-    		// if(this.knowType == "chapter") {
-    		// 	params.knowledgeId = ''
-    		// }else {
-    		// 	params.chapterId = ''
-    		// }
+    		if(this.knowType == "chapter") {
+    			params.knowledgeId = ''
+    		}else {
+    			params.chapterId = ''
+    		}
     	}
 
 
@@ -661,13 +672,17 @@ export default {
         })
       }
 
-      //知识点
-      item.knowledgesPoint = []
+      //章节
+      item.chapterPoint = [] 
       if(item.chapters && item.chapters.length) {
         item.chapters.forEach(item1=>{
-          item.knowledgesPoint.push(item1.name)
+          item.chapterPoint.push(item1.name)
         })
-      }else if(item.knowledges && item.knowledges.length) {
+      }
+
+      //知识点
+      item.knowledgesPoint = [] 
+      if(item.knowledges && item.knowledges.length) {
         item.knowledges.forEach(item1=>{
           item.knowledgesPoint.push(item1.name)
         })

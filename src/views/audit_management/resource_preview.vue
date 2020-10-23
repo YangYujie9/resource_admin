@@ -42,14 +42,14 @@
                 <th>栏目</th>
                 <th>类型</th>
                 <th>状态</th>
-                <th>操作</th>
+                <th v-if="resourceInfo.openState!='Privately'">操作</th>
               </tr>
               <tr>
                 <td>{{resourceInfo.name}}</td>
                 <td>{{resourceInfo.resourceName}}</td>
                 <td>{{resourceInfo.resourceName}}</td>
                 <td>{{resourceInfo.applyName}}</td>
-                <td style="width: 220px;">
+                <td style="width: 220px;" v-if="resourceInfo.openState!='Privately'">
                   <div class="active-wrap">
                     <el-button type="text" @click="deleteResource(resourceInfo)">删除</el-button>
 
@@ -73,41 +73,56 @@
             <div class="right-wrap-content-left">
 
               <div class="right-wrap-content-left-top"> 
-                <div class="img-class">
+                <!-- <div class="img-class">
                   <img :src="resourceInfo.surfaceUrl" alt="" style="width: 230px;height: 150px;" v-if="resourceInfo.surfaceUrl">
                   <img src="@/assets/images/default.jpg" alt="" style="width: 230px;height: 150px;" v-else>
-                </div>
+                </div> -->
                 <div class="info-class">
-                  <p class="title_p">{{resourceInfo.name}}
+                  <p class="title_p" style="width: 100%;">{{resourceInfo.name}}
                     <i class="iconfont iconbianji iconclass" style="margin-left: 10px;" @click="editDialogShow('name')"></i>
                   </p>
 
-                  <p>权限：{{resourceInfo.openStateName}}</p>
-                  <p>学段：{{resourceInfo.name}}</p>
-                  <p>年级：{{resourceInfo.gradeName}}
+                  <p class="one-piece">权限：{{resourceInfo.openStateName}}</p>
+                  <!-- <p>学段：{{resourceInfo.name}}</p> -->
+                  <p class="one-piece">年级：{{resourceInfo.gradeName}}
                     <i class="iconfont iconbianji iconclass" style="margin-left: 10px;" @click="editDialogShow('grade')"></i>
                   </p>
-                  <p>科目：{{resourceInfo.subjectName}}</p>
-                  <p>上传用户：{{resourceInfo.userName}}</p>
-                  <p>资源类型：{{resourceInfo.resourceName}}
-                    <i class="iconfont iconbianji iconclass" style="margin-left: 10px;" @click="editDialogShow('type')"></i>
+                  <p class="one-piece">科目：{{resourceInfo.subjectName}}</p>
+                  <p class="one-piece">上传用户：{{resourceInfo.userName}}</p>
+                  <p class="one-piece">资源类型：{{resourceInfo.resourceName}}
+                    <!-- <i class="iconfont iconbianji iconclass" style="margin-left: 10px;" @click="editDialogShow('type')"></i> -->
                   </p>
-                  <p>文件类型：{{resourceInfo.fileType}}</p>
-                  <p>上传时间：{{resourceInfo.createTime}}</p>
-                  <p><i class="iconfont iconicontouxiang" style="margin-right: 5px;"></i>{{resourceInfo.preview}}人已学习</p>
-
+                  <p class="one-piece">文件类型：{{resourceInfo.fileType}}</p>
+                  <p class="one-piece">上传时间：{{resourceInfo.createTime}}</p>
+                  <p class="one-piece"><i class="iconfont iconicontouxiang" style="margin-right: 5px;"></i>{{resourceInfo.preview}}人已学习</p>
+                  <p @click="chapterTreeShow" class="cursor" style="width: 100%;">章节：<span class="link-class">{{resourceInfo.chapterNames}}</span> </p>
+                  <p @click="knowledgeTreeShow" class="cursor" style="width: 100%;">知识点：<span class="link-class">{{resourceInfo.knowledgeNames}}</span></p>
                 </div>
               </div>
 
               <div class="right-wrap-content-left-content">
-                <p @click="chapterTreeShow" class="cursor">章节：<span class="link-class">{{resourceInfo.chapterNames}}</span> </p>
-                <p @click="knowledgeTreeShow" class="cursor">知识点：<span class="link-class">{{resourceInfo.knowledgeNames}}</span></p>
+                <div class="container" v-if="previewTab && showPreview === 'picture'">
+                  <div class="bottomContent" v-if="showPreview === 'picture'" >
+                     <img :src="picturePreviewUrl" style="max-width: 100%;max-height: 100%;">
+                  </div>    
+                </div>
+
+                <div class="container" v-if="previewTab && showPreview === 'pdf'">
+                   <div class="bottomContent" v-if="showPreview === 'pdf' && pdfPreviewUrl">
+                    <div class="bottomLeft">
+                          <pdf-preview 
+                            :pdf-url='pdfPreviewUrl'
+                            :pdf-pagenum='totalPages'>
+                          </pdf-preview >      
+                    </div>
+                  </div>    
+                </div>
               </div> 
 
 
             </div>
 
-            <div class="right-wrap-content-right">
+<!--             <div class="right-wrap-content-right">
 
 
                 <div class="container" v-if="previewTab && showPreview === 'picture'">
@@ -127,7 +142,7 @@
                   </div>    
                 </div>
 
-            </div>
+            </div> -->
           </div>  
 
         </div>
@@ -207,7 +222,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false" size="mini">取 消</el-button>
-        <el-button type="primary" @click="updateResource" size="mini">确 定</el-button>
+        <el-button type="primary" @click="updateResource('basic')" size="mini">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -392,10 +407,12 @@ export default {
 
           let chapterIdList = this.$refs.chapterTree.getCheckedKeys()
           parmas.chapterIdList = chapterIdList
+          parmas.knowledgeIdList = this.resourceInfo.knowledgeSet
 
         }else {
           let knowledgeIdList = this.$refs.knowledgeTree.getCheckedKeys()
-          parmas.knowledgeIdList = knowledgeIdList      
+          parmas.knowledgeIdList = knowledgeIdList 
+          parmas.chapterIdList = this.resourceInfo.chapterSet     
         }
 
 
@@ -404,6 +421,8 @@ export default {
         parmas.name = this.resource.name
         parmas.resourceType = this.resource.type
         parmas.grade = this.resource.grade
+        parmas.chapterIdList = this.resourceInfo.chapterSet
+        parmas.knowledgeIdList = this.resourceInfo.knowledgeSet
 
 
       }
@@ -691,21 +710,23 @@ export default {
         margin-top: 10px;
         background-color: #ffffff;
         height: calc(100vh - 260px);
-        display: flex;
+        // overflow-y: auto;
+        // display: flex;
         padding: 10px;
 
         &-left {
-          width: 50%;
+          // width: 50%;
           margin-right: 20px;
           height: 100%;
-          overflow-y: auto;
+          // 
           line-height: 24px;
 
           &-top {
-            display: flex;
+            // display: flex;
 
             .title_p {
               font-size: 1.18rem;
+              text-align: center;
             }
 
             .img-class {
@@ -714,15 +735,27 @@ export default {
 
             .info-class {
               margin-left: 20px;
+              display: flex;
+              flex-wrap: wrap;
+
+              .one-piece {
+                width: 25%;
+              }
+
+
+              .link-class {
+                color: #409EFF;
+              }
             }
           }
 
           &-content {
-            padding-left: 10px;
+            height: calc(100vh - 430px);
+            overflow-y: auto;
+            // background-color: red;
+            margin-top: 10px;
 
-            .link-class {
-              color: #409EFF;
-            }
+
 
 
           }

@@ -28,12 +28,12 @@
               </el-form-item>
               <el-form-item label="状态">
                 <el-select v-model="search.applyState" placeholder="状态" class="search-class" @change="resetPage" clearable>
-                  <el-option v-for="list in statusLiist" :label="list" :value="list" :key="list"></el-option>
+                  <el-option v-for="list in statusLiist" :label="list.value" :value="list.key" :key="list.key"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="难度">
                 <el-select v-model="search.difficultyType" placeholder="难度" class="search-class" @change="resetPage" clearable>
-                  <el-option v-for="list in difficultyLiist" :label="list" :value="list" :key="list"></el-option>
+                  <el-option v-for="list in difficultyList" :label="list.value" :value="list.key" :key="list.key"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="上传时间">
@@ -84,18 +84,7 @@
                           <span v-html="item.value"></span> 
   			                  <!-- <img src="@/assets/test1.png" /> -->
   			                </li>
-  			                <!-- <li style="width: 24%;" class="selectoption">
-  			                  B.
-  			                 <img src="@/assets/test1.png" />
-  			                </li>
-  			                <li style="width: 24%;" class="selectoption">
-  			                  C.
-  			                  <img src="@/assets/test1.png" /> 
-  			                </li>
-  			                <li style="width: 24%;" class="selectoption">
-  			                  D.
-  			                  <img src="@/assets/test1.png" /> 
-  			                </li> -->
+
   			              </ul>
   			            </div>
 
@@ -127,8 +116,8 @@
   			          </section>
 
 
-  			          <section class="content" v-show="list.showDetail" style="padding-top: 0px;">
-  			            <div class="qt2 top"></div>
+  			          <section class="content" v-show="list.showDetail" style="padding-top: 0px;border-top: 1px dashed #dbdee4;">
+  			            
 
   			            <div class="middle">
   			              <div>
@@ -138,7 +127,7 @@
   			                </p>
   			              </div>
 
-  			              <div v-if="list.fillAnswers.length ||list.smallQuestions.length">
+  			              <div v-if="list.answers.length">
   			                <p class="title">【答案】</p>
   			                <p>
   			                	<span v-for="(item,index1) in list.answers">
@@ -263,8 +252,8 @@ export default {
     	tableData:[],
     	table_height:300,
     	questionTypeList:[],
-    	statusLiist:['待审核','已上架','已下架'],
-    	difficultyLiist: ['易','较易','中档','较难','难'],
+    	statusLiist:[{key: 'Audit', value: '待审核'},{key : 'Grounding',value:'已上架'},{key: 'Undercarriage', value:'已下架'}],
+    	difficultyList: [],
       currentChapter:'',
       currentKnowledge:'',    	
       currentNode:'',
@@ -275,6 +264,7 @@ export default {
       isMounted: false,
       subjectCode:'',
       learningSection:'',
+      isIndeterminate: false,
 
 
 
@@ -309,6 +299,8 @@ export default {
   },
   mounted() {
 
+
+    this.getDifficultyList()
     this.isMounted = true  
     this.$nextTick(()=>{
       this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight - this.$refs.pagination.offsetHeight
@@ -367,6 +359,15 @@ export default {
         this.getQuestionType()   
       }
 
+    },
+
+    getDifficultyList() {
+
+      this.$http.get(`/api/open/common/difficultyType`)
+      .then(data=>{
+
+        this.difficultyList = data.data
+      })
     },
 
 
@@ -516,7 +517,6 @@ export default {
     	}	
 
       this.tableData = []
-      this.checked = false
       let params = {
       	schoolId: this.currentNode.id,
       	subject:  this.activeType == 'organizations'? this.search.subject.code:this.subjectCode,
@@ -539,11 +539,11 @@ export default {
     		params.schoolId = ''
     		params.subjectId = ''
 
-    		// if(this.knowType == "chapter") {
-    		// 	params.knowledgeId = ''
-    		// }else {
-    		// 	params.chapterId = ''
-    		// }
+    		if(this.knowType == "chapter") {
+    			params.knowledgeId = ''
+    		}else {
+    			params.chapterId = ''
+    		}
     	}
 
 
@@ -601,13 +601,17 @@ export default {
         })
       }
 
-      //知识点
-      item.knowledgesPoint = []
+      //章节
+      item.chapterPoint = []
       if(item.chapters && item.chapters.length) {
         item.chapters.forEach(item1=>{
-          item.knowledgesPoint.push(item1.name)
+          item.chapterPoint.push(item1.name)
         })
-      }else if(item.knowledges && item.knowledges.length) {
+      }
+
+      //知识点
+      item.knowledgesPoint = []
+      if(item.knowledges && item.knowledges.length) {
         item.knowledges.forEach(item1=>{
           item.knowledgesPoint.push(item1.name)
         })

@@ -465,7 +465,9 @@ export default {
 		}
 	}
 
-
+  .input-class {
+    width: 280px;
+  }
 
 
 }

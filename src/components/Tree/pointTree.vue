@@ -128,18 +128,22 @@ export default {
   methods: {
     getCheckedNodes(node, data) {
 
-
+      // console.log(888)
       let arr = [];
 
 
       if(this.isReset) {
 
         data.checkedNodes.forEach(node => {
-          if(node.memberType == 'Volume') {
-            data.checkedKeys.splice(data.checkedKeys.indexOf(node.resourceId.id),1)
-          }else {
-            (data.checkedKeys.indexOf(node.parentId.id) >-1)?null:arr.push(node)
-          }
+
+          (data.checkedKeys.indexOf(node.parentId.id) >-1)?null:arr.push(node)
+          
+          // if(node.memberType == 'Volume') {
+
+          //   data.checkedKeys.splice(data.checkedKeys.indexOf(node.resourceId.id),1)
+          // }else {
+          //   (data.checkedKeys.indexOf(node.parentId.id) >-1)?null:arr.push(node)
+          // }
           
             
         });
@@ -258,9 +262,17 @@ export default {
     },
     getCheckedKeys() {
 
-      return this.$refs.tree.getCheckedKeys()
+      let checkedNodes = this.$refs.tree.getCheckedNodes()
+      let checkedKeys = this.$refs.tree.getCheckedKeys()
+
+      let arr = []
+      checkedNodes.forEach(item=>{
+        checkedKeys.indexOf(item.parentId.id)>-1?null:arr.push(item.resourceId.id)
+      })
       
-      this.$emit('getCheckedKeys',arr)
+      return arr
+      
+      // this.$emit('getCheckedKeys',arr)
 
     },
     setCheckedNodes(nodes) {

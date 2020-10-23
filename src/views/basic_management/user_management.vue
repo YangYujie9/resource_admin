@@ -79,6 +79,7 @@
               :data="tableData"
               :height="table_height"
               ref="multipleTable"
+              @selection-change="handleSelectionChange"
               border>
               <el-table-column
                 type="selection">
@@ -162,7 +163,7 @@
           </div>
           <div class="pagination">
             <div>
-              <el-checkbox v-model="checked" @change="toggleSelection">全选</el-checkbox>
+              <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
               <el-button type="text" @click="deleteUser()" style="margin-left: 20px;">删除</el-button>
             </div>
             <el-pagination
@@ -182,6 +183,7 @@
           :title="dislogTitle"
           :visible.sync="dialogVisible"
           :close-on-click-modal='false'
+          @closed="closeEditDialog"
           width="500px">
           <div class="class-wrap">
             <el-form :model="userForm" size="small" label-width="100px" :rules="rules" ref="usersForm">
@@ -221,11 +223,13 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="密码" prop="pass" :required="true" v-if="!isEdit">
-                <input style="position: fixed;left: -9999px;">
-                <el-input v-model="userForm.pass" type="password" class="input-class" placeholder="请输入密码" autocomplete="off"></el-input>
+                <!-- <input style="position: fixed;left: -9999px;"> -->
+                <el-input v-model="userForm.pass" type="password" style="position:fixed;bottom:-9999px;display:none;"></el-input>
+                <el-input v-model="userForm.pass" type="password" class="input-class" placeholder="请输入密码" auto-complete="off"></el-input>
               </el-form-item>
               <el-form-item label="确认密码" prop="checkPass" :required="true" v-if="!isEdit">
-                <el-input v-model="userForm.checkPass" type="password"  class="input-class" placeholder="请再次输入密码" autocomplete="new-password"></el-input>
+                <el-input v-model="userForm.checkPass" type="password" style="position:fixed;bottom:-9999px;display:none;"></el-input>
+                <el-input v-model="userForm.checkPass" type="password"  class="input-class" placeholder="请再次输入密码" autocomplete="off"></el-input>
               </el-form-item>
               <el-form-item label="手机号">
                 <el-input v-model="userForm.phoneNumber" class="input-class" placeholder="请输入"></el-input>
@@ -316,6 +320,7 @@ export default {
     };
     return {
       tableData:[],
+      isIndeterminate: false,
       table_height:300,
       filterText:'',
       data:[],
@@ -331,7 +336,7 @@ export default {
       subjectList:[],
       searchClassList:[],
       classList:[],
-      checked:false,
+      checkAll:false,
       learningSection:'',
       search: {
         roleTpye:'student',
@@ -420,10 +425,10 @@ export default {
   methods: {
 
 
-    toggleSelection() {
+    handleCheckAllChange() {
 
       // this.$refs.multipleTable.toggleAllSelection()
-        if (this.checked) {
+        if (this.checkAll) {
           this.tableData.forEach(row => {
             this.$refs.multipleTable.toggleRowSelection(row,true);
           });
@@ -432,6 +437,12 @@ export default {
         }
 
 
+    },
+
+    handleSelectionChange(rows) {
+        let checkedCount = rows.length;
+        this.checkAll = checkedCount === this.tableData.length;
+        this.isIndeterminate = checkedCount > 0 && checkedCount < this.tableData.length;
     },
 
     // 分页
@@ -494,7 +505,7 @@ export default {
 
 
       if(this.isAdd || this.isEdit) {
-        //this.userForm.classId = ''
+        // this.userForm.classId = ''
 
       }else {
         this.search.classId = ''
@@ -520,7 +531,7 @@ export default {
           if(this.isEdit) {
             this.userForm.classId = this.classList.length? this.userForm.classId:''
             // console.log(this.classList,this.userForm.classId)
-            this.dialogVisible = true
+            // this.dialogVisible = true
           }
             
             
@@ -551,9 +562,10 @@ export default {
     },
 
     getTableData() {
+      
 
       this.tableData = []
-
+      
       if(this.search.roleTpye=='student') {
         let params = {
           enabled: this.search.enabled,
@@ -569,6 +581,7 @@ export default {
 
             this.tableData = data.data.content
             this.total = data.data.totalElements
+            this.checkAll = false
             
           
         })
@@ -589,6 +602,7 @@ export default {
 
             this.tableData = data.data.content
             this.total = data.data.totalElements
+            this.checkAll = false
             // this.search.page = 1
 
  
@@ -606,6 +620,8 @@ export default {
       this.userForm.userRole = this.search.roleTpye
       this.userForm.account = ''
       this.userForm.classId = ''
+      this.userForm.pass = ''
+      this.userForm.checkPass = ''
       this.userForm.name = ''
       this.userForm.phoneNumber = ''
       this.userForm.email = ''
@@ -639,7 +655,12 @@ export default {
       
     },
 
+    closeEditDialog() {
+      // this.dialogVisible = false
+      this.isAdd = false
+      this.isEdit = false
 
+    },
 
     add_userDebounce: VueDebounce('add_user',200),
     add_user() {

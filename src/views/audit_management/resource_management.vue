@@ -3,7 +3,7 @@
     <rightNav>
       <div slot="left" class="left">
 
-      <collapsiblePonitTree @setActiveType="setActiveType" @orgNodeClick="orgNodeClick" @chapterNodeClick="chapterNodeClick" @knowNodeClick="knowNodeClick" @clearData="clearData"></collapsiblePonitTree>
+      <collapsiblePonitTree @setActiveType="setActiveType" @orgNodeClick="orgNodeClick" @chapterNodeClick="chapterNodeClick" @knowNodeClick="knowNodeClick" @clearData="clearData" @getSubjectCode="getSubjectCode"></collapsiblePonitTree>
 
 
 
@@ -96,7 +96,7 @@
           </div>
           <div class="pagination">
             <div  style="flex-shrink: 0">
-              <el-checkbox v-model="checked" @change="toggleSelection">全选</el-checkbox>
+              <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
        <!--        /*/*<el-button type="text" @click="deleteResource()" >删除</el-button>*/*/ -->
               <el-button type="text" @click="deleteResource()" style="margin-left: 20px;">删除</el-button>
               <el-button type="text" @click="resourceStateChange('','Grounding','')">上架</el-button>
@@ -140,7 +140,7 @@ export default {
     return {
       activeType:'',
       knowType:'',
-
+      isIndeterminate: false,
 
       sectionList:[],
       gradesList:[],
@@ -154,6 +154,7 @@ export default {
       },
       search: {
         type:'',
+        subjectCode:'',
         openState:'',
         applyState:'',
         time:'',
@@ -161,7 +162,7 @@ export default {
         size:10
       },
       total:0,
-      checked:'',
+      checkAll:'',
       tableData:[],
       table_height:300,
       typeList:[],
@@ -226,7 +227,7 @@ export default {
       }
       if(this.knowType != type2) {
         this.knowType = type2
-        this.resetPage()
+        this.getSubjectCode()
       }
       
 
@@ -269,13 +270,27 @@ export default {
         })
 
     },
+    getSubjectCode(learningSection,code) {
+
+      if(this.search.subjectCode != code) {
+        // this.learningSection = learningSection
+        this.search.subjectCode = code
+        this.getTableData()   
+      }
+
+    },
 
 
+    handleSelectionChange(rows) {
+        let checkedCount = rows.length;
+        this.checkAll = checkedCount === this.tableData.length;
+        this.isIndeterminate = checkedCount > 0 && checkedCount < this.tableData.length;
+    },
 
-    toggleSelection() {
+    handleCheckAllChange() {
 
       // this.$refs.multipleTable.toggleAllSelection()
-        if (this.checked) {
+        if (this.checkAll) {
           this.tableData.forEach(row => {
             this.$refs.multipleTable.toggleRowSelection(row,true);
           });
@@ -295,7 +310,7 @@ export default {
     handleCurrentChange(val) {
       this.search.page = val
       // console.log(`当前页: ${val}`);
-      this.resetPage()
+      this.getTableData()
     },
 
     tableCellStyle({row, column, rowIndex, columnIndex}) {
@@ -324,11 +339,12 @@ export default {
 
 
       this.tableData = []
-      this.checked = false
+      this.checkAll = false
       let params = {
         schoolId: this.currentNode.id,
 
         resourceType: this.search.type,
+        subject: this.activeType == 'knowledge'? this.search.subjectCode:'',
         chapterId: this.currentChapter.id,
         knowledgeId: this.currentKnowledge.id,
         openState: this.search.openState,
@@ -356,13 +372,14 @@ export default {
       }
 
     
-      this.$http.get(`/api/internal/resources/resourceList`,params)
+      this.$http.get(`/api/internal/resources`,params)
       .then((data)=>{
         if(data.status == '200') {
 
           this.tableData = data.data.content
           this.total = data.data.totalElements
-          this.search.page = 1
+          // this.search.page = 1
+          this.checkAll = false
 
         }   
       })
