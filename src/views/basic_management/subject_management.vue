@@ -141,7 +141,7 @@ export default {
 
 
 
-    this.getOrgTree()
+    // this.getOrgTree()
 
 
 

@@ -62,8 +62,14 @@
 
  
           </div>
-			    <div class="content-wrap"  ref="table_warp" :style="{height:table_height+'px'}">
-            <div v-if="tableData.length==0">
+			    <div class="content-wrap"  
+           ref="table_warp" 
+           :style="{height:table_height+'px'}" 
+           v-loading="loading"
+           element-loading-text="拼命加载中">
+
+            <questionList :tableData="tableData" :isAnswer="isAnswer" :checkAll="checkAll" @getData="getTableData" @checkAllchange="checkAllchange" @isIndeterminateChange="isIndeterminateChange" ref="question"></questionList>
+            <!-- <div v-if="tableData.length==0">
               <div style="height: 300px;line-height: 300px;text-align: center;">暂无数据</div>
             </div>
 			      <div v-else>
@@ -72,44 +78,41 @@
                 <div>
   			          <section class="content cursor" style="padding-bottom: 0px;" @click="list.showDetail = !list.showDetail">
   			            <div class="qt1" v-html="list.name">
-  			              <!-- <img src="@/assets/test1.png" /> -->
   	
   			            </div>
-  			            <div class="qt2" v-if="list.options.length">
+  			            <div class="qt2" v-if="list.options.length && list.questionTypeTemplate!='BoolenQuestionTemplate'">
   			              <ul>
   			                <li style="width: 100%;" class="selectoption" v-for="item in list.selectoption">
 
                           <span>{{item.key}}</span>
                           <span>、</span>
                           <span v-html="item.value"></span> 
-  			                  <!-- <img src="@/assets/test1.png" /> -->
   			                </li>
 
   			              </ul>
   			            </div>
 
-                    <!-- 小题 -->
                     <div class="" v-if="list.smallQuestions.length" style="margin-top: 10px;">
                       <div v-for="(list1,index1) in list.smallQuestions">
-
-                        <div class="qt1" v-if="list1.name">
-                          <div class="small-one">
-                            <span>{{index1+1}}</span><span>、</span>
-                            <span v-html="list1.name" ></span>
+                        <div :class="{qtwrap:list.questionTypeTemplate=='GestaltFillsUpTemplate'||list1.questionType=='NoAloneEnter'}">
+                          <div class="qt1" v-if="list1.questionType!='NoAloneEnter'">
+                            <div class="small-one">
+                              <span class="order">{{index1+1}}</span><span>、</span>
+                              <span v-html="list1.name" ></span>
+                            </div>
                           </div>
-                        </div>
-                        <div class="qt2" v-if="list1.options.length">
-                          <ul>
-                            <li style="width: 100%;" class="selectoption" v-for="item in list1.selectoption">
+                          <div class="qt2" v-if="list1.options.length && list1.questionType!='BoolenQuestion'">
+                            <ul style="padding-left: 20px;">
+                              <li style="width: 100%;" class="selectoption" v-for="item in list1.selectoption">
 
-                              <span>{{item.key}}</span>
-                              <span>、</span>
-                              <span v-html="item.value"></span> 
-                              <!-- <img src="@/assets/test1.png" /> -->
-                            </li>
-       
-       
-                          </ul>
+                                <span>{{item.key}}</span>
+                                <span>、</span>
+                                <span v-html="item.value"></span> 
+                              </li>
+         
+         
+                            </ul>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -131,8 +134,8 @@
   			                <p class="title">【答案】</p>
   			                <p>
   			                	<span v-for="(item,index1) in list.answers">
-                           <span v-if="list.smallQuestions.length"  style="margin-left: 0px;">{{index1+1}}.</span>
-                           <span style="margin-left: 0px;">{{item}}</span>
+                           <span v-if="list.smallQuestions.length"  style="margin-left: 0px;">{{item.index}}.</span>
+                           <span style="margin-left: 0px;">{{item.name}}</span>
                           </span>
   			                </p>
   			              </div>
@@ -160,7 +163,7 @@
                         <el-button type="text" @click="list.showDetail = !list.showDetail">{{list.showDetail?'收起': '详情'}}</el-button>
   			              	<el-button type="text" v-if="list.applyState == 'Audit' || list.applyState == 'Undercarriage'" @click="groundQuestion(list.questionId)">上架</el-button>
   			              	<el-button type="text" v-if="list.applyState == 'Grounding'" @click="underQuestion(list.questionId)">下架</el-button>
-  			              	<!-- <el-button type="text" v-if="list.applyState == 'Audit'" @click="rejectQuestion(list.questionId)">审批打回</el-button> -->
+
   			              	<el-button type="text" @click="deleteQuestion(list.questionId)">删除</el-button>
                         <el-button type="text" @click="errorCorrect(list.questionId)">纠错</el-button>
   			              </div>
@@ -170,7 +173,7 @@
   			          </section>
                 </div>
 			        </el-card>
-			      </div>
+			      </div> -->
 
 
 			    </div>
@@ -178,9 +181,9 @@
           <div class="pagination" ref="pagination">
             <div style="flex-shrink: 0">
               <el-checkbox v-model="checkAll" @change="handleCheckAllChange" :indeterminate="isIndeterminate">全选</el-checkbox>
-       				<el-button type="text" @click="deleteQuestion()" style="margin-left: 20px;">删除</el-button>
-            	<el-button type="text" @click="groundQuestion()">上架</el-button>
-            	<el-button type="text" @click="underQuestion()">下架</el-button>
+       				<el-button type="text" @click="$refs.question.deleteQuestion()" style="margin-left: 20px;">删除</el-button>
+            	<el-button type="text" @click="$refs.question.groundQuestion()">上架</el-button>
+            	<el-button type="text" @click="$refs.question.underQuestion()">下架</el-button>
             	<!-- <el-button type="text" @click="rejectQuestion()">打回</el-button> -->
             </div>
             <el-pagination
@@ -224,6 +227,7 @@
   import rightNav from '@/components/Nav/rightNav'
   import collapsiblePonitTree from '@/components/Nav/collapsiblePonitTree'
   import { debounce } from '@/utils/public.js'
+  import questionList from '@/components/question/questionList'
 export default {
 
   data() {
@@ -265,6 +269,7 @@ export default {
       subjectCode:'',
       learningSection:'',
       isIndeterminate: false,
+      loading: false,
 
 
 
@@ -278,14 +283,15 @@ export default {
   components: {
     rightNav,
     collapsiblePonitTree,
+    questionList
     
   },
   watch: {
-    isAnswer(val) {
-      this.tableData.forEach(item=>{
-        item.showDetail = val?true: false
-      })
-    }
+    // isAnswer(val) {
+    //   this.tableData.forEach(item=>{
+    //     item.showDetail = val?true: false
+    //   })
+    // }
 
   },
   computed: {
@@ -324,7 +330,13 @@ export default {
     }
 
   },
+  activated() {
+    this.getTableData()
 
+  },
+  deactivated(){
+    window.onresize = null;
+  },
   destroyed(){
     window.onresize = null;
   },
@@ -454,30 +466,42 @@ export default {
 
   	},
 
+    checkAllchange(val) {
+      this.checkAll = val
+    },
 
-  	//全选
+    isIndeterminateChange(val) {
+      this.isIndeterminate = val
+    },
+    // //全选
     handleCheckAllChange(val) {
-    	if(val) {
-    		this.tableData.forEach(item=>{
-    			item.check = true
-    		})
-    	}else {
-    		this.tableData.forEach(item=>{
-    			item.check = false
-    		})    	
-    	}
-      this.isIndeterminate = false;
+      this.$refs.question.handleCheckAllChange(val)
+      // this.isIndeterminate = false;
     },
 
+  	// //全选
+   //  handleCheckAllChange(val) {
+   //  	if(val) {
+   //  		this.tableData.forEach(item=>{
+   //  			item.check = true
+   //  		})
+   //  	}else {
+   //  		this.tableData.forEach(item=>{
+   //  			item.check = false
+   //  		})    	
+   //  	}
+   //    this.isIndeterminate = false;
+   //  },
 
-    handleCheckedChange() {
-  	  let checked = this.tableData.filter(item=>{
-  			return item.check
-  		})
 
-      this.checkAll = checked.length === this.tableData.length;
-      this.isIndeterminate = checked.length > 0 && checked.length < this.tableData.length;
-    },
+   //  handleCheckedChange() {
+  	//   let checked = this.tableData.filter(item=>{
+  	// 		return item.check
+  	// 	})
+
+   //    this.checkAll = checked.length === this.tableData.length;
+   //    this.isIndeterminate = checked.length > 0 && checked.length < this.tableData.length;
+   //  },
 
 
     // 分页
@@ -512,11 +536,15 @@ export default {
       this.getTableData()
     },
     getTableData: debounce(function() {
+
+      // this.isAnswer = false
     	if(!this.currentNode && (!this.currentChapter || !this.currentKnowledge)) {
     		return false
     	}	
-
       this.tableData = []
+      this.loading = true
+
+      // this.tableData = []
       let params = {
       	schoolId: this.currentNode.id,
       	subject:  this.activeType == 'organizations'? this.search.subject.code:this.subjectCode,
@@ -551,27 +579,28 @@ export default {
       this.$http.get(`/api/internal/question/questions`,params)
       .then((data)=>{
         if(data.status == '200') {
-        	data.data.content.forEach(item=>{
+        	// data.data.content.forEach(item=>{
 
-            item.showDetail = false
-            item.answers = []
-            this.handleQuestion(item,item)
-
-
+         //    item.showDetail = false
+         //    item.answers = []
+         //    this.handleQuestion(item,item)
 
 
-        		item.check = false
-        	})
+
+
+        	// 	item.check = false
+        	// })
           // console.log(data.data.content)
 
           this.tableData = data.data.content
           this.total = data.data.totalElements
           this.checkAll = false
+          this.loading = false
+          // console.log(this.tableData)
+          // this.$nextTick(()=>{
+          //   MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 
-          this.$nextTick(()=>{
-            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-
-          })
+          // })
 
         } 
           
@@ -579,245 +608,246 @@ export default {
 
     }),
 
-    handleQuestion(item,item0) {
-      item.selectoption = []
-      if(item.options && item.options.length) {
-        item.options.forEach(item1=>{
-          item.selectoption.push({key:item1.key,id:item1.value.id,value:item1.value.name})
-          // item.selectoption.push(item1)
-          // for(let key in item1) {
-          //   item.selectoption.push({key:key,id:item1[key].id,value:item1[key].name})
-          // }
-        })
-      }
-      //答案
-      //item.answers = []
-      if(item.fillAnswers && item.fillAnswers.length) {
-        item.fillAnswers.forEach(item1=>{
-          item0.answers.push(item1.value.name)
-          // for(let key in item1) {
-          //   item0.answers.push(item1[key])
-          // }
-        })
-      }
+    // handleQuestion(item,item0,index) {
+    //   item.selectoption = []
+    //   if(item.options && item.options.length) {
+    //     item.options.forEach(item1=>{
+    //       item.selectoption.push({key:item1.key,id:item1.value.id,value:item1.value.name})
+    //       // item.selectoption.push(item1)
+    //       // for(let key in item1) {
+    //       //   item.selectoption.push({key:key,id:item1[key].id,value:item1[key].name})
+    //       // }
+    //     })
+    //   }
+    //   //答案
+    //   //item.answers = []
+    //   if(item.fillAnswers && item.fillAnswers.length) {
+    //     item0.answers.push({index:index+1,name:''})
+    //     item.fillAnswers.forEach(item1=>{
 
-      //章节
-      item.chapterPoint = []
-      if(item.chapters && item.chapters.length) {
-        item.chapters.forEach(item1=>{
-          item.chapterPoint.push(item1.name)
-        })
-      }
+    //       item0.answers[item0.answers.length-1].name += item1.value.name + ' '
+    //       // item0.answers.push({index:index+1,name:item1.value.name})
+    //       // for(let key in item1) {
+    //       //   item0.answers.push(item1[key])
+    //       // }
+    //     })
+    //   }
 
-      //知识点
-      item.knowledgesPoint = []
-      if(item.knowledges && item.knowledges.length) {
-        item.knowledges.forEach(item1=>{
-          item.knowledgesPoint.push(item1.name)
-        })
-      }
+    //   //章节
+    //   item.chapterPoint = []
+    //   if(item.chapters && item.chapters.length) {
+    //     item.chapters.forEach(item1=>{
+    //       item.chapterPoint.push(item1.name)
+    //     })
+    //   }
 
-      if(item.smallQuestions && item.smallQuestions.length) {
-        item.smallQuestions.forEach(item1=>{
+    //   //知识点
+    //   item.knowledgesPoint = []
+    //   if(item.knowledges && item.knowledges.length) {
+    //     item.knowledges.forEach(item1=>{
+    //       item.knowledgesPoint.push(item1.name)
+    //     })
+    //   }
+
+    //   if(item.smallQuestions && item.smallQuestions.length) {
+    //     item.smallQuestions.forEach((item1,index1)=>{
           
-          this.handleQuestion(item1,item)
-        })
+    //       this.handleQuestion(item1,item,index1)
+    //     })
         
-      }
+    //   }
 
-      // console.log(item)
-    },
-    //删除
-    deleteQuestion(questionId) {
-    	this.$confirm('确认删除资源吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-	    	if(questionId) {
-					this.$http.delete(`/api/internal/question/${questionId}`)
-		      .then((data)=>{
-		        if(data.status == '200') {
-		        	this.getTableData()
-		        	this.$message({
-		              message: "删除成功",
-		              type:'success'
-		          })
+    //   // console.log(item)
+    // },
+    // //删除
+    // deleteQuestion(questionId) {
+    // 	this.$confirm('确认删除该题吗?', '提示', {
+    //     confirmButtonText: '确定',
+    //     cancelButtonText: '取消',
+    //     type: 'warning'
+    //   }).then(() => {
+	   //  	if(questionId) {
+				// 	this.$http.delete(`/api/internal/question/${questionId}`)
+		  //     .then((data)=>{
+		  //       if(data.status == '200') {
+		  //       	this.getTableData()
+		  //       	this.$message({
+		  //             message: "删除成功",
+		  //             type:'success'
+		  //         })
 
 
-		          } 
+		  //         } 
 		          
-		      })
+		  //     })
    	
-		    }else {
+		  //   }else {
+
+    //       let ids = []
+    //       this.tableData.forEach(item=>{
+    //         item.check? ids.push(item.questionId):null
+    //       })
 
 
+				// 	this.$http.delete(`/api/internal/question/batchDelete`,{},ids)
+		  //     .then((data)=>{
+		  //       if(data.status == '200') {
 
-          let ids = []
-          this.tableData.forEach(item=>{
-            item.check? ids.push(item.questionId):null
-          })
-
-
-					this.$http.delete(`/api/internal/question/batchDelete`,{},ids)
-		      .then((data)=>{
-		        if(data.status == '200') {
-
-              this.checkAll = false
-		        	this.getTableData()
-		        	this.$message({
-		              message: "删除成功",
-		              type:'success'
-		          })
+    //           this.checkAll = false
+		  //       	this.getTableData()
+		  //       	this.$message({
+		  //             message: "删除成功",
+		  //             type:'success'
+		  //         })
 
 
-		          } 
+		  //         } 
 		          
-		        })
+		  //       })
 
 
-		    }
-		  })
+		  //   }
+		  // })
 	      
-    },
+    // },
 
 
-    //上架
-    groundQuestion(questionId) {
-    	if(questionId) {
-					this.$http.put(`/api/internal/question/status/${questionId}?applyState=Grounding`)
-		      .then((data)=>{
-		        if(data.status == '200') {
-		        	this.getTableData()
-		        	this.$message({
-		              message: "上架成功",
-		              type:'success'
-		          })
+    // //上架
+    // groundQuestion(questionId) {
+    // 	if(questionId) {
+				// 	this.$http.put(`/api/internal/question/status/${questionId}?applyState=Grounding`)
+		  //     .then((data)=>{
+		  //       if(data.status == '200') {
+		  //       	this.getTableData()
+		  //       	this.$message({
+		  //             message: "上架成功",
+		  //             type:'success'
+		  //         })
 
 
-		          }
+		  //         }
 		          
-		        })
+		  //       })
    	
-		    }else {
+		  //   }else {
 
 		    	
-          let ids = []
-          this.tableData.forEach(item=>{
-            item.check? ids.push(item.questionId):null
-          })
+    //       let ids = []
+    //       this.tableData.forEach(item=>{
+    //         item.check? ids.push(item.questionId):null
+    //       })
 
-					this.$http.put(`/api/internal/question/batch/status?applyState=Grounding`,ids)
-		      .then((data)=>{
-		        if(data.status == '200') {
-		        	this.getTableData()
-		        	this.$message({
-		              message: "上架成功",
-		              type:'success'
-		          })
+				// 	this.$http.put(`/api/internal/question/batch/status?applyState=Grounding`,ids)
+		  //     .then((data)=>{
+		  //       if(data.status == '200') {
+		  //       	this.getTableData()
+		  //       	this.$message({
+		  //             message: "上架成功",
+		  //             type:'success'
+		  //         })
 
 
-		          } 
+		  //         } 
 		          
-		        })
+		  //       })
 
 
-		  }
-    },
+		  // }
+    // },
 
-    //下架
-    underQuestion(questionId) {
-    	if(questionId) {
-          this.$http.put(`/api/internal/question/status/${questionId}?applyState=Undercarriage`)
-		      .then((data)=>{
-		        if(data.status == '200') {
-		        	this.getTableData()
-		        	this.$message({
-		              message: "下架成功",
-		              type:'success'
-		          })
+    // //下架
+    // underQuestion(questionId) {
+    // 	if(questionId) {
+    //       this.$http.put(`/api/internal/question/status/${questionId}?applyState=Undercarriage`)
+		  //     .then((data)=>{
+		  //       if(data.status == '200') {
+		  //       	this.getTableData()
+		  //       	this.$message({
+		  //             message: "下架成功",
+		  //             type:'success'
+		  //         })
 
 
-		          } 
+		  //         } 
 		          
-		        })
+		  //       })
    	
-		    }else {
+		  //   }else {
 
 		    	
-          let ids = []
-          this.tableData.forEach(item=>{
-            item.check? ids.push(item.questionId):null
-          })
+    //       let ids = []
+    //       this.tableData.forEach(item=>{
+    //         item.check? ids.push(item.questionId):null
+    //       })
 
 
-					this.$http.put(`/api/internal/question/batch/status?applyState=Undercarriage`,ids)
-		      .then((data)=>{
-		        if(data.status == '200') {
-		        	this.getTableData()
-		        	this.$message({
-		              message: "下架成功",
-		              type:'success'
-		          })
+				// 	this.$http.put(`/api/internal/question/batch/status?applyState=Undercarriage`,ids)
+		  //     .then((data)=>{
+		  //       if(data.status == '200') {
+		  //       	this.getTableData()
+		  //       	this.$message({
+		  //             message: "下架成功",
+		  //             type:'success'
+		  //         })
 
 
-		          } 
+		  //         } 
 		          
-		        })
+		  //       })
 
 
-		  }
-    },
+		  // }
+    // },
 
-    //打回
-    rejectQuestion(questionId) {
-   		if(questionId) {
-					this.$http.put(`/api/internal/question/status/${questionId}?applyState=Reject`)
-		      .then((data)=>{
-		        if(data.status == '200') {
-		        	this.getTableData()
-		        	this.$message({
-		              message: "打回成功",
-		              type:'success'
-		          })
+    // //打回
+    // rejectQuestion(questionId) {
+   	// 	if(questionId) {
+				// 	this.$http.put(`/api/internal/question/status/${questionId}?applyState=Reject`)
+		  //     .then((data)=>{
+		  //       if(data.status == '200') {
+		  //       	this.getTableData()
+		  //       	this.$message({
+		  //             message: "打回成功",
+		  //             type:'success'
+		  //         })
 
 
-		          } 
+		  //         } 
 		          
-		        })
+		  //       })
   	
-		    }else {
+		  //   }else {
 
 		    	
-          let ids = []
-          this.tableData.forEach(item=>{
-            item.check? ids.push(item.questionId):null
-          })
+    //       let ids = []
+    //       this.tableData.forEach(item=>{
+    //         item.check? ids.push(item.questionId):null
+    //       })
 
 
-					this.$http.put(`/api/internal/question/batch/status?applyState=Reject`,ids)
-		      .then((data)=>{
-		        if(data.status == '200') {
-		        	this.getTableData()
-		        	this.$message({
-		              message: "打回成功",
-		              type:'success'
-		          })
+				// 	this.$http.put(`/api/internal/question/batch/status?applyState=Reject`,ids)
+		  //     .then((data)=>{
+		  //       if(data.status == '200') {
+		  //       	this.getTableData()
+		  //       	this.$message({
+		  //             message: "打回成功",
+		  //             type:'success'
+		  //         })
 
 
-		          } 
+		  //         } 
 		          
-		        })
+		  //       })
 
 
-			  }
-	    },
+			 //  }
+	   //  },
 
 
-      errorCorrect(questionId) {
+    //   errorCorrect(questionId) {
 
-        this.$router.push({path:'/administrator/questionCorrection', query: {questionId: questionId}})
-      },
+    //     this.$router.push({path:'/administrator/questionCorrection', query: {questionId: questionId}})
+    //   },
 
 
 
@@ -925,6 +955,10 @@ export default {
 		      -webkit-font-smoothing: antialiased;
 		      // border-radius: 50% 0;
 
+
+          .order {
+            flex-shrink: 0;
+          }
 		      .qt1 {
 		        overflow: hidden;
 		        zoom: 1;
@@ -953,7 +987,7 @@ export default {
 
 		      .qt2 {
 		        //padding: 0px 20px 20px 20px;
-
+            width: 100%;
 		        ul {
 		          display: flex;
 		          flex-wrap: wrap;
@@ -971,7 +1005,18 @@ export default {
 		          }
 		        }
 		      }
+          .qtwrap {
+            display: flex;
+            align-items: center;
 
+            .qt1 {
+              padding-bottom: 0px;
+            }
+
+            .qt2 ul {
+              flex-wrap: nowrap;
+            }
+          }
 		      .top {
 		        border-bottom: 1px dashed #dbdee4;
 		        padding-bottom: 20px;

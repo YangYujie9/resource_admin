@@ -14,7 +14,7 @@
 
 			<p style="margin-left: 80px;">教育管理平台  > {{title}}</p>
 
-			<el-button size="mini" type="text" style="position: absolute;right: 20px;top: 20px;color: #ffffff;" @click="exit()">退出登陆</el-button>
+			<el-button size="mini" type="text" style="position: absolute;right: 20px;top: 20px;color: #ffffff;" @click="exit()">退出登录</el-button>
 		</div>
 
 		<div class="content-wrap">
@@ -22,7 +22,6 @@
 				<div class="left ">
 					<div class="menu-wrap contener">
 						<el-menu
-					      default-active="2"
 					      :collapse="isCollapse"
 					      :default-active="defaultActive"
 					      class="el-menu-vertical-demo"
@@ -99,7 +98,10 @@
 				</div>
 
 				<div class="right">
-          <router-view></router-view>
+          <router-view v-if="!$route.meta.keepAlive"></router-view>
+			    <keep-alive>
+			      <router-view v-if="$route.meta.keepAlive"></router-view>
+			    </keep-alive>
 				</div>
 			</div>
 
@@ -147,11 +149,21 @@ export default {
 
   	      //退出登录
       exit() {
+      	this.$http.get(`/api/open/user/logout`)
+      	.then((data)=>{
+      		if(data.status == '200') {
+						// let cookies = Cookies.get()
+						// for(let key in cookies) {
+						// 	Cookies.remove(key)
+						// }
 
-        Cookies.remove('resource-admin')
+						Cookies.remove("resource-admin")
 
-        //this.$router.push('/login')
-        window.location.reload()
+		        //this.$router.push('/login')
+		        window.location.reload()
+      		}
+      	})
+
 
 
 
@@ -183,17 +195,9 @@ export default {
 
 				  	}
 
-
             if (key.indexOf('/')==0) {
 
-               if (key.indexOf('report')>0 || key.indexOf('yw')>0) {
-
-                    this.routechange(key)
-
-                   
-                } else {
-                    this.$router.push(key) 
-                } 
+               this.$router.push(key) 
             }
 
             

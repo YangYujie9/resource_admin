@@ -81,7 +81,6 @@
           </div> 
 
           <div v-show="title=='文件转换记录'">
-
              <div class="search-wrap" ref="search_wrap2">
               <el-form :inline="true" :model="fileSearch" class="demo-form-inline" size="mini">
                 <el-form-item label="名称">
@@ -110,9 +109,26 @@
                 <el-table-column label="类型" prop="covertType"> </el-table-column>
                 <el-table-column label="名称" prop="name"> </el-table-column>
                 <el-table-column label="文件类型" prop="fileType"> </el-table-column>
+                <el-table-column label="转换类型" prop="fileConvertTypeName"> </el-table-column>
                 <el-table-column label="更新时间" prop="updateTime" > </el-table-column>
                 <el-table-column label="状态" prop="statusName"> </el-table-column>
-                <el-table-column label="提示信息" prop="resultMsg" > </el-table-column>
+                <el-table-column label="提示信息" prop="resultMsg" show-overflow-tooltip > </el-table-column>
+                <el-table-column
+                  prop=""
+                  label="操作"
+                  show-overflow-tooltip>
+                  <template slot-scope="scope">
+                    <span style="cursor: pointer">
+                       <i v-if="scope.row.status !== 'Failure'">-</i>
+                       <el-button type="primary" size="mini"
+                                 v-if="'Failure' == scope.row.status"
+                                 @click="updateFileConvert(scope.row,false)">普通转换</el-button>
+                       <el-button type="primary" size="mini"
+                                 v-if="'Failure' == scope.row.status"
+                                 @click="updateFileConvert(scope.row,true)">office转换</el-button>
+                    </span>
+                  </template>
+                </el-table-column>
               </el-table>
             </div>
             <div class="pagination">   
@@ -386,6 +402,26 @@ export default {
             this.fileTableData = result.data.content
             this.fileTotal = result.data.totalElements;
           } 
+        })
+    },
+    // 再次触发文件转换
+    updateFileConvert(row,isOfficeConvert) {
+        this.$confirm('确定更新?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }).then(() => {
+            this.$http.put(`/api/internal/files/convert/${row.fileConvertId}`, {}
+                          ,{isOfficeConvert:isOfficeConvert})
+                .then(res => {
+                    if (res.status == '200') {
+                        this.$message({message: '更新成功', type: 'success'});
+                        // 成功更新回调
+                        this.getFileTableData()
+                    } else {
+                        this.$message.error(res.msg);
+                    }
+                })
         })
     },
 

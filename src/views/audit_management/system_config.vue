@@ -151,10 +151,11 @@ export default {
         },{
           label:'题目难度设置',
           check: false
-        },{
-          label:'学科封面设置',
-          check: false
-        } 
+        },
+        // {
+        //   label:'学科封面设置',
+        //   check: false
+        // } 
       ],
       title:'自动审核设置',
       subjectCoverList:[],

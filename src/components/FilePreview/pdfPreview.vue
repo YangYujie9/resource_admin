@@ -15,7 +15,7 @@
     <pdf
       ref="pdf"
       class="pdf-wrap"
-      :src="pdfUrl"
+      :src="pdfPreviewUrl"
       :page='currentPage'
       @num-pages="pageCount=$event" 
       @page-loaded="currentPage=$event"
@@ -26,7 +26,7 @@
       class="pdf-wrap"
       v-for="i in currentPageNum"
       :key="i"
-      :src="pdfUrl"
+      :src="pdfPreviewUrl"
       :page="i"
     ></pdf>
 
@@ -65,13 +65,10 @@ export default {
   },
 
   created() {
-    this.pdfPreviewUrl = pdf.createLoadingTask(this.pdfUrl);
-
-    
   },
 
   mounted() {
-
+    this.pdfPreviewUrl = pdf.createLoadingTask(this.pdfUrl);
     this.currentPageNum = this.pdfPagenum < 10? this.pdfPagenum: 10
   },
 
@@ -85,8 +82,6 @@ export default {
         this.currentPage++;
       }
     },
-
-
 
     //预览pdf
     previewPDF(url){
@@ -135,48 +130,47 @@ export default {
         }
     },
 
-
-      //放大
-      scaleD() {
-        if (this.scale == 100) {
-          return;
-        }
-        this.scale += 5;
-        this.$refs.pdf.$el.style.width = parseInt(this.scale) + "%";
-      },
- 
-      //缩小
-      scaleX() {
-        if (this.scale == 70) {
-          return;
-        }
-        this.scale += -5;
-        this.$refs.pdf.$el.style.width = parseInt(this.scale) + "%";
-      },
-
-
-      addPageNum() {
-
-        if(this.pdfPagenum<this.currentPageNum + 10) {
-          this.currentPageNum = this.pdfPagenum
-        }else {
-          this.currentPageNum += this.currentPageNum
-        }
+    //放大
+    scaleD() {
+      if (this.scale == 100) {
+        return;
       }
+      this.scale += 5;
+      this.$refs.pdf.$el.style.width = parseInt(this.scale) + "%";
+    },
+
+    //缩小
+    scaleX() {
+      if (this.scale == 70) {
+        return;
+      }
+      this.scale += -5;
+      this.$refs.pdf.$el.style.width = parseInt(this.scale) + "%";
+    },
+
+
+    addPageNum() {
+
+      if(this.pdfPagenum<this.currentPageNum + 10) {
+        this.currentPageNum = this.pdfPagenum
+      }else {
+        this.currentPageNum += this.currentPageNum
+      }
+    }
   }
 }
 </script>
 
 <style lang="less">
 .pdf-view {
-  padding: 0 20px 20px 20px;
+  // padding: 0 20px 20px 20px;
   width: 100%;
 
   .pdf-wrap {
-    width:90%;
-    margin: 0px auto 20px;
+    // width:90%;
+    // margin: 0px auto 20px;
     border:1px solid rgb(212 211 211);
-    
+    margin-bottom: 20px;
     // width: 100%;
     // margin-bottom: 20px;
   }

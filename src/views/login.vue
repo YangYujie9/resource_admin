@@ -80,6 +80,10 @@ export default {
 						
 				  }else {
 				  	
+						// let cookies = Cookies.get()
+						// for(let key in cookies) {
+						// 	Cookies.remove(key)
+						// }
 						Cookies.remove("resource-admin")
 						this.$message({
 							message:data.msg,
@@ -90,12 +94,7 @@ export default {
 				  }
 		
 				})
-				.catch(()=>{
-					return this.$message({
-						message:'接口报错',
-						type:'error'
-					})
-				})
+
 			}
 		  });
 		}

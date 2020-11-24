@@ -32,41 +32,66 @@ Vue.use(VueRouter)
         path: 'organizational',
         name: 'organizational',
         component: ()=>import('@/views/basic_management/organizational'),
+        meta: {
+          keepAlive: true
+        }
       },
+
       {
         path: 'subjectManagement',
         name: 'subjectManagement',
         component: ()=>import('@/views/basic_management/subject_management'),
+        meta: {
+          keepAlive: true
+        }
       },
       {
         path: 'classManagement',
         name: 'classManagement',
         component: ()=>import('@/views/basic_management/class_management'),
+        meta: {
+          keepAlive: true
+        }
       },
       {
         path: 'userManagement',
         name: 'userManagement',
         component: ()=>import('@/views/basic_management/user_management'),
+        meta: {
+          keepAlive: true
+        }
       },
       {
         path: 'versionManagement',
         name: 'versionManagement',
         component: ()=>import('@/views/basic_management/version_management'),
+        meta: {
+          keepAlive: true
+        }
       },
       {
         path: 'textbookManagement',
         name: 'textbookManagement',
         component: ()=>import('@/views/basic_management/textbook_management'),
+        meta: {
+          keepAlive: true
+        }
       },
       {
         path: 'siteManagement',
         name: 'siteManagement',
         component: ()=>import('@/views/basic_management/site_management'),
+        meta: {
+          keepAlive: true
+        }
       },
       {
         path: 'knowledgePoint',
         name: 'knowledgePoint',
         component: ()=>import('@/views/basic_management/knowledge_management'),
+        meta: {
+          keepAlive: true
+        }
       },
       {
         path: 'chapterKnow',
@@ -77,6 +102,9 @@ Vue.use(VueRouter)
         path: 'passwordReview',
         name: 'passwordReview',
         component: ()=>import('@/views/audit_management/password_review'),
+        meta: {
+          keepAlive: true
+        }
       },
       {
         path: 'systemConfig',
@@ -87,6 +115,9 @@ Vue.use(VueRouter)
         path: 'questionType',
         name: 'questionType',
         component: ()=>import('@/views/audit_management/question_type'),
+        meta: {
+          keepAlive: true
+        }
       },
       {
         path: 'resourceType',
@@ -107,6 +138,9 @@ Vue.use(VueRouter)
         path: 'resourceManagement',
         name: 'resourceManagement',
         component: ()=>import('@/views/audit_management/resource_management'),
+        meta: {
+          keepAlive: true
+        }
       },
       {
         path: 'resourcePreview',
@@ -117,6 +151,9 @@ Vue.use(VueRouter)
         path: 'questionManagement',
         name: 'questionManagement',
         component: ()=>import('@/views/audit_management/question_management'),
+        meta: {
+          keepAlive: true
+        }
       },
       {
         path: 'questionCorrection',
@@ -127,6 +164,9 @@ Vue.use(VueRouter)
         path: 'correctionReview',
         name: 'correctionReview',
         component: ()=>import('@/views/audit_management/correction_review'),
+        meta: {
+          keepAlive: true
+        }
       }
 
     ]

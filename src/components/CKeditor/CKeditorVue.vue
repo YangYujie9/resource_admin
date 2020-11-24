@@ -165,7 +165,8 @@ export default {
 	    },
 
 	    setData(data){
-	    	this.editorData = data
+
+	    	this.editorData = data?data:''
 	    }, 
 
     }

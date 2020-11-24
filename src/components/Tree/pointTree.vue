@@ -9,7 +9,6 @@
       default-expand-all
       class="pageTree"
       :props="defaultProps"
-      :expand-on-click-node="false"
       :highlight-current="true"
       @check="getCheckedNodes"
       :filter-node-method="filterNode"
@@ -318,9 +317,124 @@ export default {
     min-width: 100%;
   }
 }
+// .pageTree {
+//   .el-tree-node__content {
+//     height: 36px;
+//     padding-left:0px !important;
+//   }
+//   .el-tree-node__expand-icon {
+//     color: #333333;
+//   }
+//   .el-tree-node__expand-icon.is-leaf {
+//     color: transparent;
+//   }
+
+
+//   .el-tree-node:focus>.el-tree-node__content {
+//     background-color: transparent;
+//   }
+
+
+
+//   /* 树形结构节点添加连线 */
+//    /deep/ .el-tree-node {
+//     position: relative;
+//     padding-left: 16px;
+//   }
+   
+//    /deep/ .el-tree-node__children {
+//     padding-left: 16px;
+//   }
+   
+//    /deep/ .el-tree-node :last-child:before {
+//     height: 36px;
+//   }
+   
+//    /deep/ .el-tree > .el-tree-node:before {
+//     border-left: none;
+//   }
+   
+
+   
+//    /deep/ .el-tree-node:before {
+//     content: "";
+//     left: -4px;
+//     position: absolute;
+//     right: auto;
+//     border-width: 1px;
+//   }
+   
+//    /deep/ .el-tree-node:after {
+//     content: "";
+//     left: -4px;
+//     position: absolute;
+//     right: auto;
+//     border-width: 1px;
+//   }
+//   //  /deep/ .el-tree-node__expand-icon.is-leaf {
+//   //   display: none;
+//   // }
+   
+//    /deep/ .el-tree-node:before {
+//     border-left: 1px dashed #b8b9bb;
+//     bottom: 0px;
+//     height: 100%;
+//     top: -18px;
+//     width: 1px;
+//   }
+   
+//    /deep/ .el-tree-node:after {
+//     border-top: 1px dashed #b8b9bb;
+//     height: 36px;
+//     top: 18px;
+//     width: 18px;
+//   }
+//   /deep/ .el-tree-node.is-leaf:after {
+
+//     width: 28px;
+//   }
+
+//     //    更换下拉图标
+//   .el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content {
+//     color: #2489f6;
+//     background-color:transparent;
+//   }
+//   .el-tree {
+//     background: transparent !important;
+//   }
+//   [class*=" el-icon-"],
+//   [class^="el-icon-"] {
+//     // 更换图标库
+//     font-family: "iconfont" !important;
+//   }
+
+//   .el-tree-node__expand-icon.expanded {
+//     // 动画取消
+//     -webkit-transform: rotate(0deg);
+//     transform: rotate(0deg);
+//   }
+//   .el-icon-caret-right:before {
+//     // 收起
+//     content: "\e6b5";
+//     font-size: 14px;
+//     color: #409eff;
+//   }
+//   .el-tree-node__expand-icon.is-leaf.el-icon-caret-right:before {
+//     color: transparent;
+//   }
+//   .el-tree-node__expand-icon.expanded.el-icon-caret-right:before {
+//     // 展开
+//     content: "\e605";
+//     font-size: 14px;
+//   }
+
+//   // .el-tree-node__content {
+//   //   height: 28px;
+//   // }
+// }
 .pageTree {
   .el-tree-node__content {
-    height: 36px;
+    height: 32px;
     padding-left:0px !important;
   }
   .el-tree-node__expand-icon {
@@ -328,6 +442,7 @@ export default {
   }
   .el-tree-node__expand-icon.is-leaf {
     color: transparent;
+    width: 26px;
   }
 
 
@@ -340,15 +455,15 @@ export default {
   /* 树形结构节点添加连线 */
    /deep/ .el-tree-node {
     position: relative;
-    padding-left: 16px;
+    padding-left: 6px;
   }
    
    /deep/ .el-tree-node__children {
-    padding-left: 16px;
+    padding-left: 11px;
   }
    
    /deep/ .el-tree-node :last-child:before {
-    height: 36px;
+    height: 32px;
   }
    
    /deep/ .el-tree > .el-tree-node:before {
@@ -359,7 +474,7 @@ export default {
    
    /deep/ .el-tree-node:before {
     content: "";
-    left: -4px;
+    left: -1px;
     position: absolute;
     right: auto;
     border-width: 1px;
@@ -367,7 +482,7 @@ export default {
    
    /deep/ .el-tree-node:after {
     content: "";
-    left: -4px;
+    left: -1px;
     position: absolute;
     right: auto;
     border-width: 1px;
@@ -380,14 +495,14 @@ export default {
     border-left: 1px dashed #b8b9bb;
     bottom: 0px;
     height: 100%;
-    top: -18px;
+    top: -16px;
     width: 1px;
   }
    
    /deep/ .el-tree-node:after {
     border-top: 1px dashed #b8b9bb;
     height: 36px;
-    top: 18px;
+    top: 16px;
     width: 18px;
   }
   /deep/ .el-tree-node.is-leaf:after {

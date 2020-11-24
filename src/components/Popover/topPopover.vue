@@ -262,7 +262,7 @@ export default {
     position: relative;
     cursor: pointer;
     transition: 5s;
-    z-index: 1000;
+    z-index: 2001;
 
     &:hover {
       .popover-div {

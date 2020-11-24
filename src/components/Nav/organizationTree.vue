@@ -65,6 +65,7 @@
   import basicTree from '@/components/Tree/basicTree'
 
 export default {
+  name:'organizationTree',
 	props: {
 		enableEdit: {
 			type: Boolean,

@@ -1,149 +1,175 @@
 <template>
   <div class="rescoure-preview">
-
-<!--       <div class="left-class contener" style="display: none;">
-
-        <div class="left-wrap">
-          <div class="search-wrap">
-            <el-radio-group v-model="knowType" size="mini" @change="getPonitTree">
-              <el-radio-button label="chapter">章节目录</el-radio-button>
-              <el-radio-button label="knowledge">知识点</el-radio-button>
-            </el-radio-group>
-          </div>
-          <top-popover :chooseType="knowType" ref="filter" :isReset="true" @setparams="setparams" :learningSectionKey="resourceInfo.learningSection" :subjectCode="resourceInfo.subjectCode" :oeseId="resourceInfo.oeseId" :volumeId="resourceInfo.oeseBookId">
-            <div slot="reference" class="search-class">
-              <span v-if="$refs.filter">{{$refs.filter.learningSection.value}}</span>
-              <span v-if="$refs.filter">{{$refs.filter.subject.value}}</span>
-              <span v-if="$refs.filter && knowType=='chapter'">{{$refs.filter.oese.name}}</span>
-            </div>
-
-          </top-popover>
-
-          <div class="tree-class">
-            <pointTree :tree-data="chapterData" :showCheckbox="true" @selectnode="defaultCheckChapters" @getCheckedNodes="getCheckedChapters" ref="chapterTree" v-show="knowType=='chapter'"></pointTree>
-            <pointTree :tree-data="knowledgeData" :showCheckbox="true"  @selectnode="defaultCheckKnows" @getCheckedNodes="getCheckedKnows" ref="knowledgeTree" v-show="knowType=='knowledge'"></pointTree>
-          </div>
-        </div>
-
-
-
-      </div> -->
+    <el-backtop target=".right-class .el-scrollbar__wrap" :bottom="80"></el-backtop>
       <div  class="right-class">
-        <div class="right-header" style="display: flex;justify-content: space-between;">
-          <span>基础数据 > 资源审核 > 资源详情 </span><el-button type="text" @click="toPageBack">返回</el-button>
-        </div>
-
-        <div  class="right-wrap" ref="wrap">
-
-          <div class="right-wrap-top" >
-            <table style="width: 100%;" cellpadding="0" cellspacing="0">
-              <tr>
-                <th>文件名</th>
-                <th>栏目</th>
-                <th>类型</th>
-                <th>状态</th>
-                <th v-if="resourceInfo.openState!='Privately'">操作</th>
-              </tr>
-              <tr>
-                <td>{{resourceInfo.name}}</td>
-                <td>{{resourceInfo.resourceName}}</td>
-                <td>{{resourceInfo.resourceName}}</td>
-                <td>{{resourceInfo.applyName}}</td>
-                <td style="width: 220px;" v-if="resourceInfo.openState!='Privately'">
-                  <div class="active-wrap">
-                    <el-button type="text" @click="deleteResource(resourceInfo)">删除</el-button>
-
-                    <el-button type="text" @click="resourceStateChange(resourceInfo,'Grounding','')" v-if="resourceInfo.applyState=='Undercarriage'||resourceInfo.applyState=='Audit'" >上架</el-button>
-
-                    <el-button type="text" @click="resourceStateChange(resourceInfo,'Undercarriage','')" v-else>下架</el-button>
-                    
-                    <el-button type="text" @click="resourceStateChange(resourceInfo,'Recommend','on')" v-if="resourceInfo.applyState=='Grounding'" >推荐</el-button>
-
-                    <el-button type="text" @click="resourceStateChange(resourceInfo,'Recommend','cancel')" v-if="resourceInfo.applyState=='Recommend'">取消推荐</el-button>
-
-                    <el-button type="text" @click="resourceStateChange(resourceInfo,'Reject','')" v-if="resourceInfo.applyState=='Audit'">打回</el-button>
-                  </div>
-                </td>
-              </tr>
-            </table>
+        <div class="right-class-wrap el-scrollbar__wrap">
+          <div class="right-header" style="display: flex;justify-content: space-between;">
+            <span>基础数据 > 资源审核 > 资源详情 </span>
+            <el-button type="text" @click="toPageBack" style="margin-right: 20px;">返回</el-button>
           </div>
-          <div class="right-wrap-content">
+
+          <div  class="right-wrap" ref="wrap">
+
+            <div class="right-wrap-top" >
+              <table style="width: 100%;" cellpadding="0" cellspacing="0">
+                <tr>
+                  <th>文件名</th>
+                  <th>栏目</th>
+                  <th>类型</th>
+                  <th>状态</th>
+                  <th v-if="resourceInfo.openState!='Privately'">操作</th>
+                </tr>
+                <tr>
+                  <td>{{resourceInfo.name}}</td>
+                  <td>{{resourceInfo.resourceName}}</td>
+                  <td>{{resourceInfo.resourceName}}</td>
+                  <td>{{resourceInfo.applyName}}</td>
+                  <td style="width: 220px;" v-if="resourceInfo.openState!='Privately'">
+                    <div class="active-wrap">
+                      <el-button type="text" @click="deleteResource(resourceInfo)">删除</el-button>
+
+                      <el-button type="text" @click="resourceStateChange(resourceInfo,'Grounding','')" v-if="resourceInfo.applyState=='Undercarriage'||resourceInfo.applyState=='Audit'" >上架</el-button>
+
+                      <el-button type="text" @click="resourceStateChange(resourceInfo,'Undercarriage','')" v-else>下架</el-button>
+                      
+                      <el-button type="text" @click="resourceStateChange(resourceInfo,'Recommend','on')" v-if="resourceInfo.applyState=='Grounding'" >推荐</el-button>
+
+                      <el-button type="text" @click="resourceStateChange(resourceInfo,'Recommend','cancel')" v-if="resourceInfo.applyState=='Recommend'">取消推荐</el-button>
+
+                      <el-button type="text" @click="resourceStateChange(resourceInfo,'Reject','')" v-if="resourceInfo.applyState=='Audit'">打回</el-button>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="right-wrap-content">
 
 
-            <div class="right-wrap-content-left">
+              <div class="right-wrap-content-left">
 
-              <div class="right-wrap-content-left-top"> 
-                <!-- <div class="img-class">
-                  <img :src="resourceInfo.surfaceUrl" alt="" style="width: 230px;height: 150px;" v-if="resourceInfo.surfaceUrl">
-                  <img src="@/assets/images/default.jpg" alt="" style="width: 230px;height: 150px;" v-else>
-                </div> -->
-                <div class="info-class">
-                  <p class="title_p" style="width: 100%;">{{resourceInfo.name}}
-                    <i class="iconfont iconbianji iconclass" style="margin-left: 10px;" @click="editDialogShow('name')"></i>
-                  </p>
+                <div class="right-wrap-content-left-top"> 
+                  <!-- <div class="img-class">
+                    <img :src="resourceInfo.surfaceUrl" alt="" style="width: 230px;height: 150px;" v-if="resourceInfo.surfaceUrl">
+                    <img src="@/assets/images/default.jpg" alt="" style="width: 230px;height: 150px;" v-else>
+                  </div> -->
+                  <div class="info-class">
+                    <p class="title_p" style="width: 100%;">{{resourceInfo.name}}
+                      <i class="iconfont iconbianji iconclass" style="margin-left: 10px;" @click="editDialogShow('name')"></i>
+                    </p>
 
-                  <p class="one-piece">权限：{{resourceInfo.openStateName}}</p>
-                  <!-- <p>学段：{{resourceInfo.name}}</p> -->
-                  <p class="one-piece">年级：{{resourceInfo.gradeName}}
-                    <i class="iconfont iconbianji iconclass" style="margin-left: 10px;" @click="editDialogShow('grade')"></i>
-                  </p>
-                  <p class="one-piece">科目：{{resourceInfo.subjectName}}</p>
-                  <p class="one-piece">上传用户：{{resourceInfo.userName}}</p>
-                  <p class="one-piece">资源类型：{{resourceInfo.resourceName}}
-                    <!-- <i class="iconfont iconbianji iconclass" style="margin-left: 10px;" @click="editDialogShow('type')"></i> -->
-                  </p>
-                  <p class="one-piece">文件类型：{{resourceInfo.fileType}}</p>
-                  <p class="one-piece">上传时间：{{resourceInfo.createTime}}</p>
-                  <p class="one-piece"><i class="iconfont iconicontouxiang" style="margin-right: 5px;"></i>{{resourceInfo.preview}}人已学习</p>
-                  <p @click="chapterTreeShow" class="cursor" style="width: 100%;">章节：<span class="link-class">{{resourceInfo.chapterNames}}</span> </p>
-                  <p @click="knowledgeTreeShow" class="cursor" style="width: 100%;">知识点：<span class="link-class">{{resourceInfo.knowledgeNames}}</span></p>
+                    <p class="one-piece">权限：{{resourceInfo.openStateName}}</p>
+                    <!-- <p>学段：{{resourceInfo.name}}</p> -->
+                    <p class="one-piece">年级：{{resourceInfo.gradeName}}
+                      <i class="iconfont iconbianji iconclass" style="margin-left: 10px;" @click="editDialogShow('grade')"></i>
+                    </p>
+                    <p class="one-piece">科目：{{resourceInfo.subjectName}}</p>
+                    <p class="one-piece">上传用户：{{resourceInfo.userName}}</p>
+                    <p class="one-piece">资源类型：{{resourceInfo.resourceName}}
+                      <!-- <i class="iconfont iconbianji iconclass" style="margin-left: 10px;" @click="editDialogShow('type')"></i> -->
+                    </p>
+                    <p class="one-piece">文件类型：{{resourceInfo.fileTypeName}}</p>
+                    <p class="one-piece">上传时间：{{resourceInfo.createTime}}</p>
+                    <p class="one-piece"><i class="iconfont iconicontouxiang" style="margin-right: 5px;"></i>{{resourceInfo.preview}}人已学习</p>
+                    <p @click="chapterTreeShow" class="cursor" style="width: 100%;">章节：
+                      <span class="link-class">{{resourceInfo.chapterNames}}</span>
+                      <i class="iconfont iconbianji iconclass" style="margin-left: 10px;" @click="chapterTreeShow"></i> 
+                    </p>
+                    <p @click="knowledgeTreeShow" class="cursor" style="width: 100%;">知识点：
+                      <span class="link-class">{{resourceInfo.knowledgeNames}}</span>
+                      <i class="iconfont iconbianji iconclass" style="margin-left: 10px;" @click="knowledgeTreeShow"></i> 
+                    </p>
+                  </div>
                 </div>
+
+                <div class="right-wrap-content-left-content">
+
+                  <!-- 图片预览 -->
+                  <div class="container" v-if="previewTab && showPreview === 'picture'">
+                    <div class="bottomContent" v-if="showPreview === 'picture'" >
+                       <img :src="previewUrl" style="max-width: 100%;max-height: 100%;">
+                    </div>    
+                  </div>
+
+
+                 <!-- PDF预览 -->
+                  <div class="container" v-if="previewTab && showPreview === 'pdf'">
+                     <div class="bottomContent" v-if="showPreview === 'pdf' && previewUrl">
+                      <div class="bottomLeft">
+                            <pdf-preview 
+                              :pdf-url='previewUrl'
+                              :pdf-pagenum='totalPages'>
+                            </pdf-preview >      
+                      </div>
+                    </div>    
+                  </div>
+                
+
+                  <!-- MP4预览 -->
+                  <div class="container" v-if="previewTab && showPreview === 'video'">
+                    <div class="bottomContent" v-if="showPreview === 'video' && previewUrl">
+                      <div class="bottomLeft">
+                        <video-player :videoUrl="previewUrl"></video-player>    
+                      </div>
+                    </div>    
+                  </div>
+
+                  <!-- 音频预览 -->
+                  <div class="container" v-if="previewTab && showPreview === 'frequency'">
+                    <div class="bottomContent" v-if="showPreview === 'frequency' && previewUrl">
+                      <div class="bottomLeft">
+                          <audio-player :audioUrl="previewUrl" :title="resourceInfo.name" :artist="resourceInfo.userName"></audio-player>
+                      </div>
+                    </div>    
+                  </div>
+
+
+                </div> 
               </div>
 
-              <div class="right-wrap-content-left-content">
-                <div class="container" v-if="previewTab && showPreview === 'picture'">
-                  <div class="bottomContent" v-if="showPreview === 'picture'" >
-                     <img :src="picturePreviewUrl" style="max-width: 100%;max-height: 100%;">
-                  </div>    
-                </div>
-
-                <div class="container" v-if="previewTab && showPreview === 'pdf'">
-                   <div class="bottomContent" v-if="showPreview === 'pdf' && pdfPreviewUrl">
-                    <div class="bottomLeft">
-                          <pdf-preview 
-                            :pdf-url='pdfPreviewUrl'
-                            :pdf-pagenum='totalPages'>
-                          </pdf-preview >      
-                    </div>
-                  </div>    
-                </div>
-              </div> 
+              <!-- <div class="right-wrap-content-right">
 
 
-            </div>
+                  <div class="container" v-if="previewTab && showPreview === 'picture'">
+                    <div class="bottomContent" v-if="showPreview === 'picture'" >
+                       <img :src="previewUrl" style="max-width: 100%;max-height: 100%;">
+                    </div>    
+                  </div>
 
-<!--             <div class="right-wrap-content-right">
+                  <div class="container" v-if="previewTab && showPreview === 'pdf'">
+                     <div class="bottomContent" v-if="showPreview === 'pdf' && previewUrl">
+                      <div class="bottomLeft">
+                            <pdf-preview 
+                              :pdf-url='previewUrl'
+                              :pdf-pagenum='totalPages'>
+                            </pdf-preview >      
+                      </div>
+                    </div>    
+                  </div>
 
+                  <div class="container" v-if="previewTab && showPreview === 'video'">
+                    <div class="bottomContent" v-if="showPreview === 'video' && previewUrl">
+                      <div class="bottomLeft">
+                            <video-player  class="video-player vjs-custom-skin"
+                             ref="videoPlayer"
+                             :playsinline="true"
+                             :options="playerOptions"
+                            ></video-player>    
+                      </div>
+                    </div>    
+                  </div>
 
-                <div class="container" v-if="previewTab && showPreview === 'picture'">
-                  <div class="bottomContent" v-if="showPreview === 'picture'" >
-                     <img :src="picturePreviewUrl" style="max-width: 100%;max-height: 100%;">
-                  </div>    
-                </div>
+                  <div class="container" v-if="previewTab && showPreview === 'frequency'">
+                    <div class="bottomContent" v-if="showPreview === 'frequency' && previewUrl">
+                      <div class="bottomLeft">
+                            <aplayer :music="videoUpload.music"></aplayer>   
+                      </div>
+                    </div>    
+                  </div>
 
-                <div class="container" v-if="previewTab && showPreview === 'pdf'">
-                   <div class="bottomContent" v-if="showPreview === 'pdf' && pdfPreviewUrl">
-                    <div class="bottomLeft">
-                          <pdf-preview 
-                            :pdf-url='pdfPreviewUrl'
-                            :pdf-pagenum='totalPages'>
-                          </pdf-preview >      
-                    </div>
-                  </div>    
-                </div>
+              </div> -->
+            </div>  
 
-            </div> -->
-          </div>  
+          </div>
 
         </div>
 
@@ -171,11 +197,11 @@
           <div class="tree-class">
 
             <div v-if="knowType == 'chapter'">
-            <pointTree :tree-data="chapterData" :showCheckbox="true" @selectnode="defaultCheckChapters" ref="chapterTree" v-show="knowType=='chapter'"></pointTree>
+            <pointTree :tree-data="chapterData" :showCheckbox="true" ref="chapterTree" v-show="knowType=='chapter'"></pointTree>
             </div>
           
             <div v-if="knowType == 'knowledge'">
-              <pointTree  :tree-data="knowledgeData" :showCheckbox="true"  @selectnode="defaultCheckKnows" ref="knowledgeTree" v-show="knowType=='knowledge'"></pointTree>
+              <pointTree  :tree-data="knowledgeData" :showCheckbox="true" ref="knowledgeTree" v-show="knowType=='knowledge'"></pointTree>
             </div>
           </div>
 
@@ -232,8 +258,14 @@
   import { mapGetters } from 'vuex'
   import rightNav from '@/components/Nav/rightNav'
   import topPopover from "@/components/Popover/topPopover";
-  import pdfPreview from '@/components/PdfPreview/pdfPreview'
+
   import pointTree from '@/components/Tree/pointTree'
+  import pdfPreview from '@/components/FilePreview/pdfPreview'
+
+  import videoPlayer from '@/components/FilePreview/videoPlayer'
+  import audioPlayer from '@/components/FilePreview/audioPlayer'
+
+
 export default {
 
   data() {
@@ -246,8 +278,7 @@ export default {
       previewTab: true,
       //预览
       totalPages:1,
-      pdfPreviewUrl:'',
-      picturePreviewUrl:'',
+      previewUrl:'',
       showPreview :'pdf',
       filter: {
 
@@ -270,13 +301,16 @@ export default {
       typeList:[],
       marking:'',
       pointList:[],
+
     }
   },
   components: {
     rightNav,
     pdfPreview,
     topPopover,
-    pointTree
+    pointTree,
+    videoPlayer,
+    audioPlayer
     
   },
   watch: {
@@ -352,23 +386,23 @@ export default {
 
     },
 
-    defaultCheckChapters() {
-      // let ids = []
-      // this.resourceInfo.chapterSet.forEach(item=>{
-      //   ids.push({id:item})
-      // })
-      if(this.resourceInfo.chapterList && this.resourceInfo.chapterList.length) {
-        this.$refs.chapterTree.setNodesByIds(this.resourceInfo.chapterList)
-      }
+    // defaultCheckChapters() {
+    //   // let ids = []
+    //   // this.resourceInfo.chapterSet.forEach(item=>{
+    //   //   ids.push({id:item})
+    //   // })
+    //   if(this.resourceInfo.chapterList && this.resourceInfo.chapterList.length) {
+    //     this.$refs.chapterTree.setNodesByIds(this.resourceInfo.chapterList)
+    //   }
       
-    },
+    // },
 
-    defaultCheckKnows() {
-      if(this.resourceInfo.knowledgeList && this.resourceInfo.knowledgeList.length) {
-        this.$refs.knowledgeTree.setNodesByIds(this.resourceInfo.knowledgeList)
-      }
+    // defaultCheckKnows() {
+    //   if(this.resourceInfo.knowledgeList && this.resourceInfo.knowledgeList.length) {
+    //     this.$refs.knowledgeTree.setNodesByIds(this.resourceInfo.knowledgeList)
+    //   }
       
-    },
+    // },
     
 
     getGradeList() {
@@ -455,12 +489,26 @@ export default {
 
     },
     chapterTreeShow() {
+
+
       this.knowType = 'chapter'
       this.treeDialog = true
+      this.$nextTick(()=>{
+        if(this.resourceInfo.chapterList && this.resourceInfo.chapterList.length) {
+          this.$refs.chapterTree.setNodesByIds(this.resourceInfo.chapterList)
+        }
+      })
+
     },
     knowledgeTreeShow() {
+
       this.knowType = 'knowledge'
       this.treeDialog = true
+      this.$nextTick(()=>{
+        if(this.resourceInfo.knowledgeList && this.resourceInfo.knowledgeList.length) {
+          this.$refs.knowledgeTree.setNodesByIds(this.resourceInfo.knowledgeList)
+        }
+      })
     },
     // getCheckedKnows(list) {
     //   this.knowledgeTags = list
@@ -508,14 +556,38 @@ export default {
                   this.previewFile(this.resourceInfo.previewFile.id)
                 } else {
                   this.previewTab = false;
+                  this.$message.warning('该文件类型暂不支持预览')
                 }
                 break;
               case 'Picture':
                 this.showPreview = 'picture';
                 this.previewFile(this.resourceInfo.resourceSite.id)
                 break;
+              case 'Video':
+                this.showPreview = 'video';
+                if ( this.resourceInfo.fileSuffix === 'wmv'
+                    || this.resourceInfo.fileSuffix === 'mpg'
+                    || this.resourceInfo.fileSuffix === 'avi'
+                    || this.resourceInfo.fileSuffix === '3gp'
+                    || this.resourceInfo.fileSuffix === 'flv'
+                    || this.resourceInfo.fileSuffix === 'swf'
+                    || this.resourceInfo.fileSuffix === 'rmvb' ){
+                  this.previewTab = false;
+                  this.$message.warning('该文件类型暂不支持预览')
+                } else {
+                  this.previewFile(this.resourceInfo.resourceSite.id)
+                }
+                break;
+              case 'Frequency':
+                this.showPreview = 'frequency';
+                this.previewFile(this.resourceInfo.resourceSite.id)
+                // this.videoUpload.music.title = this.resourceInfo.name;
+                // this.videoUpload.music.artist = this.resourceInfo.userName;
+                
+                break;
               default:
                 this.previewTab = false;
+                this.$message.warning('该文件类型暂不支持预览')
             }
           }
 
@@ -528,11 +600,12 @@ export default {
       this.$http.get(`/api/open/common/${fileId}/preview`)
         .then((res)=>{
             if(res.status == '200') {
-              if (this.showPreview == 'pdf'){
-                this.pdfPreviewUrl = res.data
-              } else if (this.showPreview == 'picture'){
-                this.picturePreviewUrl = res.data
-              }   
+              this.previewUrl = res.data
+              // if (this.showPreview === 'video'){
+              //   this.playerOptions.sources[0].src = res.data;
+              // } else if (this.showPreview === 'frequency'){
+              //   this.videoUpload.music.src = res.data;
+              // }   
             }
         })
     },
@@ -676,111 +749,126 @@ export default {
   .right-class {
     width: 100%;
     height: 100%;
-    
+    overflow-y: auto;
+    overflow-x: hidden;
 
 
+    .right-class-wrap {
+      .right-wrap {
+        // margin-top: 20px;
 
+        &-top {
+          table {
+            border-top: 1px solid #e2e2e2;
+            border-left: 1px solid #e2e2e2;
 
-    .right-wrap {
-      // margin-top: 20px;
+            th, td {
+              border-right: 1px solid #e2e2e2;
+              border-bottom: 1px solid #e2e2e2;
+            }
 
-      &-top {
-        table {
-          border-top: 1px solid #e2e2e2;
-          border-left: 1px solid #e2e2e2;
-
-          th, td {
-            border-right: 1px solid #e2e2e2;
-            border-bottom: 1px solid #e2e2e2;
-          }
-
-          th {
-            padding: 8px 5px;
-            background-color: #f5f7fc;
-          }
-          td {
-            padding: 5px 3px;
-            text-align: center;
-            background-color: #ffffff;
-          }
-        }      
-      }
-
-      &-content {
-        margin-top: 10px;
-        background-color: #ffffff;
-        height: calc(100vh - 260px);
-        // overflow-y: auto;
-        // display: flex;
-        padding: 10px;
-
-        &-left {
-          // width: 50%;
-          margin-right: 20px;
-          height: 100%;
-          // 
-          line-height: 24px;
-
-          &-top {
-            // display: flex;
-
-            .title_p {
-              font-size: 1.18rem;
+            th {
+              padding: 8px 5px;
+              background-color: #f5f7fc;
+            }
+            td {
+              padding: 5px 3px;
               text-align: center;
+              background-color: #ffffff;
             }
-
-            .img-class {
-              width: 230px;
-            }
-
-            .info-class {
-              margin-left: 20px;
-              display: flex;
-              flex-wrap: wrap;
-
-              .one-piece {
-                width: 25%;
-              }
-
-
-              .link-class {
-                color: #409EFF;
-              }
-            }
-          }
-
-          &-content {
-            height: calc(100vh - 430px);
-            overflow-y: auto;
-            // background-color: red;
-            margin-top: 10px;
-
-
-
-
-          }
+          }      
         }
 
-
-        &-right {
-          margin-left: 20px;
-          width: 50%;
-          height: 100%;
-          
-          background-color:#ebeef6;
+        &-content {
+          margin-top: 10px;
+          background-color: #ffffff;
+          // height: calc(100vh - 260px);
+          // overflow-y: auto;
+          // display: flex;
           padding: 10px;
 
-
-
-          .container {
+          &-left {
+            // width: 50%;
+            margin-right: 20px;
             height: 100%;
-            background-color: #ffffff;
-            overflow-y: auto;
+            // 
+            line-height: 24px;
 
+            &-top {
+              width: 90%;
+              margin: 0 auto;
+              // display: flex;
+
+              .title_p {
+                font-size: 1.18rem;
+                // text-align: center;
+              }
+
+              .img-class {
+                width: 230px;
+              }
+
+              .info-class {
+                margin-left: 20px;
+                display: flex;
+                flex-wrap: wrap;
+
+                .one-piece {
+                  width: 25%;
+                }
+
+
+                .link-class {
+                  color: #409EFF;
+                }
+              }
+            }
+
+            &-content {
+              // height: calc(100vh - 430px);
+              // overflow-y: auto;
+              // background-color: red;
+              margin-top: 10px;
+              padding: 0 20px;
+
+
+              .container {
+                // height: 100%;
+                width: 90%;
+                margin: 0 auto;
+                // background-color: #ffffff;
+                // overflow-y: auto;
+
+              }
+
+
+            }
+          }
+
+
+          &-right {
+            margin-left: 20px;
+            width: 50%;
+            height: 100%;
+            
+            background-color:#ebeef6;
+            padding: 10px;
+
+
+
+            .container {
+              height: 100%;
+              width: 90%;
+              margin: 0 auto;
+              background-color: #ffffff;
+              overflow-y: auto;
+
+            }
           }
         }
       }
     }
+
 
 
 
@@ -848,4 +936,5 @@ export default {
   }
 
 }
+
 </style>

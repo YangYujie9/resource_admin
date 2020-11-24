@@ -186,7 +186,7 @@ export default {
   		.then((data)=>{
   			if(data.status == '200') {
 
-  				this.tableData = data.data.content
+  				this.tableData = data.data
   			
 
   			}

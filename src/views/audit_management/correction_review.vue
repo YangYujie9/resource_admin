@@ -93,8 +93,12 @@
 
  
           </div>
-			    <div class="content-wrap"  ref="table_warp" :style="{height:table_height+'px'}">
-            <div v-if="tableData.length==0">
+			    <div class="content-wrap"  
+           ref="table_warp" 
+           :style="{height:table_height+'px'}"
+           v-loading="loading"
+           element-loading-text="拼命加载中">
+             <!--<div v-if="tableData.length==0">
               <div style="height: 300px;line-height: 300px;text-align: center;">暂无数据</div>
             </div>
 			      <div v-else>
@@ -105,7 +109,7 @@
   			            <div class="qt1" v-html="list.name">
   	
   			            </div>
-  			            <div class="qt2" v-if="list.options.length">
+  			            <div class="qt2" v-if="list.options.length && list.questionTypeTemplate!='BoolenQuestionTemplate'">
   			              <ul>
   			                <li style="width: 100%;" class="selectoption" v-for="item in list.selectoption">
 
@@ -117,28 +121,28 @@
   			              </ul>
   			            </div>
 
-                    <!-- 小题 -->
+                    
                     <div class="" v-if="list.smallQuestions.length" style="margin-top: 10px;">
                       <div v-for="(list1,index1) in list.smallQuestions">
-
-                        <div class="qt1" v-if="list1.name">
-                          <div class="small-one">
-                            <span>{{index1+1}}</span><span>、</span>
-                            <span v-html="list1.name" ></span>
+                        <div :class="{qtwrap:list.questionTypeTemplate=='GestaltFillsUpTemplate'||list1.questionType=='NoAloneEnter'}">
+                          <div class="qt1" v-if="list1.questionType!='NoAloneEnter'">
+                            <div class="small-one">
+                              <span class="order">{{index1+1}}</span><span>、</span>
+                              <span v-html="list1.name" ></span>
+                            </div>
                           </div>
-                        </div>
-                        <div class="qt2" v-if="list1.options.length">
-                          <ul>
-                            <li style="width: 100%;" class="selectoption" v-for="item in list1.selectoption">
+                          <div class="qt2" v-if="list1.options.length && list1.questionType!='BoolenQuestion'" style="padding-left: 20px;">
+                            <ul style="padding-left: 20px;">
+                              <li style="width: 100%;" class="selectoption" v-for="item in list1.selectoption">
 
-                              <span>{{item.key}}</span>
-                              <span>、</span>
-                              <span v-html="item.value"></span> 
-                              <!-- <img src="@/assets/test1.png" /> -->
-                            </li>
-       
-       
-                          </ul>
+                                <span>{{item.key}}</span>
+                                <span>、</span>
+                                <span v-html="item.value"></span> 
+                              </li>
+         
+         
+                            </ul>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -165,8 +169,8 @@
   			                <p class="title">【答案】</p>
   			                <p>
   			                	<span v-for="(item,index1) in list.answers">
-                            <span v-if="list.smallQuestions.length"  style="margin-left: 0px;">{{index1+1}}.</span>
-                            <span style="margin-left: 0px;">{{item}}</span>
+                            <span v-if="list.smallQuestions.length"  style="margin-left: 0px;">{{item.index}}.</span>
+                            <span style="margin-left: 3px;">{{item.name}}</span>
                           </span>
   			                </p>
   			              </div>
@@ -188,7 +192,6 @@
                         <span>难度：{{list.difficultyTypeName}}</span>
                         <span>题型：{{list.questionTypeName}}</span>
                       </div>
-  			              <!-- <div>状态：{{list.applyStateName}}</div> -->
   			              <div>
                         <el-button type="text" @click="list.showDetail = !list.showDetail">{{list.showDetail?'收起':'详情'}}</el-button>
   			              	<el-button type="text" @click="checkQuestionError(true,list.errorCorrectionId)">审核通过</el-button>
@@ -204,17 +207,17 @@
   			          </section>
                 </div>
 			        </el-card>
-			      </div>
-
+			      </div> -->
+            <questionList :tableData="tableData" :isError="true" :isAnswer="isAnswer" :checkAll="checkAll" @getData="getTableData" @checkAllchange="checkAllchange" @isIndeterminateChange="isIndeterminateChange" ref="question"></questionList>
 
 			    </div>
 
           <div class="pagination" ref="pagination">
             <div style="flex-shrink: 0">
               <el-checkbox v-model="checkAll" @change="handleCheckAllChange" :indeterminate="isIndeterminate">全选</el-checkbox>
-       				<el-button type="text" @click="deleteQuestion()" style="margin-left: 20px;">删除</el-button>
-            	<el-button type="text" @click="checkQuestionError(true)">审批通过</el-button>
-            	<el-button type="text" @click="checkQuestionError(false)">审批拒绝</el-button>
+       				<el-button type="text" @click="$refs.question.deleteError()" style="margin-left: 20px;">删除</el-button>
+            	<el-button type="text" @click="$refs.question.checkQuestionError(true)">审批通过</el-button>
+            	<el-button type="text" @click="$refs.question.checkQuestionError(false)">审批拒绝</el-button>
             </div>
             <el-pagination
               @size-change="handleSizeChange"
@@ -240,6 +243,7 @@
   import rightNav from '@/components/Nav/rightNav'
   import collapsiblePonitTree from '@/components/Nav/collapsiblePonitTree'
   import { debounce } from '@/utils/public.js'
+  import questionList from '@/components/question/questionList'
   // import topTabs from '@/components/Nav/topTabs'
   // import basicTree from '@/components/Tree/basicTree'
   // import pointTree from '@/components/Tree/pointTree'
@@ -290,6 +294,7 @@ export default {
       isMounted: false,
       learningSection:'',
       subjectCode:'',
+      loading: false,
 
 
 
@@ -303,6 +308,7 @@ export default {
   components: {
     rightNav,
     collapsiblePonitTree,
+    questionList
     // topTabs,
     // basicTree,
     // pointTree,
@@ -310,17 +316,17 @@ export default {
     
   },
   watch: {
-    isAnswer(value) {
-      if(value) {
-        this.tableData.forEach(item=>{
-          item.showDetail = true
-        })
-      }else {
-        this.tableData.forEach(item=>{
-          item.showDetail = false
-        })
-      }
-    },
+    // isAnswer(value) {
+    //   if(value) {
+    //     this.tableData.forEach(item=>{
+    //       item.showDetail = true
+    //     })
+    //   }else {
+    //     this.tableData.forEach(item=>{
+    //       item.showDetail = false
+    //     })
+    //   }
+    // },
 
   },
   computed: {
@@ -350,7 +356,13 @@ export default {
     }
 
   },
+  activated() {
+    this.getTableData()
 
+  },
+  deactivated(){
+    window.onresize = null;
+  },
   destroyed(){
     window.onresize = null;
   },
@@ -530,30 +542,30 @@ export default {
 
   	},
 
+    checkAllchange(val) {
+      this.checkAll = val
+      // console.log(this.checkAll)
+    },
 
-  	//全选
+    isIndeterminateChange(val) {
+      this.isIndeterminate = val
+      // console.log(this.isIndeterminate)
+    },
+  	// //全选
     handleCheckAllChange(val) {
-    	if(val) {
-    		this.tableData.forEach(item=>{
-    			item.check = true
-    		})
-    	}else {
-    		this.tableData.forEach(item=>{
-    			item.check = false
-    		})    	
-    	}
-      this.isIndeterminate = false;
+    	this.$refs.question.handleCheckAllChange(val)
+      // this.isIndeterminate = false;
     },
 
 
-    handleCheckedChange() {
-  	  let checked = this.tableData.filter(item=>{
-  			return item.check
-  		})
+    // handleCheckedChange() {
+  	 //  let checked = this.tableData.filter(item=>{
+  		// 	return item.check
+  		// })
 
-      this.checkAll = checked.length === this.tableData.length;
-      this.isIndeterminate = checked.length > 0 && checked.length < this.tableData.length;
-    },
+    //   this.checkAll = checked.length === this.tableData.length;
+    //   this.isIndeterminate = checked.length > 0 && checked.length < this.tableData.length;
+    // },
 
 
     // 分页
@@ -580,6 +592,8 @@ export default {
     	}	
 
       this.tableData = []
+      this.loading = true
+      // this.tableData = []
       this.checked = false
       let params = {
       	schoolId: this.currentNode.id,
@@ -615,34 +629,35 @@ export default {
       .then((data)=>{
         if(data.status == '200') {
 
-        	let list = []
-        	data.data.content.forEach(item=>{
+        	// let list = []
+        	// data.data.content.forEach(item=>{
 
-        		item.questionDto.showDetail = false
+        	// 	item.showDetail = false
 
-            item.questionDto.answers = []
-            this.handleQuestion(item.questionDto,item.questionDto)
+         //    item.answers = []
+         //    this.handleQuestion(item,item)
 
 
-            item.questionDto.content = item.errorCorrection.content
+         //    item.content = item.errorCorrection.content
 
-            item.questionDto.errorCorrectionId = item.errorCorrection.errorCorrectionId.id
+         //    item.errorCorrectionId = item.errorCorrection.errorCorrectionId.id
 
-        		item.questionDto.check = false
+        	// 	item.check = false
 
-        		list.push(item.questionDto)
-        	})
+        	// 	list.push(item)
+        	// })
 
         	// console.log(list)
 
-          this.tableData = list
+          this.tableData = data.data.content
           this.total = data.data.totalElements
           this.checkAll = false
+          this.loading = false
 
-          this.$nextTick(()=>{
-            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+          // this.$nextTick(()=>{
+          //   MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 
-          })
+          // })
 
         } 
           
@@ -650,147 +665,151 @@ export default {
 
     }),
 
-    handleQuestion(item,item0) {
-      item.selectoption = []
-      if(item.options && item.options.length) {
-        item.options.forEach(item1=>{
-          item.selectoption.push({key:item1.key,id:item1.value.id,value:item1.value.name})
-          // item.selectoption.push(item1)
-          // for(let key in item1) {
-          //   item.selectoption.push({key:key,id:item1[key].id,value:item1[key].name})
-          // }
-        })
-      }
-      //答案
-      //item.answers = []
-      if(item.fillAnswers && item.fillAnswers.length) {
-        item.fillAnswers.forEach(item1=>{
-          item0.answers.push(item1.value.name)
-          // for(let key in item1) {
-          //   item0.answers.push(item1[key])
-          // }
-        })
-      }
 
-      //章节
-      item.chapterPoint = [] 
-      if(item.chapters && item.chapters.length) {
-        item.chapters.forEach(item1=>{
-          item.chapterPoint.push(item1.name)
-        })
-      }
 
-      //知识点
-      item.knowledgesPoint = [] 
-      if(item.knowledges && item.knowledges.length) {
-        item.knowledges.forEach(item1=>{
-          item.knowledgesPoint.push(item1.name)
-        })
-      }
+    // handleQuestion(item,item0,index) {
+    //   item.selectoption = []
+    //   if(item.options && item.options.length) {
+    //     item.options.forEach(item1=>{
+    //       item.selectoption.push({key:item1.key,id:item1.value.id,value:item1.value.name})
+    //       // item.selectoption.push(item1)
+    //       // for(let key in item1) {
+    //       //   item.selectoption.push({key:key,id:item1[key].id,value:item1[key].name})
+    //       // }
+    //     })
+    //   }
+    //   //答案
+    //   //item.answers = []
+    //   if(item.fillAnswers && item.fillAnswers.length) {
+    //     item0.answers.push({index:index+1,name:''})
+    //     item.fillAnswers.forEach(item1=>{
+    //       // item0.answers.push({index: index+1,name: item1.value.name})
+    //       item0.answers[item0.answers.length-1].name += item1.value.name + ' '
+    //       // for(let key in item1) {
+    //       //   item0.answers.push(item1[key])
+    //       // }
+    //     })
+    //   }
 
-      if(item.smallQuestions && item.smallQuestions.length) {
-        item.smallQuestions.forEach(item1=>{
+    //   //章节
+    //   item.chapterPoint = [] 
+    //   if(item.chapters && item.chapters.length) {
+    //     item.chapters.forEach(item1=>{
+    //       item.chapterPoint.push(item1.name)
+    //     })
+    //   }
+
+    //   //知识点
+    //   item.knowledgesPoint = [] 
+    //   if(item.knowledges && item.knowledges.length) {
+    //     item.knowledges.forEach(item1=>{
+    //       item.knowledgesPoint.push(item1.name)
+    //     })
+    //   }
+
+    //   if(item.smallQuestions && item.smallQuestions.length) {
+    //     item.smallQuestions.forEach((item1, index1)=>{
           
-          this.handleQuestion(item1,item)
-        })
+    //       this.handleQuestion(item1,item,index1)
+    //     })
         
-      }
+    //   }
 
-      // console.log(item)
-    },
-    //删除
-    deleteQuestion(errorId) {
-    	this.$confirm('确认删除试题纠错记录吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
+    //   // console.log(item)
+    // },
+    // //删除
+    // deleteQuestion(errorId) {
+    // 	this.$confirm('确认删除试题纠错记录吗?', '提示', {
+    //     confirmButtonText: '确定',
+    //     cancelButtonText: '取消',
+    //     type: 'warning'
+    //   }).then(() => {
 
-      	let ids = []
+    //   	let ids = []
 
 
-	    	if(errorId) {
+	   //  	if(errorId) {
 					
-					ids.push(errorId)
+				// 	ids.push(errorId)
    	
-		    }else {
+		  //   }else {
 
           
-          this.tableData.forEach(item=>{
-            item.check? ids.push(item.errorCorrectionId):null
-          })
-        }
+    //       this.tableData.forEach(item=>{
+    //         item.check? ids.push(item.errorCorrectionId):null
+    //       })
+    //     }
 
 
-					this.$http.delete(`/api/internal/errorCorrection`,{},ids)
-		      .then((data)=>{
-		        if(data.status == '200') {
+				// 	this.$http.delete(`/api/internal/errorCorrection`,{},ids)
+		  //     .then((data)=>{
+		  //       if(data.status == '200') {
 
-              this.checkAll = false
-		        	this.getTableData()
-		        	this.$message({
-		              message: "删除成功",
-		              type:'success'
-		          })
+    //           this.checkAll = false
+		  //       	this.getTableData()
+		  //       	this.$message({
+		  //             message: "删除成功",
+		  //             type:'success'
+		  //         })
 
 
-		        } 
+		  //       } 
 		          
-		      })
+		  //     })
 
 
 		    
-		  })
+		  // })
 	      
-    },
+    // },
 
 
 
 
-    //审核
-    checkQuestionError(enabled,errorId) {
-      let ids = []
+    // //审核
+    // checkQuestionError(enabled,errorId) {
+    //   let ids = []
 
 
-    	if(errorId) {
-        ids.push(errorId)
+    // 	if(errorId) {
+    //     ids.push(errorId)
    	
-		    }else {
+		  //   }else {
 
 		    	
           
-          this.tableData.forEach(item=>{
-            item.check? ids.push(item.errorCorrectionId):null
-          })
-        }
+    //       this.tableData.forEach(item=>{
+    //         item.check? ids.push(item.errorCorrectionId):null
+    //       })
+    //     }
 
 
-					this.$http.put(`/api/internal/errorCorrection/batch/${enabled}`,ids)
+				// 	this.$http.put(`/api/internal/errorCorrection/batch/${enabled}`,ids)
 
-		      .then((data)=>{
-		        if(data.status == '200') {
-		        	this.getTableData()
-		        	this.$message({
-		              message: "操作成功",
-		              type:'success'
-		          })
+		  //     .then((data)=>{
+		  //       if(data.status == '200') {
+		  //       	this.getTableData()
+		  //       	this.$message({
+		  //             message: "操作成功",
+		  //             type:'success'
+		  //         })
 
 
-		          } 
+		  //         } 
 		          
-	        })
+	   //      })
 
 
 		
-    },
+    // },
 
 
 
 
-      continueError(questionId,errorId) {
+    //   continueError(questionId,errorId) {
 
-        this.$router.push({path:'/administrator/questionCorrection', query: {questionId: questionId,errorId:errorId}})
-      },
+    //     this.$router.push({path:'/administrator/questionCorrection', query: {questionId: questionId,errorId:errorId}})
+    //   },
 
 
 
@@ -897,7 +916,9 @@ export default {
 		        Arial, "宋体";
 		      -webkit-font-smoothing: antialiased;
 		      // border-radius: 50% 0;
-
+          .order {
+            flex-shrink: 0;
+          }
 		      .qt1 {
 		        overflow: hidden;
 		        zoom: 1;
@@ -924,6 +945,7 @@ export default {
 
 		      .qt2 {
 		        //padding: 0px 20px 20px 20px;
+            width: 100%;
 
 		        ul {
 		          display: flex;
@@ -942,8 +964,19 @@ export default {
 		          }
 		        }
 		      }
+          .qtwrap {
+            display: flex;
+            align-items: center;
 
-		      .top {
+            .qt1 {
+              padding-bottom: 0px;
+            }
+
+            .qt2 ul {
+              flex-wrap: nowrap;
+            }
+          }
+    		      .top {
 		        border-bottom: 1px dashed #dbdee4;
 		        padding-bottom: 20px;
 		      }

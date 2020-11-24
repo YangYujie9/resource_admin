@@ -3,7 +3,7 @@
     <div class="rolemana-wrap contener">
       <div class="right-header">
         <span>角色管理 </span>
-        <el-button size="mini" style="margin-left: 20px;" @click="addUserShow" type="primary"><i class="el-icon-plus"></i> 添加</el-button>
+        <!-- <el-button size="mini" style="margin-left: 20px;" @click="addUserShow" type="primary"><i class="el-icon-plus"></i> 添加</el-button> -->
       </div>
       <div class="table-warp" ref="table_warp">
       <el-table
@@ -32,7 +32,7 @@
           label="备注"
           show-overflow-tooltip>
         </el-table-column>
-        <el-table-column
+<!--         <el-table-column
           prop=""
           label="操作"
           show-overflow-tooltip>
@@ -42,7 +42,7 @@
               <i class="iconfont iconshanchu-copy iconclass" @click="deleteUser(scope.row)"></i>
             </span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
 
 
@@ -183,6 +183,7 @@ export default {
 
     addUserShow() {
       this.dialogTitle = '添加角色'
+      this.editUserId = ''
       this.userForm.userRolename = ''
       this.userForm.userRole = ''
       this.userForm.description = ''
@@ -197,6 +198,7 @@ export default {
       this.userForm.userRolename = row.name
       this.userForm.userRole = row.roleType
       this.userForm.description = row.description
+      this.getroleNameList('editShow')
     },
     
     
@@ -255,16 +257,16 @@ export default {
     },
 
 
-    getroleNameList() {
+    getroleNameList(name) {
       this.roleNameList = []
-      this.userForm.userRolename = ''
+      // this.userForm.userRolename = ''
 
       if(this.userForm.userRole) {
         this.$http.get(`/api/open/common/userRole/${this.userForm.userRole}`)
         .then(data=>{
           if(data.status == '200') {
             this.roleNameList = data.data
-
+            this.userForm.userRolename = name=='editShow'? this.userForm.userRolename :''
             // this.userForm.userRolename = this.roleNameList.length? this.roleNameList[0].id:''
           }
         })

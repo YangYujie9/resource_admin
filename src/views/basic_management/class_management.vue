@@ -184,12 +184,18 @@ export default {
   mounted() {
 
 
-    this.getOrgTree()
+    // this.getOrgTree()
     
 
 
 
   },
+  activated() {
+
+    this.gradeId?this.get_class_list():null
+    
+  },
+
   methods: {
 
     // 获取组织架构树
@@ -201,20 +207,10 @@ export default {
           this.data = data.data
 
 
-        } else {
-          return this.$message({
-            message: data.msg,
-            type:'error'
-          })
         }
         
       })
-      .catch(()=>{
-        return this.$message({
-          message:'接口报错',
-          type:'error'
-        })
-      })
+
 
     },
 
@@ -316,7 +312,7 @@ export default {
     	this.editClassId = row.classId.id
     	this.classes.name = row.className
 
-      this.classes.headTeacherId = Number(row.headTeacher.id)
+      this.classes.headTeacherId = row.headTeacher?Number(row.headTeacher.id):''
     	let tearchers = []
     	for(let i=0;i<this.subjectList.length;i++) {
     		tearchers[i] = ''
@@ -341,7 +337,13 @@ export default {
           type:'warning'
         })
     	}
-      // console.log(this.classes)
+
+      if(!this.classes.headTeacherId) {
+        return this.$message({
+          message: '班主任不能为空',
+          type:'warning'
+        })
+      }
 
     	let giveLessonCommands = []
     	this.classes.tearchers.forEach(item=>{
@@ -379,12 +381,6 @@ export default {
     	}else {
     		//新增
 
-        if(!this.classes.headTeacherId) {
-          return this.$message({
-            message: '班主任不能为空',
-            type:'warning'
-          })
-        }
 
 	    	this.$http.post(`/api/internal/grades/${this.gradeId}/classes`,{
 	    		className: this.classes.name,

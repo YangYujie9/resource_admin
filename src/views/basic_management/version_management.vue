@@ -553,6 +553,7 @@ export default {
 	.right-three {
 		// width: calc(100vw - 300px);
 		width: 60%;
+    margin-right: 0px;
 		// padding: 0 20px;
 		// overflow-x: hidden;
 		// position: relative;

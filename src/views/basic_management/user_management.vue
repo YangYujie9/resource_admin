@@ -195,12 +195,12 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="账号" prop="account" :required="true">
-                <input style="position: fixed;bottom: -9999px;">
-                <el-input v-model="userForm.account"  class="input-class" placeholder="请输入" :disabled="isEdit"></el-input>
+                <input style="position: fixed;bottom: -9999px;" disabled>
+                <el-input v-model="userForm.account"  class="input-class" placeholder="请输入账号" :disabled="isEdit"></el-input>
               </el-form-item>
               <el-form-item label="姓名" prop="name" :required="true" >
-                <input style="position: fixed;left: -9999px;">
-                <el-input v-model="userForm.name"  class="input-class" placeholder="请输入" autocomplete="off"></el-input>
+                <input style="position: fixed;left: -9999px;" disabled>
+                <el-input v-model="userForm.name"  class="input-class" placeholder="请输入姓名" autocomplete="off"></el-input>
               </el-form-item>
 <!--               <el-form-item label="学段" prop="learningSection" :required="true" >
                 <el-select v-model="userForm.learningSection" class="input-class" @change="">
@@ -224,17 +224,17 @@
               </el-form-item>
               <el-form-item label="密码" prop="pass" :required="true" v-if="!isEdit">
                 <!-- <input style="position: fixed;left: -9999px;"> -->
-                <el-input v-model="userForm.pass" type="password" style="position:fixed;bottom:-9999px;display:none;"></el-input>
+                <!-- <el-input v-model="userForm.pass" type="password" style="position:fixed;bottom:-9999px;display:none;"></el-input> -->
                 <el-input v-model="userForm.pass" type="password" class="input-class" placeholder="请输入密码" auto-complete="off"></el-input>
               </el-form-item>
               <el-form-item label="确认密码" prop="checkPass" :required="true" v-if="!isEdit">
-                <el-input v-model="userForm.checkPass" type="password" style="position:fixed;bottom:-9999px;display:none;"></el-input>
+               <!--  <el-input v-model="userForm.checkPass" type="password" style="position:fixed;bottom:-9999px;display:none;"></el-input> -->
                 <el-input v-model="userForm.checkPass" type="password"  class="input-class" placeholder="请再次输入密码" autocomplete="off"></el-input>
               </el-form-item>
-              <el-form-item label="手机号">
+              <el-form-item label="手机号" prop="phoneNumber">
                 <el-input v-model="userForm.phoneNumber" class="input-class" placeholder="请输入"></el-input>
               </el-form-item>
-              <el-form-item label="邮箱" >
+              <el-form-item label="邮箱" prop="email">
                 <el-input v-model="userForm.email" class="input-class" placeholder="请输入"></el-input>
               </el-form-item>
             </el-form>
@@ -373,12 +373,29 @@ export default {
           { required: true, message: '请输入账号', trigger: 'blur' },
           { type: 'string', message: '账号必须为字符串'}
         ],
+        name: [
+          { required: true, message: '请输入姓名', trigger: 'blur' },
+        ],
         pass: [
           { validator: validatePass, trigger: 'blur' }
         ],
         checkPass: [
           { validator: validatePass2, trigger: 'blur' }
         ],
+        phoneNumber: [
+         {
+            pattern: /^1[3456789]\d{9}$/,
+            message: "请输入正确的手机号码",
+            trigger: "blur"
+          }
+        ],
+        email: [
+          {
+            pattern: /^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/,
+            message: "邮箱格式有误",
+            trigger: "blur"
+          }
+        ]
  
       }
 
@@ -418,7 +435,15 @@ export default {
 
 
   },
+  activated() {
 
+    this.currentNode && this.currentNode.id?this.getTableData():null
+    
+  },
+  deactivated() {
+    window.onresize = null;
+  },
+  
   destroyed(){
     window.onresize = null;
   },
@@ -505,7 +530,7 @@ export default {
 
 
       if(this.isAdd || this.isEdit) {
-        // this.userForm.classId = ''
+        this.userForm.classId = ''
 
       }else {
         this.search.classId = ''
@@ -529,7 +554,7 @@ export default {
           this.classList = data.data.content
 
           if(this.isEdit) {
-            this.userForm.classId = this.classList.length? this.userForm.classId:''
+            // this.userForm.classId = this.classList.length? this.userForm.classId:''
             // console.log(this.classList,this.userForm.classId)
             // this.dialogVisible = true
           }
@@ -645,13 +670,15 @@ export default {
       this.userForm.account = row.username
       this.userForm.name = row.person.fullName
       this.userForm.gradeId = row.grade?row.grade.id:''
-      this.userForm.classId = row.clazz?row.clazz.id:''
+      
       this.userForm.subjectId = row.subject?row.subject.id:''
       this.userForm.phoneNumber = row.person.phoneNumber
       this.userForm.email = row.person.email
       this.get_class_list(this.userForm.gradeId)
       this.dialogVisible = true
-
+      this.$nextTick(()=> {
+        this.userForm.classId = row.clazz?row.clazz.id:''
+      })
       
     },
 
@@ -799,45 +826,50 @@ export default {
     },
 
     deleteUser(row) {
-      this.$confirm('确认删除该成员?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
+
 
         if(row) {
-          if(this.search.roleTpye=='student') {
-            this.$http.delete(`/api/internal/schools/${this.currentNode.id}/students/${row.id}`)
-            .then((data)=>{
 
-                  this.$message({
-                    message:'删除成功',
-                    type:'success'
-                  })
-                  this.getTableData()
+          this.$confirm('确认删除该成员?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            if(this.search.roleTpye=='student') {
+              this.$http.delete(`/api/internal/schools/${this.currentNode.id}/students/${row.id}`)
+              .then((data)=>{
 
-
-                
-              })
-
-          }else if(this.search.roleTpye=='teacher') {
-            this.$http.delete(`/api/internal/schools/${this.currentNode.id}/teachers/${row.id}`)
-            .then((data)=>{
-
-                  this.$message({
-                    message:'删除成功',
-                    type:'success'
-                  })
-                  this.getTableData()
+                    this.$message({
+                      message:'删除成功',
+                      type:'success'
+                    })
+                    this.getTableData()
 
 
-                
-              })
-   
+                  
+                })
 
-          }
+            }else if(this.search.roleTpye=='teacher') {
+              this.$http.delete(`/api/internal/schools/${this.currentNode.id}/teachers/${row.id}`)
+              .then((data)=>{
+
+                    this.$message({
+                      message:'删除成功',
+                      type:'success'
+                    })
+                    this.getTableData()
 
 
+                  
+                })
+     
+
+            }
+
+          })
+          .catch(()=>{
+        
+          })
 
         }else {
      
@@ -847,44 +879,56 @@ export default {
             return prev
           },[])
 
+          if(!ids.length) { return this.$message.warning('未选择任何成员，请重新选择！') }
+
+
+          this.$confirm('确认删除这些成员?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
 
           // return
-          if(this.search.roleTpye=='student') {
-            this.$http.delete(`/api/internal/schools/${this.currentNode.id}/students`,{},ids)
-            .then((data)=>{
+            if(this.search.roleTpye=='student') {
+              this.$http.delete(`/api/internal/schools/${this.currentNode.id}/students`,{},ids)
+              .then((data)=>{
+
+                    
+                    this.$message({
+                      message:'删除成功',
+                      type:'success'
+                    })
+                    this.getTableData()
+
 
                   
-                  this.$message({
-                    message:'删除成功',
-                    type:'success'
-                  })
-                  this.getTableData()
+                })
 
+            }else if(this.search.roleTpye=='teacher') {
+              this.$http.delete(`/api/internal/schools/${this.currentNode.id}/teachers`,{},ids)
+              .then((data)=>{
 
-                
-              })
+                    
+                    this.$message({
+                      message:'删除成功',
+                      type:'success'
+                    })
+                    this.getTableData()
 
-          }else if(this.search.roleTpye=='teacher') {
-            this.$http.delete(`/api/internal/schools/${this.currentNode.id}/teachers`,{},ids)
-            .then((data)=>{
 
                   
-                  this.$message({
-                    message:'删除成功',
-                    type:'success'
-                  })
-                  this.getTableData()
+                })
+    
 
-
-                
-              })
-  
-
-          }
+            }
+          })
+          .catch(()=>{
+        
+          })
 
 
         }
-      })
+     
     },
 
 

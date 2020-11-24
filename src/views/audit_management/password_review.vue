@@ -197,6 +197,16 @@ export default {
     }
 
   },
+
+  activated() {
+
+    this.currentNode && this.currentNode.id?this.getTableData():null
+    
+  },
+  deactivated() {
+    window.onresize = null;
+  },
+  
   destroyed(){
     window.onresize = null;
   },

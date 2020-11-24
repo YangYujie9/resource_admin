@@ -20,7 +20,7 @@
             <el-form :inline="true" :model="search" class="demo-form-inline" size="mini">
               <el-form-item label="类型">
                 <el-select v-model="search.type" placeholder="类型" class="search-class" @change="resetPage" clearable>
-                  <el-option v-for="list in typeList" :label="list.label" :value="list.key" :key="list.key"></el-option>
+                  <el-option v-for="list in searchTypeList" :label="list.label" :value="list.key" :key="list.key"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="状态">
@@ -182,25 +182,25 @@
 
         </el-form-item>
         <el-form-item label="账号" prop="account" :required="true">
-          <input type="password" name="password" style="position: fixed;bottom: -9999px;">
-          <el-input v-model="userForm.account"  class="input-class" placeholder="请输入" :disabled="isUserEdit||isReset"></el-input>
+          <input type="password" name="password" style="position: fixed;bottom: -9999px;" disabled>
+          <el-input v-model="userForm.account"  class="input-class" placeholder="请输入账号" :disabled="isUserEdit||isReset"></el-input>
         </el-form-item>
         <el-form-item label="姓名" prop="name" :required="true" >
-          <input type="password" name="password" style="position: fixed;left: -9999px;">
-          <el-input v-model="userForm.name"  class="input-class" placeholder="请输入" autocomplete="off" :disabled="isReset"></el-input>
+          <input type="password" name="password" style="position: fixed;left: -9999px;" disabled>
+          <el-input v-model="userForm.name"  class="input-class" placeholder="请输入姓名" autocomplete="off" :disabled="isReset"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="pass" :required="true" v-show="!isUserEdit">
-          <input type="password" name="password" style="position: fixed;left: -9999px;">
+          <input type="password" name="password" style="position: fixed;left: -9999px;" disabled>
           <el-input v-model="userForm.pass" type="password" class="input-class" placeholder="请输入密码" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="确认密码" prop="checkPass" :required="true" v-show="!isUserEdit">
           <el-input v-model="userForm.checkPass" type="password"  class="input-class" placeholder="请再次输入密码" autocomplete="new-password"></el-input>
         </el-form-item>
-        <el-form-item label="手机号" v-show="!isReset">
-          <el-input v-model="userForm.phoneNumber" class="input-class" placeholder="请输入"></el-input>
+        <el-form-item label="手机号" prop="phoneNumber" v-show="!isReset">
+          <el-input v-model="userForm.phoneNumber" class="input-class" placeholder="请输入手机号"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱"  v-show="!isReset">
-          <el-input v-model="userForm.email" class="input-class" placeholder="请输入"></el-input>
+        <el-form-item label="邮箱" prop="email" v-show="!isReset">
+          <el-input v-model="userForm.email" class="input-class" placeholder="请输入邮箱"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -321,10 +321,10 @@ export default {
       editUserId:'',
       totalTypeList: [
         {label:'区域运维管理员',value:'Administrator',key:"0",role:'Organization'},
-        {label:'审核员',value:'Auditor',key:"1",role:'Organization'},
+        {label:'审核员',value:'Auditor',key:"1",role:''},
         {label:'区域领导',value:'AreaLeader',key:"4",role:'Organization'},
-        {label:'学校运维管理员',value:'Administrator',key:"0",role:'School'},
-        {label:'审核员',value:'Auditor',key:"1",role:'School'},
+        {label:'学校运维管理员',value:'Administrator',key:"5",role:'School'},
+        // {label:'审核员',value:'Auditor',key:"5",role:'School'},
         {label:'录题员',value:'Recorder',key:"2",role:'School'},
         {label:'校领导',value:'SchoolLeader',key:"3",role:'School'}
       ],
@@ -333,12 +333,29 @@ export default {
           { required: true, message: '请输入账号', trigger: 'blur' },
           { type: 'string', message: '账号必须为字符串'}
         ],
+        name: [
+          { required: true, message: '请输入姓名', trigger: 'blur' },
+        ],
         pass: [
           { validator: validatePass, trigger: 'blur' }
         ],
         checkPass: [
           { validator: validatePass2, trigger: 'blur' }
         ],
+        phoneNumber: [
+         {
+            pattern: /^1[3456789]\d{9}$/,
+            message: "请输入正确的手机号码",
+            trigger: "blur"
+          }
+        ],
+        email: [
+          {
+            pattern: /^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/,
+            message: "邮箱格式有误",
+            trigger: "blur"
+          }
+        ]
  
       }
 
@@ -359,11 +376,21 @@ export default {
       'getuserInfo',
 
     ]),
+    searchTypeList() {
+      if(this.currentNode.memberType == 'School') {
+        return this.totalTypeList.filter(list=>{
+          return list.role == this.currentNode.memberType || !list.role
+        })
+      }else {
+        return this.totalTypeList
+      }
 
+
+    },
     typeList() {
         return this.totalTypeList.filter(list=>{
           // console.log(list,this.currentNode)
-          return list.role == this.currentNode.memberType
+          return list.role == this.currentNode.memberType || !list.role
         })
       // if(this.currentNode.memberType == 'Organization') {
       //   return this.totalTypeList.filter(list=>{
@@ -377,6 +404,7 @@ export default {
     }
 
   },
+
   mounted() {
     this.$nextTick(()=>{
       this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight -40
@@ -385,11 +413,19 @@ export default {
     window.onresize = () => {
       this.table_height = this.$refs.wrap.offsetHeight  - this.$refs.search_wrap.offsetHeight -40  
     }
-    this.getOrgTree()
+    // this.getOrgTree()
 
   },
 
   destroyed(){
+    window.onresize = null;
+  },
+  activated() {
+
+    // this.getOrgTree()
+    
+  },
+  deactivated() {
     window.onresize = null;
   },
   methods: {
@@ -420,7 +456,7 @@ export default {
 
       // console.log(roleType)
       let name = this.totalTypeList.filter(list=> {
-        return list.value == row.userRole && list.role == roleType
+        return list.value == row.userRole && (list.role == roleType || !list.role)
       })
       // console.log(name)
       if(name && name.length) {
@@ -954,13 +990,14 @@ export default {
     },
 
     deleteUser(row) {
-      this.$confirm('确认删除该成员?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
+      if(row) {
+        this.$confirm('确认删除该成员?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
 
-        if(row) {
+          
           this.$http.delete(`/api/internal/users/${row.userId.id}`)
           .then((data)=>{
             if(data.status == '200') {
@@ -976,8 +1013,11 @@ export default {
               
             })
 
-
-        }else {
+          })
+          .catch(()=>{
+        
+          })
+      }else {
      
           let selectData = this.$refs.multipleTable.store.states.selection
           let ids = selectData.reduce((prev,current)=>{
@@ -985,25 +1025,37 @@ export default {
             return prev
           },[])
 
+          if(!ids.length) { return this.$message.warning('未选择任何成员，请重新选择！') }
 
-          this.$http.delete(`/api/internal/users`,{},ids)
-          .then((data)=>{
-            if(data.status == '200') {
 
+          this.$confirm('确认删除该成员?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+
+            this.$http.delete(`/api/internal/users`,{},ids)
+            .then((data)=>{
+              if(data.status == '200') {
+
+                  
+                  this.$message({
+                    message:'删除成功',
+                    type:'success'
+                  })
+                  this.getTableData()
+
+
+                } 
                 
-                this.$message({
-                  message:'删除成功',
-                  type:'success'
-                })
-                this.getTableData()
+              })
 
-
-              } 
-              
-            })
-
-        }
-      })
+          })
+          .catch(()=>{
+        
+          })
+      }
+      
     },
 
     lockUser(row) {

@@ -48,17 +48,19 @@
 
             </el-form>
           </div>
-          <div class="table-wrap" ref="table_warp">
+          <div class="table-wrap" ref="table_warp" v-loading="loading"
+            element-loading-text="拼命加载中">
             <el-table
               :data="tableData"
               :height="table_height"
               ref="multipleTable"
               :cell-style="tableCellStyle"
+
               border>
                 <el-table-column type="selection"> </el-table-column>
-                <el-table-column label="文件名" prop="name" sortable :show-overflow-tooltip="true"> 
+                <el-table-column label="文件名" prop="name" sortable show-overflow-tooltip> 
                   <template slot-scope="scope">
-                    <div style="cursor: pointer;" @click="resourcePreview(scope.row.resourceId)">
+                    <div style="cursor: pointer;text-overflow: ellipsis;overflow: hidden;" @click="resourcePreview(scope.row.resourceId)">
                       {{scope.row.name}}
                     </div>
                   </template>
@@ -174,6 +176,7 @@ export default {
       currentNode:'',
       schoolsName:'',
       volumeList:[],
+      loading: false,
     }
   },
   components: {
@@ -213,7 +216,13 @@ export default {
 
 
   },
+  activated() {
+    this.getTableData()
 
+  },
+  deactivated(){
+    window.onresize = null;
+  },
   destroyed(){
     window.onresize = null;
   },
@@ -337,8 +346,8 @@ export default {
         return false
       } 
 
-
-      this.tableData = []
+      this.loading = true
+      // this.tableData = []
       this.checkAll = false
       let params = {
         schoolId: this.currentNode.id,
@@ -381,12 +390,22 @@ export default {
           // this.search.page = 1
           this.checkAll = false
 
+          this.loading = false
+
         }   
       })
 
     }),
     //删除
     deleteResource(row) {
+
+      let ids = this.getCheckedIds()
+
+      if(!ids.length && !row){
+        return this.$message.warning('未选择任何资源，请重新选择！')
+      }
+
+
       this.$confirm('确认删除资源吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -406,12 +425,6 @@ export default {
     
         }else {
 
-          let selectData = this.$refs.multipleTable.store.states.selection
-          let ids = selectData.reduce((prev,current)=>{
-            prev.push(current.resourceId)
-            return prev
-          },[])
-
           this.$http.delete(`/api/internal/resources/batchDelete`,{},ids)
           .then((data)=>{
             if(data.status == '200') {
@@ -425,12 +438,18 @@ export default {
 
         }
       })
+      .catch(()=>{
+
+      })
         
     },  
 
     //资源状态更新:上架、下架、拒绝、推荐、取消推荐
     resourceStateChange(row,applyState,recommend) {
       recommend = recommend ? recommend : '';
+
+      
+
       if(row) {
           this.$http.put(`/api/internal/resources/status/${row.resourceId}?applyState=${applyState}&recommend=${recommend}`)
             .then((data)=>{
@@ -444,12 +463,17 @@ export default {
             })
     
       } else {
-          let selectData = this.$refs.multipleTable.store.states.selection
-          let ids = selectData.reduce((prev,current)=>{
-              prev.push(current.resourceId)
-              return prev
-            },[])
+          // let selectData = this.$refs.multipleTable.store.states.selection
+          // let ids = selectData.reduce((prev,current)=>{
+          //     prev.push(current.resourceId)
+          //     return prev
+              //   },[])
 
+          let ids = this.getCheckedIds()
+
+          if(!ids.length){
+            return this.$message.warning('未选择任何资源，请重新选择！')
+          }
           this.$http.put(`/api/internal/resources/batch/status?applyState=${applyState}&recommend=${recommend}`,ids)
             .then((data)=>{
               if(data.status == '200') {
@@ -461,6 +485,16 @@ export default {
               } 
           })
       }
+    },
+
+    getCheckedIds() {
+      let selectData = this.$refs.multipleTable.store.states.selection
+      let ids = selectData.reduce((prev,current)=>{
+        prev.push(current.resourceId)
+        return prev
+      },[])
+
+      return ids
     },
 
     resourcePreview(resourceId) {

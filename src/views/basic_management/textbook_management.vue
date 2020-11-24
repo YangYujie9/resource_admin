@@ -26,7 +26,7 @@
               border
               height="100%"
               :data="tableData"
-              cell-class-name="cell-class""
+              cell-class-name="cell-class"
               style="width: 100%">
               <el-table-column
                 prop="value"
